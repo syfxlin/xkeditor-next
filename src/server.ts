@@ -63,16 +63,16 @@ const extensions = new ExtensionManager([
   new Strikethrough(),
   new TemplatePlaceholder(),
   new Underline(),
-  new OrderedList(),
+  new OrderedList()
 ]);
 
 export const schema = new Schema({
   nodes: extensions.nodes,
-  marks: extensions.marks,
+  marks: extensions.marks
 });
 
 export const parser = extensions.parser({
-  schema,
+  schema
 });
 
 export const serializer = extensions.serializer();

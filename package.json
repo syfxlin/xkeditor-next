@@ -6,6 +6,8 @@
     "copy-to-clipboard": "^3.0.8",
     "lodash": "^4.17.11",
     "markdown-it-container": "^3.0.0",
+    "monaco-editor": "^0.21.3",
+    "monaco-editor-webpack-plugin": "^2.1.0",
     "outline-icons": "^1.23.0",
     "prismjs": "^1.19.0",
     "prosemirror-commands": "^1.1.4",
@@ -23,6 +25,7 @@
     "prosemirror-utils": "^0.9.6",
     "prosemirror-view": "^1.16.1",
     "react": "^17.0.1",
+    "react-app-rewired": "^2.1.8",
     "react-dom": "^17.0.1",
     "react-medium-image-zoom": "^3.0.16",
     "react-portal": "^4.2.1",
@@ -75,9 +78,9 @@
     "prettier": "^1.19.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

@@ -11,7 +11,7 @@ export default class Placeholder extends Mark {
   get schema(): MarkSpec {
     return {
       parseDOM: [{ tag: "span.template-placeholder" }],
-      toDOM: () => ["span", { class: "template-placeholder" }],
+      toDOM: () => ["span", { class: "template-placeholder" }]
     };
   }
 
@@ -20,7 +20,7 @@ export default class Placeholder extends Mark {
       open: "!!",
       close: "!!",
       mixable: true,
-      expelEnclosingWhitespace: true,
+      expelEnclosingWhitespace: true
     };
   }
 
@@ -150,9 +150,9 @@ export default class Placeholder extends Mark {
               return true;
             }
             return false;
-          },
-        },
-      }),
+          }
+        }
+      })
     ];
   }
 }

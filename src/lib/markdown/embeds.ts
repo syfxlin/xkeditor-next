@@ -30,7 +30,7 @@ export default function(embeds: any[]): (md: MarkdownIt) => void {
       if (matches) {
         return {
           ...embed,
-          matches,
+          matches
         };
       }
     }
