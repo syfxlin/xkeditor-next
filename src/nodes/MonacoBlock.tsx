@@ -1,7 +1,7 @@
 import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useRef } from "react";
 import { NodeArgs } from "./Node";
 import { textblockTypeInputRule } from "prosemirror-inputrules";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
@@ -11,30 +11,10 @@ import PrismHighlight from "../components/PrismHighlight";
 import { languages } from "../utils/languages";
 import copy from "copy-to-clipboard";
 import { ToastType } from "../types";
-
-export function computeChange(oldVal: string, newVal: string) {
-  if (oldVal == newVal) {
-    return null;
-  }
-  let start = 0,
-    oldEnd = oldVal.length,
-    newEnd = newVal.length;
-  while (
-    start < oldEnd &&
-    oldVal.charCodeAt(start) == newVal.charCodeAt(start)
-  ) {
-    ++start;
-  }
-  while (
-    oldEnd > start &&
-    newEnd > start &&
-    oldVal.charCodeAt(oldEnd - 1) == newVal.charCodeAt(newEnd - 1)
-  ) {
-    oldEnd--;
-    newEnd--;
-  }
-  return { from: start, to: oldEnd, text: newVal.slice(start, newEnd) };
-}
+import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import { Selection } from "prosemirror-state";
+import { computeChange, mergeSpec, nodeKeys } from "../utils/editor";
+import { setBlockType } from "prosemirror-commands";
 
 export default class MonacoBlock extends ReactNode {
   get name() {
@@ -42,18 +22,15 @@ export default class MonacoBlock extends ReactNode {
   }
 
   get schema(): NodeSpec {
-    return {
+    return mergeSpec({
       attrs: {
         language: {
-          default: null
+          default: "javascript"
+        },
+        isEdit: {
+          default: false
         }
       },
-      content: "text*",
-      marks: "",
-      group: "block",
-      code: true,
-      defining: true,
-      draggable: false,
       parseDOM: [
         {
           tag: "pre",
@@ -91,12 +68,23 @@ export default class MonacoBlock extends ReactNode {
         { "data-language": node.attrs.language },
         ["code", 0]
       ]
-    };
+    });
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ node, view, getPos }) => {
-      const [isEdit, setEdit] = useState(view.editable);
+    return ({ node, view, getPos, updateAttrs }) => {
+      const propsRef = useRef({
+        node,
+        view,
+        getPos
+      });
+      useEffect(() => {
+        propsRef.current = {
+          node,
+          view,
+          getPos
+        };
+      }, [node, view, getPos, view.state]);
       const handleChange: OnChange = useCallback(
         value => {
           const change = computeChange(node.textContent, value || "");
@@ -114,20 +102,17 @@ export default class MonacoBlock extends ReactNode {
       );
       const handleLanguageChange = useCallback(
         (event: ChangeEvent<HTMLSelectElement>) => {
-          const { tr } = view.state;
-          const element = event.target;
-          const { top, left } = element.getBoundingClientRect();
-          const result = view.posAtCoords({ top, left });
-
-          if (result) {
-            const transaction = tr.setNodeMarkup(result.inside, undefined, {
-              language: element.value
-            });
-            view.dispatch(transaction);
-          }
+          updateAttrs({
+            language: event.target.value
+          });
         },
-        [view]
+        [updateAttrs]
       );
+      const handleEdit = useCallback(() => {
+        updateAttrs({
+          isEdit: !node.attrs.isEdit
+        });
+      }, [updateAttrs, node]);
       const handleCopyToClipboard = useCallback(() => {
         copy(node.textContent);
         if (this.options.onShowToast) {
@@ -137,9 +122,74 @@ export default class MonacoBlock extends ReactNode {
           );
         }
       }, [node]);
+
+      const handleMount = useCallback(
+        (editor: editor.IStandaloneCodeEditor) => {
+          updateAttrs({
+            monacoRef: editor
+          });
+          editor.focus();
+          editor.onKeyDown(e => {
+            const { node, view, getPos } = propsRef.current;
+            // 删除
+            if (e.code === "Delete" || e.code === "Backspace") {
+              if (node.textContent === "") {
+                view.dispatch(
+                  view.state.tr.deleteRange(getPos(), getPos() + node.nodeSize)
+                );
+                view.focus();
+                return;
+              }
+            }
+            // 移动光标
+            const { lineNumber = 1, column = 1 } = editor.getPosition() || {};
+            const model = editor.getModel();
+            const maxLines = model?.getLineCount() || 1;
+            let dir: -1 | 1 | null = null;
+            if (e.code === "ArrowLeft") {
+              if (lineNumber !== 1 || column !== 1) {
+                return;
+              }
+              dir = -1;
+            } else if (e.code === "ArrowRight") {
+              if (
+                lineNumber !== maxLines ||
+                column - 1 !== model?.getLineLength(maxLines)
+              ) {
+                return;
+              }
+              dir = 1;
+            } else if (e.code === "ArrowUp") {
+              if (lineNumber !== 1) {
+                return;
+              }
+              dir = -1;
+            } else if (e.code === "ArrowDown") {
+              if (lineNumber !== maxLines) {
+                return;
+              }
+              dir = 1;
+            }
+            if (dir !== null) {
+              const targetPos = getPos() + (dir < 0 ? 0 : node?.nodeSize);
+              const selection = Selection.near(
+                view.state.doc.resolve(targetPos),
+                dir
+              );
+              view.dispatch(
+                view.state.tr.setSelection(selection).scrollIntoView()
+              );
+              view.focus();
+              return;
+            }
+          });
+        },
+        []
+      );
+
       return (
-        <div className={"code-block"}>
-          {isEdit ? (
+        <div className={"code-block"} contentEditable={false}>
+          {node.attrs.isEdit ? (
             <section>
               <MonacoEditor
                 value={node.textContent}
@@ -147,9 +197,10 @@ export default class MonacoBlock extends ReactNode {
                 theme={"vs-dark"}
                 language={node.attrs.language}
                 onChange={handleChange}
+                onMount={handleMount}
               />
               <div className={"toolbar"}>
-                <button onClick={() => setEdit(false)}>View</button>
+                <button onClick={handleEdit}>View</button>
                 <select
                   value={node.attrs.language}
                   onChange={handleLanguageChange}
@@ -163,7 +214,7 @@ export default class MonacoBlock extends ReactNode {
               </div>
             </section>
           ) : (
-            <section contentEditable={false}>
+            <section>
               <pre className={"line-numbers"}>
                 <span aria-hidden="true" className="line-numbers-rows">
                   {node.textContent.split("\n").map((value, index) => (
@@ -176,7 +227,7 @@ export default class MonacoBlock extends ReactNode {
                 />
               </pre>
               <div className={"toolbar"}>
-                <button onClick={() => setEdit(true)}>Edit</button>
+                <button onClick={handleEdit}>Edit</button>
                 <button onClick={handleCopyToClipboard}>Copy</button>
               </div>
             </section>
@@ -187,13 +238,26 @@ export default class MonacoBlock extends ReactNode {
   }
 
   inputRules({ type }: NodeArgs) {
-    return [textblockTypeInputRule(/^:::monaco$/, type)];
+    return [textblockTypeInputRule(/^```$/, type, { isEdit: true })];
+  }
+
+  commands({ type }: NodeArgs) {
+    return () => setBlockType(type, { isEdit: true });
+  }
+
+  keys({ type }: NodeArgs) {
+    return {
+      "Shift-Ctrl-\\": setBlockType(type, { isEdit: true }),
+      ...nodeKeys(node => node.type.name === "monaco" && node.attrs.isEdit)
+    };
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
     state.write("```" + (node.attrs.language || "") + "\n");
+
     state.text(node.textContent, false);
     state.ensureNewLine();
+
     state.write("```");
     state.closeBlock(node);
   }
