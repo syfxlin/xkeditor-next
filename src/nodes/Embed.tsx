@@ -55,17 +55,19 @@ export default class Embed extends ReactNode {
     };
   }
 
-  component({ isEditable, isSelected, theme, node }: ComponentProps) {
-    const Component = node.attrs.component;
+  component(): React.FC<ComponentProps> {
+    return ({ isEditable, isSelected, theme, node }) => {
+      const Component = node.attrs.component;
 
-    return (
-      <Component
-        attrs={node.attrs}
-        isEditable={isEditable}
-        isSelected={isSelected}
-        theme={theme}
-      />
-    );
+      return (
+        <Component
+          attrs={node.attrs}
+          isEditable={isEditable}
+          isSelected={isSelected}
+          theme={theme}
+        />
+      );
+    };
   }
 
   commands({ type }: NodeArgs): Command {

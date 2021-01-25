@@ -3,7 +3,6 @@ import debounce from "lodash/debounce";
 import ReactDOM from "react-dom";
 import Editor from "./main";
 import { Attrs } from "./lib/Extension";
-import MonacoBlock from "./components/MonacoBlock";
 
 const element = document.getElementById("root");
 const savedText = localStorage.getItem("saved");
@@ -237,6 +236,5 @@ class Example extends React.Component {
 }
 
 if (element) {
-  // ReactDOM.render(<Example />, element);
-  ReactDOM.render(<MonacoBlock value={""} height={300} />, element);
+  ReactDOM.render(<Example />, element);
 }

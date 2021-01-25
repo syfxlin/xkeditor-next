@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useCallback } from "react";
 import { NodeSelection, Plugin, TextSelection } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
 import { setTextSelection } from "prosemirror-utils";
@@ -166,97 +167,107 @@ export default class Image extends ReactNode {
     };
   }
 
-  handleKeyDown = ({ node, getPos }: ComponentProps) => (event: any) => {
-    // Pressing Enter in the caption field should move the cursor/selection
-    // below the image
-    if (event.key === "Enter") {
-      event.preventDefault();
+  component(): React.FC<ComponentProps> {
+    return ({ theme, isSelected, node, getPos }) => {
+      const { alt, src, title, layoutClass } = node.attrs;
+      const className = layoutClass ? `image image-${layoutClass}` : "image";
 
-      const { view } = this.editor;
-      const pos = getPos() + node.nodeSize;
-      view.focus();
-      view.dispatch(setTextSelection(pos)(view.state.tr));
-      return;
-    }
+      const handleSelect = useCallback(
+        (event: any) => {
+          event.preventDefault();
 
-    // Pressing Backspace in an an empty caption field should remove the entire
-    // image, leaving an empty paragraph
-    if (event.key === "Backspace" && event.target.textContext === "") {
-      const { view } = this.editor;
-      const $pos = view.state.doc.resolve(getPos());
-      const tr = view.state.tr.setSelection(new NodeSelection($pos));
-      view.dispatch(tr.deleteSelection());
-      view.focus();
-      return;
-    }
-  };
+          const { view } = this.editor;
+          const $pos = view.state.doc.resolve(getPos());
+          const transaction = view.state.tr.setSelection(
+            new NodeSelection($pos)
+          );
+          view.dispatch(transaction);
+        },
+        [getPos]
+      );
+      const handleKeyDown = useCallback(
+        (event: any) => {
+          // Pressing Enter in the caption field should move the cursor/selection
+          // below the image
+          if (event.key === "Enter") {
+            event.preventDefault();
 
-  handleBlur = ({ node, getPos }: ComponentProps) => (event: any) => {
-    const alt = event.target.innerText;
-    const { src, title, layoutClass } = node.attrs;
+            const { view } = this.editor;
+            const pos = getPos() + node.nodeSize;
+            view.focus();
+            view.dispatch(setTextSelection(pos)(view.state.tr));
+            return;
+          }
 
-    if (alt === node.attrs.alt) return;
+          // Pressing Backspace in an an empty caption field should remove the entire
+          // image, leaving an empty paragraph
+          if (event.key === "Backspace" && event.target.textContext === "") {
+            const { view } = this.editor;
+            const $pos = view.state.doc.resolve(getPos());
+            const tr = view.state.tr.setSelection(new NodeSelection($pos));
+            view.dispatch(tr.deleteSelection());
+            view.focus();
+            return;
+          }
+        },
+        [node, getPos]
+      );
+      const handleBlur = useCallback(
+        (event: any) => {
+          const alt = event.target.innerText;
+          const { src, title, layoutClass } = node.attrs;
 
-    const { view } = this.editor;
-    const { tr } = view.state;
+          if (alt === node.attrs.alt) return;
 
-    // update meta on object
-    const pos = getPos();
-    const transaction = tr.setNodeMarkup(pos, undefined, {
-      src,
-      alt,
-      title,
-      layoutClass
-    });
-    view.dispatch(transaction);
-  };
+          const { view } = this.editor;
+          const { tr } = view.state;
 
-  handleSelect = ({ getPos }: ComponentProps) => (event: any) => {
-    event.preventDefault();
+          // update meta on object
+          const pos = getPos();
+          const transaction = tr.setNodeMarkup(pos, undefined, {
+            src,
+            alt,
+            title,
+            layoutClass
+          });
+          view.dispatch(transaction);
+        },
+        [node, getPos]
+      );
 
-    const { view } = this.editor;
-    const $pos = view.state.doc.resolve(getPos());
-    const transaction = view.state.tr.setSelection(new NodeSelection($pos));
-    view.dispatch(transaction);
-  };
-
-  component(props: ComponentProps): React.ReactElement {
-    const { theme, isSelected } = props;
-    const { alt, src, title, layoutClass } = props.node.attrs;
-    const className = layoutClass ? `image image-${layoutClass}` : "image";
-
-    return (
-      <div contentEditable={false} className={className}>
-        <ImageWrapper
-          className={isSelected ? "ProseMirror-selectednode" : ""}
-          onClick={this.handleSelect(props)}
-        >
-          <ImageZoom
-            image={{
-              src,
-              alt,
-              title
-            }}
-            defaultStyles={{
-              overlay: {
-                backgroundColor: theme.background
-              }
-            }}
-            shouldRespectMaxDimension
-          />
-        </ImageWrapper>
-        <Caption
-          onKeyDown={this.handleKeyDown(props)}
-          onBlur={this.handleBlur(props)}
-          className="caption"
-          tabIndex={-1}
-          contentEditable
-          suppressContentEditableWarning
-        >
-          {alt}
-        </Caption>
-      </div>
-    );
+      return (
+        <div contentEditable={false} className={className}>
+          <ImageWrapper
+            className={isSelected ? "ProseMirror-selectednode" : ""}
+            onClick={handleSelect}
+          >
+            <ImageZoom
+              image={{
+                src,
+                alt,
+                title
+              }}
+              defaultStyles={{
+                overlay: {
+                  backgroundColor: theme.background
+                }
+              }}
+              shouldRespectMaxDimension
+            />
+          </ImageWrapper>
+          <Caption
+            onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
+            className="caption"
+            tabIndex={-1}
+            contentEditable
+            suppressContentEditableWarning
+          >
+            {alt}
+          </Caption>
+        </div>
+      );
+    };
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {

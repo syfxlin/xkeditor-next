@@ -39,8 +39,6 @@ import Doc from "./nodes/Doc";
 import Text from "./nodes/Text";
 import Blockquote from "./nodes/Blockquote";
 import BulletList from "./nodes/BulletList";
-import CodeBlock from "./nodes/CodeBlock";
-import CodeFence from "./nodes/CodeFence";
 import CheckboxList from "./nodes/CheckboxList";
 import CheckboxItem from "./nodes/CheckboxItem";
 import Embed from "./nodes/Embed";
@@ -78,6 +76,7 @@ import MarkdownPaste from "./plugins/MarkdownPaste";
 import Sup from "./marks/Sup";
 import Sub from "./marks/Sub";
 import Details from "./nodes/Details";
+import MonacoBlock from "./nodes/MonacoBlock";
 
 export { schema, parser, serializer } from "./server";
 
@@ -260,16 +259,16 @@ export default class RichMarkdownEditor extends React.PureComponent<
         new HardBreak(),
         new Paragraph(),
         new Blockquote(),
-        new CodeBlock({
-          dictionary,
-          initialReadOnly: this.props.readOnly,
-          onShowToast: this.props.onShowToast
-        }),
-        new CodeFence({
-          dictionary,
-          initialReadOnly: this.props.readOnly,
-          onShowToast: this.props.onShowToast
-        }),
+        // new CodeBlock({
+        //   dictionary,
+        //   initialReadOnly: this.props.readOnly,
+        //   onShowToast: this.props.onShowToast
+        // }),
+        // new CodeFence({
+        //   dictionary,
+        //   initialReadOnly: this.props.readOnly,
+        //   onShowToast: this.props.onShowToast
+        // }),
         new CheckboxList(),
         new CheckboxItem(),
         new BulletList(),
@@ -335,6 +334,7 @@ export default class RichMarkdownEditor extends React.PureComponent<
         new Sup(),
         new Sub(),
         new Details(),
+        new MonacoBlock(),
         //
         ...this.props.extensions
       ],
@@ -363,7 +363,7 @@ export default class RichMarkdownEditor extends React.PureComponent<
       .filter((extension: ReactNode) => extension.component)
       .reduce((nodeViews, extension: ReactNode) => {
         const nodeView: NodeViewCreator = (node, view, getPos, decorations) => {
-          return new ComponentView(extension.component, {
+          return new ComponentView(extension.component(), {
             editor: this,
             extension,
             node,
@@ -1071,38 +1071,42 @@ const StyledEditor = styled("div")<{
   .notice-block {
     position: relative;
 
-    select,
-    button {
-      background: ${props => props.theme.blockToolbarBackground};
-      color: ${props => props.theme.blockToolbarItem};
-      border-width: 1px;
-      font-size: 13px;
-      display: none;
+    .toolbar {
       position: absolute;
-      border-radius: 4px;
-      padding: 2px;
       z-index: 1;
       top: 4px;
       right: 4px;
-    }
 
-    button {
-      padding: 2px 4px;
-    }
-
-    &:hover {
-      select {
-        display: ${props => (props.readOnly ? "none" : "inline")};
+      select,
+      button {
+        background: ${props => props.theme.blockToolbarBackground};
+        color: ${props => props.theme.blockToolbarItem};
+        border-width: 1px;
+        font-size: 13px;
+        display: none;
+        border-radius: 4px;
+        padding: 2px;
+        margin: 0px 2px;
       }
 
       button {
-        display: ${props => (props.readOnly ? "inline" : "none")};
+        padding: 2px 4px;
+      }
+
+      select:focus,
+      select:active {
+        display: inline;
       }
     }
 
-    select:focus,
-    select:active {
-      display: inline;
+    &:hover .toolbar {
+      select {
+        display: inline;
+      }
+
+      button {
+        display: inline;
+      }
     }
   }
 

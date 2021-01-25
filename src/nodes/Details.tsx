@@ -4,7 +4,7 @@ import { wrappingInputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
 import customFence from "markdown-it-container";
 import ReactNode from "./ReactNode";
-import React from "react";
+import React, { useCallback } from "react";
 import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
@@ -57,19 +57,20 @@ export default class Details extends ReactNode {
     };
   }
 
-  component(props: ComponentProps): React.ReactElement {
-    const { node, contentRef } = props;
-    const handleToggle = ({ node, updateAttrs }: ComponentProps) => () => {
-      updateAttrs({
-        open: !node.attrs.open
-      });
+  component(): React.FC<ComponentProps> {
+    return ({ node, contentRef, updateAttrs }) => {
+      const handleToggle = useCallback(() => {
+        updateAttrs({
+          open: !node.attrs.open
+        });
+      }, [node, updateAttrs]);
+      return (
+        <details open={node.attrs.open} onToggle={handleToggle}>
+          {node.attrs.summary && <summary>{node.attrs.summary}</summary>}
+          <div ref={contentRef} />
+        </details>
+      );
     };
-    return (
-      <details open={node.attrs.open} onToggle={handleToggle(props)}>
-        {node.attrs.summary && <summary>{node.attrs.summary}</summary>}
-        <div ref={contentRef} />
-      </details>
-    );
   }
 
   commands({ type }: NodeArgs): Command {

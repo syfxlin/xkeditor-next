@@ -23,10 +23,9 @@ export type ComponentProps = {
   updateAttrs: (attrs: Attrs) => void;
   contentRef: HTMLElementRef;
 };
-export type Component = (options: ComponentProps) => React.ReactElement;
 
 export default class ComponentView implements NodeView {
-  component: Component;
+  component: React.FC<ComponentProps>;
   editor: Editor;
   extension: Node;
   node: ProseMirrorNode;
@@ -39,7 +38,7 @@ export default class ComponentView implements NodeView {
 
   // See https://prosemirror.net/docs/ref/#view.NodeView
   constructor(
-    component: Component,
+    component: React.FC<ComponentProps>,
     {
       editor,
       extension,
@@ -78,10 +77,10 @@ export default class ComponentView implements NodeView {
 
     const contentRef = React.createRef<any>();
 
-    const children = this.component({
+    const props = {
       editor: this.editor,
       node: this.node,
-      view: this.editor.view,
+      view: this.view,
       theme,
       isSelected: this.isSelected,
       isEditable: this.view.editable,
@@ -90,13 +89,22 @@ export default class ComponentView implements NodeView {
       options: this.extension.options,
       updateAttrs: this.updateAttrs.bind(this),
       contentRef
-    });
+    };
 
     ReactDOM.render(
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>,
+      <ThemeProvider theme={theme}>
+        <this.component {...props} />
+      </ThemeProvider>,
       this.dom,
       () => {
-        contentRef.current.append(this.contentDOM);
+        if (contentRef.current && this.contentDOM) {
+          contentRef.current.append(this.contentDOM);
+        } else if (this.contentDOM) {
+          const textarea = document.createElement("textarea");
+          textarea.hidden = true;
+          textarea.append(this.contentDOM);
+          this.dom?.append(textarea);
+        }
       }
     );
   }
