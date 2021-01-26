@@ -9,6 +9,7 @@ import Extension, { Command, Dispatcher } from "../lib/Extension";
 import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple, PluginWithOptions, PluginWithParams } from "markdown-it";
 import toggleBlockType from "../commands/toggleBlockType";
+import { TokenConfig } from "prosemirror-markdown";
 
 export type NodeArgs = { type: NodeType; schema: Schema };
 
@@ -27,8 +28,8 @@ export default abstract class Node extends Extension {
     console.error("toMarkdown not implemented", state, node);
   }
 
-  parseMarkdown(): any {
-    return;
+  parseMarkdown(): TokenConfig | undefined {
+    return undefined;
   }
 
   markdownPlugin():

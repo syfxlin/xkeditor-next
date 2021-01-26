@@ -77,6 +77,7 @@ import Sup from "./marks/Sup";
 import Sub from "./marks/Sub";
 import Details from "./nodes/Details";
 import MonacoBlock from "./nodes/MonacoBlock";
+import Katex from "./nodes/Katex";
 
 export { schema, parser, serializer } from "./server";
 
@@ -335,6 +336,7 @@ export default class RichMarkdownEditor extends React.PureComponent<
         new Sub(),
         new Details(),
         new MonacoBlock(),
+        new Katex(),
         //
         ...this.props.extensions
       ],

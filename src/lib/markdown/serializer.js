@@ -428,7 +428,7 @@ export class MarkdownSerializerState {
   // : (Mark, bool, string?) → string
   // Get the markdown string for a given opening or closing mark.
   markString(mark, open, parent, index) {
-    const info = this.marks[mark.type.name];
+    const info = this.marks[mark.type.name]();
     const value = open ? info.open : info.close;
     return typeof value === "string" ? value : value(this, mark, parent, index);
   }

@@ -1,5 +1,5 @@
-import { Mark, MarkType } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
+import { Mark, MarkType } from "prosemirror-model";
 import { EditorState } from "prosemirror-state";
 
 function getMarksBetween(start: number, end: number, state: EditorState) {
@@ -22,44 +22,50 @@ function getMarksBetween(start: number, end: number, state: EditorState) {
 export default function(
   regexp: RegExp,
   markType: MarkType,
-  getAttrs?: (match: string[]) => Record<string, unknown>
-): InputRule {
-  return new InputRule(
-    regexp,
-    (state: EditorState, match: string[], start: number, end: number) => {
-      const attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs;
-      const { tr } = state;
-      const m = match.length - 1;
-      let markEnd = end;
-      let markStart = start;
+  getContent: ((match: string[]) => string) | string | number = 1,
+  getAttrs:
+    | ((match: string[]) => { [attr: string]: any })
+    | { [attr: string]: any } = {}
+) {
+  return new InputRule(regexp, (state, match, start, end) => {
+    const { tr } = state;
+    const markStart = start;
+    let markEnd = end;
 
-      if (match[m]) {
-        const matchStart = start + match[0].indexOf(match[m - 1]);
-        const matchEnd = matchStart + match[m - 1].length - 1;
-        const textStart = matchStart + match[m - 1].lastIndexOf(match[m]);
-        const textEnd = textStart + match[m].length;
+    const attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs;
 
-        const excludedMarks = getMarksBetween(start, end, state)
-          .filter(item => item.mark.type.excludes(markType))
-          .filter(item => item.end > matchStart);
+    if (match && match.length > 1) {
+      let content;
+      if (getContent instanceof Function) {
+        content = getContent(match);
+      } else if (typeof getContent === "string") {
+        content = getContent;
+      } else {
+        content = match[getContent];
+      }
+      const textStart = markStart + match[0].indexOf(content);
+      const textEnd = textStart + content.length;
 
-        if (excludedMarks.length) {
-          return null;
-        }
+      const excludedMarks = getMarksBetween(start, end, state)
+        .filter(item => item.mark.type.excludes(markType))
+        .filter(item => item.end > textStart);
 
-        if (textEnd < matchEnd) {
-          tr.delete(textEnd, matchEnd);
-        }
-        if (textStart > matchStart) {
-          tr.delete(matchStart, textStart);
-        }
-        markStart = matchStart;
-        markEnd = markStart + match[m].length;
+      if (excludedMarks.length) {
+        return null;
       }
 
-      tr.addMark(markStart, markEnd, markType.create(attrs));
-      tr.removeStoredMark(markType);
-      return tr;
+      if (textEnd < markEnd) {
+        tr.delete(textEnd, markEnd);
+        markEnd = textEnd;
+      }
+      if (textStart > markStart) {
+        tr.delete(markStart, textStart);
+        markEnd -= textStart - markStart;
+      }
     }
-  );
+
+    tr.addMark(markStart, markEnd, markType.create(attrs));
+    tr.removeStoredMark(markType);
+    return tr;
+  });
 }
