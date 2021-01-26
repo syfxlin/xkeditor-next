@@ -13,7 +13,7 @@ import copy from "copy-to-clipboard";
 import { ToastType } from "../types";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Selection } from "prosemirror-state";
-import { computeChange, mergeSpec, nodeKeys } from "../utils/editor";
+import { applyContent, mergeSpec, nodeKeys } from "../utils/editor";
 import { setBlockType } from "prosemirror-commands";
 
 export default class MonacoBlock extends ReactNode {
@@ -87,16 +87,7 @@ export default class MonacoBlock extends ReactNode {
       }, [node, view, getPos, view.state]);
       const handleChange: OnChange = useCallback(
         value => {
-          const change = computeChange(node.textContent, value || "");
-          if (change) {
-            const start = getPos() + 1;
-            const tr = view.state.tr.replaceWith(
-              start + change.from,
-              start + change.to,
-              change.text ? view.state.schema.text(change.text) : null
-            );
-            view.dispatch(tr);
-          }
+          applyContent({ node, getPos, view }, value);
         },
         [node, getPos, view]
       );

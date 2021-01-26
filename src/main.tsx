@@ -79,6 +79,7 @@ import Details from "./nodes/Details";
 import MonacoBlock from "./nodes/MonacoBlock";
 import Katex from "./nodes/Katex";
 import KatexInline from "./nodes/KatexInline";
+import Mermaid from "./nodes/Mermaid";
 
 export { schema, parser, serializer } from "./server";
 
@@ -339,6 +340,7 @@ export default class RichMarkdownEditor extends React.PureComponent<
         new MonacoBlock(),
         new Katex(),
         new KatexInline(),
+        new Mermaid(),
         //
         ...this.props.extensions
       ],
@@ -1074,6 +1076,18 @@ const StyledEditor = styled("div")<{
   .code-block,
   .notice-block {
     position: relative;
+
+    > section {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      overflow-y: auto;
+
+      &.hidden {
+        visibility: hidden;
+      }
+    }
 
     .toolbar {
       position: absolute;

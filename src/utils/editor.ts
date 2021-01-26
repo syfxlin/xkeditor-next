@@ -2,6 +2,7 @@ import { Dispatcher } from "../lib/Extension";
 import { Selection } from "prosemirror-state";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Node, NodeSpec } from "prosemirror-model";
+import { EditorView } from "prosemirror-view";
 
 export function computeChange(oldVal: string, newVal: string) {
   if (oldVal == newVal) {
@@ -25,6 +26,26 @@ export function computeChange(oldVal: string, newVal: string) {
     newEnd--;
   }
   return { from: start, to: oldEnd, text: newVal.slice(start, newEnd) };
+}
+
+export function applyContent(
+  {
+    node,
+    view,
+    getPos
+  }: { node: Node; view: EditorView; getPos: () => number },
+  value: string | undefined
+) {
+  const change = computeChange(node.textContent, value || "");
+  if (change) {
+    const start = getPos() + 1;
+    const tr = view.state.tr.replaceWith(
+      start + change.from,
+      start + change.to,
+      change.text ? view.state.schema.text(change.text) : null
+    );
+    view.dispatch(tr);
+  }
 }
 
 export function isMonaco(pos: Selection) {

@@ -4,13 +4,14 @@ import nodeInputRule from "../lib/nodeInputRule";
 import katexPlugin from "@iktakahiro/markdown-it-katex";
 import { render } from "katex";
 import ReactNode from "./ReactNode";
-import React, { useEffect, useRef } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useRef } from "react";
 import { ComponentProps } from "../lib/ComponentView";
 import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
 import { NodeArgs } from "./Node";
 import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { applyContent } from "../utils/editor";
 
 export default class KatexInline extends ReactNode {
   get name() {
@@ -24,6 +25,7 @@ export default class KatexInline extends ReactNode {
       marks: "",
       content: "text*",
       draggable: true,
+      atom: true,
       parseDOM: [
         {
           tag: `span[data-type="katex-inline"]`
@@ -36,8 +38,9 @@ export default class KatexInline extends ReactNode {
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ node, contentRef, isSelected }) => {
+    return ({ node, view, getPos, isSelected }) => {
       const tex = useRef<HTMLElement>(null);
+      const input = useRef<HTMLInputElement>(null);
       useEffect(() => {
         if (tex.current) {
           render(node.textContent, tex.current, {
@@ -45,15 +48,29 @@ export default class KatexInline extends ReactNode {
           });
         }
       }, [node.textContent]);
+
+      const handleChange = useCallback(
+        (event: ChangeEvent<HTMLInputElement>) => {
+          applyContent({ node, view, getPos }, event.target.value);
+        },
+        [node, view, getPos]
+      );
+
+      useEffect(() => {
+        if (isSelected) {
+          input.current?.focus();
+        }
+      }, [isSelected]);
+
       return (
         <>
-          <span ref={contentRef} hidden={!isSelected} />
-          <span
-            data-type={"katex-inline"}
-            ref={tex}
-            contentEditable={false}
-            hidden={isSelected}
+          <input
+            value={node.textContent}
+            onChange={handleChange}
+            hidden={!isSelected}
+            ref={input}
           />
+          <span data-type={"katex-inline"} ref={tex} contentEditable={false} />
         </>
       );
     };

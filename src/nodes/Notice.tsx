@@ -106,7 +106,7 @@ export default class Notice extends Node {
   };
 
   inputRules({ type }: NodeArgs) {
-    return [wrappingInputRule(/^:::notice$/, type)];
+    return [wrappingInputRule(/^:::\s?notice$/, type)];
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
