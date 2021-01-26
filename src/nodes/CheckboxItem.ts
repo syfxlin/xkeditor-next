@@ -4,7 +4,7 @@ import {
   splitListItem
 } from "prosemirror-schema-list";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 
@@ -84,7 +84,7 @@ export default class CheckboxItem extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write(node.attrs.checked ? "[x] " : "[ ] ");
     state.renderContent(node);
   }

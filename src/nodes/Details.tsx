@@ -1,4 +1,4 @@
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import toggleWrap from "../commands/toggleWrap";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
@@ -85,7 +85,7 @@ export default class Details extends ReactNode {
     return [wrappingInputRule(/^:::details$/, type, { open: true })];
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write(
       "\n:::details" +
         (node.attrs.summary ? " " + node.attrs.summary : "") +

@@ -1,6 +1,6 @@
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import {
-  Node as ProsemirrorNode,
+  Node as ProseMirrorNode,
   NodeSpec,
   NodeType,
   Schema
@@ -24,7 +24,7 @@ export default abstract class Node extends Extension {
     return "";
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode): void {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode): void {
     console.error("toMarkdown not implemented", state, node);
   }
 

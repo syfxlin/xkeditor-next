@@ -1,7 +1,7 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import checkboxPlugin from "../lib/markdown/checkboxes";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
@@ -38,7 +38,7 @@ export default class CheckboxList extends Node {
     return [wrappingInputRule(/^-?\s*(\[ \])\s$/i, type)];
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.renderList(node, "  ", () => "- ");
   }
 

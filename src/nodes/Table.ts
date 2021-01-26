@@ -23,7 +23,7 @@ import {
 } from "prosemirror-utils";
 import { Plugin, TextSelection } from "prosemirror-state";
 import { Command, Dispatcher } from "../lib/Extension";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
@@ -118,7 +118,7 @@ export default class Table extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.renderTable(node);
     state.closeBlock(node);
   }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
@@ -79,7 +79,7 @@ export default class Embed extends ReactNode {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.ensureNewLine();
     state.write(
       "[" + state.esc(node.attrs.href) + "](" + state.esc(node.attrs.href) + ")"

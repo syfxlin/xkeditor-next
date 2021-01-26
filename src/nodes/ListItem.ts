@@ -4,7 +4,7 @@ import {
   splitListItem
 } from "prosemirror-schema-list";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 
 export default class ListItem extends Node {
@@ -32,7 +32,7 @@ export default class ListItem extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.renderContent(node);
   }
 

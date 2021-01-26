@@ -1,7 +1,7 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
 import toggleWrap from "../commands/toggleWrap";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 
 export default class Blockquote extends Node {
@@ -34,7 +34,7 @@ export default class Blockquote extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.wrapBlock("> ", undefined, node, () => state.renderContent(node));
   }
 

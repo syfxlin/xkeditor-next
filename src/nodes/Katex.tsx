@@ -1,5 +1,5 @@
 import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
@@ -27,7 +27,7 @@ export default class Katex extends Node {
       selectable: true,
       parseDOM: [
         {
-          tag: `math[data-type="block"]`
+          tag: `span[data-type="katex-block"]`
         },
         {
           tag: "span.katex",
@@ -42,7 +42,7 @@ export default class Katex extends Node {
         render(node.textContent, tex, {
           throwOnError: false
         });
-        return ["math", { "data-type": "block" }, tex];
+        return ["span", { "data-type": "katex-block" }, tex];
       }
     };
   }
@@ -51,7 +51,7 @@ export default class Katex extends Node {
     return [nodeInputRule(/\$\$([^$]+)\$\$/, type, 1)];
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write("$$");
     state.text(node.textContent);
     state.write("$$");

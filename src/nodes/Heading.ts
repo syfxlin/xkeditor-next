@@ -1,7 +1,7 @@
 import { Plugin } from "prosemirror-state";
 import copy from "copy-to-clipboard";
 import { Decoration, DecorationSet } from "prosemirror-view";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { textblockTypeInputRule } from "prosemirror-inputrules";
 import { setBlockType } from "prosemirror-commands";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
@@ -57,7 +57,7 @@ export default class Heading extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write(state.repeat("#", node.attrs.level) + " ");
     state.renderInline(node);
     state.closeBlock(node);
@@ -121,7 +121,7 @@ export default class Heading extends Node {
   }
 
   get plugins() {
-    const getAnchors = (doc: ProsemirrorNode) => {
+    const getAnchors = (doc: ProseMirrorNode) => {
       const decorations: Decoration[] = [];
       const previouslySeen: { [key: string]: any } = {};
 

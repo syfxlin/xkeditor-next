@@ -9,7 +9,7 @@ import ImageZoom from "react-medium-image-zoom";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
 import uploadPlaceholderPlugin from "../lib/uploadPlaceholder";
 import insertFiles, { InsertFilesOptions } from "../commands/insertFiles";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
@@ -270,7 +270,7 @@ export default class Image extends ReactNode {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     let markdown =
       " ![" +
       state.esc((node.attrs.alt || "").replace("\n", "") || "") +

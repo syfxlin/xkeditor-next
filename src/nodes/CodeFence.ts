@@ -21,7 +21,7 @@ import copy from "copy-to-clipboard";
 import Prism, { LANGUAGES } from "../plugins/Prism";
 import Node, { NodeArgs } from "./Node";
 import { ToastType } from "../types";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 
@@ -116,7 +116,7 @@ export default class CodeFence extends Node {
     };
   }
 
-  handleCopyToClipboard(node: ProsemirrorNode) {
+  handleCopyToClipboard(node: ProseMirrorNode) {
     return () => {
       copy(node.textContent);
       if (this.options.onShowToast) {
@@ -156,7 +156,7 @@ export default class CodeFence extends Node {
     return [textblockTypeInputRule(/^```$/, type)];
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write("```" + (node.attrs.language || "") + "\n");
     state.text(node.textContent, false);
     state.ensureNewLine();

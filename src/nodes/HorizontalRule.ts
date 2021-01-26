@@ -1,6 +1,6 @@
 import { InputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { Command, Dispatcher } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 
@@ -51,7 +51,7 @@ export default class HorizontalRule extends Node {
     ];
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write(node.attrs.markup || "\n---");
     state.closeBlock(node);
   }

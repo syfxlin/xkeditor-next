@@ -9,7 +9,7 @@ import { MarkdownParser, MarkdownSerializer } from "prosemirror-markdown";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
 import {
   MarkSpec,
-  Node as ProsemirrorNode,
+  Node as ProseMirrorNode,
   NodeSpec,
   Schema,
   Slice
@@ -134,7 +134,7 @@ type Step = {
 };
 
 type NodeViewCreator = (
-  node: ProsemirrorNode,
+  node: ProseMirrorNode,
   view: EditorView,
   getPos: (() => number) | boolean,
   decorations: Decoration[]

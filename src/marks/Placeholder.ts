@@ -61,68 +61,68 @@ export default class Placeholder extends Mark {
 
             return true;
           },
-          handleKeyDown: (view, event: KeyboardEvent) => {
-            if (!view.props.editable || !view.props.editable(view.state)) {
-              return false;
-            }
-            if (this.editor.props.template) {
-              return false;
-            }
-            if (
-              event.key !== "ArrowLeft" &&
-              event.key !== "ArrowRight" &&
-              event.key !== "Backspace"
-            ) {
-              return false;
-            }
-
-            const { state, dispatch } = view;
-
-            if (event.key === "Backspace") {
-              const range = getMarkRange(
-                state.doc.resolve(Math.max(0, state.selection.from - 1)),
-                state.schema.marks.placeholder
-              );
-              if (!range) return false;
-
-              dispatch(
-                state.tr
-                  .removeMark(
-                    range.from,
-                    range.to,
-                    state.schema.marks.placeholder
-                  )
-                  .insertText("", range.from, range.to)
-              );
-              return true;
-            }
-
-            if (event.key === "ArrowLeft") {
-              const range = getMarkRange(
-                state.doc.resolve(Math.max(0, state.selection.from - 1)),
-                state.schema.marks.placeholder
-              );
-              if (!range) return false;
-
-              const startOfMark = state.doc.resolve(range.from);
-              dispatch(state.tr.setSelection(TextSelection.near(startOfMark)));
-              return true;
-            }
-
-            if (event.key === "ArrowRight") {
-              const range = getMarkRange(
-                state.selection.$from,
-                state.schema.marks.placeholder
-              );
-              if (!range) return false;
-
-              const endOfMark = state.doc.resolve(range.to);
-              dispatch(state.tr.setSelection(TextSelection.near(endOfMark)));
-              return true;
-            }
-
-            return false;
-          },
+          // handleKeyDown: (view, event: KeyboardEvent) => {
+          //   if (!view.props.editable || !view.props.editable(view.state)) {
+          //     return false;
+          //   }
+          //   if (this.editor.props.template) {
+          //     return false;
+          //   }
+          //   if (
+          //     event.key !== "ArrowLeft" &&
+          //     event.key !== "ArrowRight" &&
+          //     event.key !== "Backspace"
+          //   ) {
+          //     return false;
+          //   }
+          //
+          //   const { state, dispatch } = view;
+          //
+          //   if (event.key === "Backspace") {
+          //     const range = getMarkRange(
+          //       state.doc.resolve(Math.max(0, state.selection.from - 1)),
+          //       state.schema.marks.placeholder
+          //     );
+          //     if (!range) return false;
+          //
+          //     dispatch(
+          //       state.tr
+          //         .removeMark(
+          //           range.from,
+          //           range.to,
+          //           state.schema.marks.placeholder
+          //         )
+          //         .insertText("", range.from, range.to)
+          //     );
+          //     return true;
+          //   }
+          //
+          //   if (event.key === "ArrowLeft") {
+          //     const range = getMarkRange(
+          //       state.doc.resolve(Math.max(0, state.selection.from - 1)),
+          //       state.schema.marks.placeholder
+          //     );
+          //     if (!range) return false;
+          //
+          //     const startOfMark = state.doc.resolve(range.from);
+          //     dispatch(state.tr.setSelection(TextSelection.near(startOfMark)));
+          //     return true;
+          //   }
+          //
+          //   if (event.key === "ArrowRight") {
+          //     const range = getMarkRange(
+          //       state.selection.$from,
+          //       state.schema.marks.placeholder
+          //     );
+          //     if (!range) return false;
+          //
+          //     const endOfMark = state.doc.resolve(range.to);
+          //     dispatch(state.tr.setSelection(TextSelection.near(endOfMark)));
+          //     return true;
+          //   }
+          //
+          //   return false;
+          // },
           handleClick: (view, pos, event: MouseEvent) => {
             if (!view.props.editable || !view.props.editable(view.state)) {
               return false;

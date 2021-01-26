@@ -4,7 +4,7 @@ import { InfoIcon, StarredIcon, WarningIcon } from "outline-icons";
 import * as React from "react";
 import ReactDOM from "react-dom";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import customFence from "markdown-it-container";
 import { Command } from "../lib/Extension";
@@ -109,7 +109,7 @@ export default class Notice extends Node {
     return [wrappingInputRule(/^:::notice$/, type)];
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write("\n:::notice " + (node.attrs.style || "info") + "\n");
     state.renderContent(node);
     state.ensureNewLine();

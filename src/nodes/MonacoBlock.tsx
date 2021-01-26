@@ -1,4 +1,4 @@
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import React, { ChangeEvent, useCallback, useEffect, useRef } from "react";
@@ -252,7 +252,7 @@ export default class MonacoBlock extends ReactNode {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write("```" + (node.attrs.language || "") + "\n");
 
     state.text(node.textContent, false);

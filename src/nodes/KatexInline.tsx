@@ -1,15 +1,18 @@
-import Node, { NodeArgs } from "./Node";
-import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
-import { InputRule } from "prosemirror-inputrules";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import nodeInputRule from "../lib/nodeInputRule";
-import { TokenConfig } from "prosemirror-markdown";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { PluginSimple } from "markdown-it";
 // @ts-ignore
 import katexPlugin from "@iktakahiro/markdown-it-katex";
 import { render } from "katex";
+import ReactNode from "./ReactNode";
+import React, { useEffect, useRef } from "react";
+import { ComponentProps } from "../lib/ComponentView";
+import { InputRule } from "prosemirror-inputrules";
+import { PluginSimple } from "markdown-it";
+import { NodeArgs } from "./Node";
+import { TokenConfig } from "prosemirror-markdown";
+import { MarkdownSerializerState } from "../lib/markdown/serializer";
 
-export default class KatexInline extends Node {
+export default class KatexInline extends ReactNode {
   get name() {
     return "katex_inline";
   }
@@ -19,21 +22,40 @@ export default class KatexInline extends Node {
       inline: true,
       group: "inline",
       marks: "",
-      content: "inline*",
+      content: "text*",
       draggable: true,
-      selectable: true,
       parseDOM: [
         {
-          tag: "math"
+          tag: `span[data-type="katex-inline"]`
         }
       ],
       toDOM: node => {
-        const tex = document.createElement("span");
-        render(node.textContent, tex, {
-          throwOnError: false
-        });
-        return ["math", { "data-type": "inline" }, tex];
+        return ["span", { "data-type": "katex-inline" }, node.textContent];
       }
+    };
+  }
+
+  component(): React.FC<ComponentProps> {
+    return ({ node, contentRef, isSelected }) => {
+      const tex = useRef<HTMLElement>(null);
+      useEffect(() => {
+        if (tex.current) {
+          render(node.textContent, tex.current, {
+            throwOnError: false
+          });
+        }
+      }, [node.textContent]);
+      return (
+        <>
+          <span ref={contentRef} hidden={!isSelected} />
+          <span
+            data-type={"katex-inline"}
+            ref={tex}
+            contentEditable={false}
+            hidden={isSelected}
+          />
+        </>
+      );
     };
   }
 
@@ -48,7 +70,7 @@ export default class KatexInline extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write("$");
     state.text(node.textContent);
     state.write("$");

@@ -1,6 +1,6 @@
 import Node from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { Node as ProsemirrorNode } from "prosemirror-model";
+import { Node as ProseMirrorNode } from "prosemirror-model";
 
 export default class Text extends Node {
   get name() {
@@ -13,7 +13,7 @@ export default class Text extends Node {
     };
   }
 
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.text(node.text);
   }
 }
