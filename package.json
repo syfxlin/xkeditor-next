@@ -27,7 +27,6 @@
     "prosemirror-utils": "^0.9.6",
     "prosemirror-view": "^1.16.1",
     "react": "^17.0.1",
-    "react-app-rewired": "^2.1.8",
     "react-dom": "^17.0.1",
     "react-medium-image-zoom": "^3.0.16",
     "react-portal": "^4.2.1",
@@ -68,6 +67,7 @@
     "@types/styled-components": "^4.4.2",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
     "@typescript-eslint/parser": "^4.0.0",
+    "customize-cra": "^1.0.0",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-react-app": "^6.0.0",
@@ -78,7 +78,10 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.0.8",
-    "prettier": "^1.19.1"
+    "less": "^4.1.0",
+    "less-loader": "^7.3.0",
+    "prettier": "^1.19.1",
+    "react-app-rewired": "^2.1.8"
   },
   "scripts": {
     "start": "react-app-rewired start",

@@ -1,40 +1,30 @@
 import Node, { NodeArgs } from "./Node";
 import { Node as ProsemirrorNode, NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { PluginSimple } from "markdown-it";
 import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
+import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { PluginSimple } from "markdown-it";
 // @ts-ignore
 import katexPlugin from "@iktakahiro/markdown-it-katex";
 import { render } from "katex";
-import "katex/dist/katex.min.css";
-import "../styles/math.less";
 
-export default class Katex extends Node {
+export default class KatexInline extends Node {
   get name() {
-    return "katex";
+    return "katex_inline";
   }
 
   get schema(): NodeSpec {
     return {
-      content: "text*",
+      inline: true,
+      group: "inline",
       marks: "",
-      group: "block",
-      code: true,
-      defining: true,
+      content: "inline*",
       draggable: true,
       selectable: true,
       parseDOM: [
         {
-          tag: `math[data-type="block"]`
-        },
-        {
-          tag: "span.katex",
-          contentElement: node =>
-            (node as HTMLElement).querySelector(
-              'annotation[encoding="application/x-tex"]'
-            ) || node
+          tag: "math"
         }
       ],
       toDOM: node => {
@@ -42,31 +32,30 @@ export default class Katex extends Node {
         render(node.textContent, tex, {
           throwOnError: false
         });
-        return ["math", { "data-type": "block" }, tex];
+        return ["math", { "data-type": "inline" }, tex];
       }
     };
   }
 
   inputRules({ type }: NodeArgs): InputRule[] {
-    return [nodeInputRule(/\$\$([^$]+)\$\$/, type, 1)];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
-    state.write("$$");
-    state.text(node.textContent);
-    state.write("$$");
-    state.closeBlock(node);
+    return [nodeInputRule(/\$([^$]+)\$/, type, 1)];
   }
 
   parseMarkdown(): TokenConfig {
     return {
-      block: "katex",
+      block: "katex_inline",
       noCloseToken: true
     };
   }
 
+  toMarkdown(state: MarkdownSerializerState, node: ProsemirrorNode) {
+    state.write("$");
+    state.text(node.textContent);
+    state.write("$");
+  }
+
   get markdownToken(): string {
-    return "math_block";
+    return "math_inline";
   }
 
   markdownPlugin(): PluginSimple {
