@@ -1,48 +1,119 @@
 import { Monaco } from "@monaco-editor/react";
+import OceanicNext from "../styles/monaco-oceanic-next";
 
 const addMermaidSupport = (monaco: Monaco) => {
+  const graphType = [
+    "graph",
+    "flowchart",
+    "subgraph",
+    "sequenceDiagram",
+    "classDiagram",
+    "stateDiagram",
+    "erDiagram",
+    "journey",
+    "pie",
+    "gantt"
+  ];
+  const keywords = [
+    "end",
+    "as",
+    "click",
+    "call",
+    "href",
+    "class",
+    "classDef",
+    "note",
+    "of",
+    "loop",
+    "alt",
+    "else",
+    "opt",
+    "par",
+    "and",
+    "rect",
+    "state",
+    "title",
+    "section"
+  ];
+  const functions = [
+    "click",
+    "call",
+    "href",
+    "default",
+    "participant",
+    "activate",
+    "deactivate",
+    "right",
+    "left",
+    "over",
+    "dateFormat",
+    "axisFormat",
+    "excludes"
+  ];
   monaco.languages.register({ id: "mermaid" });
   monaco.languages.setMonarchTokensProvider("mermaid", {
     // @ts-ignore
-    typeKeywords: [
-      "graph",
-      "stateDiagram",
-      "sequenceDiagram",
-      "classDiagram",
-      "pie",
-      "flowchart",
-      "gantt"
-    ],
-    keywords: ["patricipant", "as"],
-    arrows: ["---", "===", "-->", "==>"],
+    graphType,
+    keywords,
+    functions,
     tokenizer: {
       root: [
         [/[{}]/, "delimiter.bracket"],
+        // 箭头
+        [/[.ox<*}]{0,2}[-=.|]+[.ox>{]{0,2}[+-]?/, "punctuation"],
+        // 关键字
         [
-          /[a-z_$][\w$]*/,
-          { cases: { "@typeKeywords": "keyword", "@keywords": "keyword" } }
+          /[a-z_$][\w$]+/,
+          {
+            cases: {
+              "@graphType": "keyword",
+              "@keywords": "keyword",
+              "@functions": "keyword.other.template"
+            }
+          }
         ],
-        [/[-=>ox]+/, { cases: { "@arrows": "transition" } }],
-        [/[\[{(}]+.+?[)\]}]+/, "string"],
-        [/".*"/, "string"]
+        // 操作符
+        [/"[01*n](..[1*n])?"/, "entity.name.tag"],
+        [/\[\*]/, "entity.name.tag"],
+        // 方向
+        [/TB|TD|BT|RL|LR/, "keyword"],
+        // 字符串
+        [/[\[{(}>|]+.+?[|)\]}]+/, "string"],
+        [/~.+?~/, "entity.name.class"],
+        [/<<.+?>>/, "entity.name.class"],
+        [/".*"/, "string"],
+        // 操作符
+        [/[&;:+#~*$-]/, "punctuation"],
+        // 空白和注释
+        [/[ \t\r\n]+/, "white"],
+        [/%%.*$/, "comment"]
       ]
-    },
-    whitespace: [
-      [/[ \t\r\n]+/, "white"],
-      [/%%.*$/, "comment"]
-    ]
+    }
   });
-  monaco.editor.defineTheme("mermaid", {
-    colors: {},
-    base: "vs-dark",
-    inherit: false,
-    rules: [
-      { token: "keyword", foreground: "880000", fontStyle: "bold" },
-      { token: "custom-error", foreground: "ff0000", fontStyle: "bold" },
-      { token: "string", foreground: "AA8500" },
-      { token: "transition", foreground: "008800", fontStyle: "bold" },
-      { token: "delimiter.bracket", foreground: "000000", fontStyle: "bold" }
-    ]
+  // @ts-ignore
+  monaco.editor.defineTheme("oceanic-next", OceanicNext);
+  monaco.languages.registerCompletionItemProvider("mermaid", {
+    provideCompletionItems(): any {
+      const suggestions = [
+        ...graphType.map(type => ({
+          label: type,
+          kind: monaco.languages.CompletionItemKind.Class,
+          insertText: type
+        })),
+        ...keywords.map(keyword => ({
+          label: keyword,
+          kind: monaco.languages.CompletionItemKind.Keyword,
+          insertText: keyword
+        })),
+        ...functions.map(fun => ({
+          label: fun,
+          kind: monaco.languages.CompletionItemKind.Function,
+          insertText: fun
+        }))
+      ];
+
+      return { suggestions };
+    }
   });
 };
 

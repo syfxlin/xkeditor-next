@@ -81,6 +81,9 @@ import Katex from "./nodes/Katex";
 import KatexInline from "./nodes/KatexInline";
 import Mermaid from "./nodes/Mermaid";
 
+// Init
+import "./init";
+
 export { schema, parser, serializer } from "./server";
 
 export { default as Extension } from "./lib/Extension";

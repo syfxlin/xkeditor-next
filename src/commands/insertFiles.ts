@@ -3,10 +3,9 @@ import uploadPlaceholderPlugin, {
 } from "../lib/uploadPlaceholder";
 import { ToastType } from "../types";
 import { EditorView } from "prosemirror-view";
-import baseDictionary from "../dictionary";
+import i18n from "../i18n";
 
 export type InsertFilesOptions = {
-  dictionary: typeof baseDictionary;
   uploadImage?: (file: File) => Promise<string>;
   onImageUploadStart?: () => void;
   onImageUploadStop?: () => void;
@@ -19,7 +18,6 @@ const insertFiles = (
   pos: number,
   files: File[],
   {
-    dictionary,
     uploadImage,
     onImageUploadStart,
     onImageUploadStop,
@@ -92,7 +90,7 @@ const insertFiles = (
 
         // let the user know
         if (onShowToast) {
-          onShowToast(dictionary.imageUploadError, ToastType.Error);
+          onShowToast(i18n.t("抱歉，上传图片时发生错误"), ToastType.Error);
         }
       })
       // eslint-disable-next-line no-loop-func

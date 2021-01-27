@@ -5,22 +5,13 @@ import { Dispatcher } from "../lib/Extension";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import MonacoNode from "../components/MonacoNode";
 import mermaid from "mermaid";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
-import { loader } from "@monaco-editor/react";
-import addMermaidSupport from "../utils/mermaid-language";
 import { blockPlugin } from "../lib/markdown/container";
-
-mermaid.initialize({
-  startOnLoad: false
-});
-
-loader.init().then(monaco => {
-  addMermaidSupport(monaco);
-});
+import { useDebounce } from "react-use";
 
 export default class Mermaid extends ReactNode {
   get name() {
@@ -57,25 +48,29 @@ export default class Mermaid extends ReactNode {
   component(): React.FC<ComponentProps> {
     return props => {
       const ref = useRef<HTMLDivElement>(null);
-      useEffect(() => {
-        try {
-          if (ref.current) {
-            mermaid.render(
-              this.name,
-              props.node.textContent,
-              svgCode => {
-                if (ref.current) {
-                  ref.current.innerHTML = svgCode;
-                }
-              },
-              // @ts-ignore
-              ref.current
-            );
+      useDebounce(
+        () => {
+          try {
+            if (ref.current) {
+              mermaid.render(
+                this.name,
+                props.node.textContent,
+                svgCode => {
+                  if (ref.current) {
+                    ref.current.innerHTML = svgCode;
+                  }
+                },
+                // @ts-ignore
+                ref.current
+              );
+            }
+          } catch (e) {
+            console.log(e);
           }
-        } catch (e) {
-          console.log(e);
-        }
-      }, [props.node.textContent]);
+        },
+        700,
+        [props.node.textContent]
+      );
       return (
         <MonacoNode {...props} height={300} language={"mermaid"}>
           <div ref={ref} style={{ height: "100%" }} />

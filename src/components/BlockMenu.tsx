@@ -268,8 +268,7 @@ class BlockMenu extends React.Component<Props, State> {
         uploadImage,
         onImageUploadStart,
         onImageUploadStop,
-        onShowToast,
-        dictionary: this.props.dictionary
+        onShowToast
       });
     }
 

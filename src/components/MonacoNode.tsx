@@ -4,6 +4,7 @@ import { ComponentProps } from "../lib/ComponentView";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
 import { Selection } from "prosemirror-state";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import { useTranslation } from "react-i18next";
 
 type Props = ComponentProps & {
   editToolbar?: React.ReactNode;
@@ -105,6 +106,8 @@ const MonacoNode: React.FC<Props> = props => {
     });
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <div
       className={"code-block"}
@@ -114,20 +117,20 @@ const MonacoNode: React.FC<Props> = props => {
       <section className={node.attrs.isEdit ? "" : "hidden"}>
         <MonacoEditor
           value={node.textContent}
-          theme={"vs-dark"}
+          theme={"oceanic-next"}
           language={language}
           onChange={handleChange}
           onMount={handleMount}
         />
         <div className={"toolbar"}>
-          <button onClick={handleEdit}>View</button>
+          <button onClick={handleEdit}>{t("预览")}</button>
           {props.editToolbar}
         </div>
       </section>
       <section className={!node.attrs.isEdit ? "" : "hidden"}>
         {props.children}
         <div className={"toolbar"}>
-          <button onClick={handleEdit}>Edit</button>
+          <button onClick={handleEdit}>{t("编辑")}</button>
           {props.viewToolbar}
         </div>
       </section>

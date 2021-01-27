@@ -185,7 +185,7 @@ export default class MonacoBlock extends ReactNode {
               <MonacoEditor
                 value={node.textContent}
                 height={300}
-                theme={"vs-dark"}
+                theme={"oceanic-next"}
                 language={node.attrs.language}
                 onChange={handleChange}
                 onMount={handleMount}
