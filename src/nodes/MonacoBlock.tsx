@@ -18,7 +18,7 @@ import { setBlockType } from "prosemirror-commands";
 
 export default class MonacoBlock extends ReactNode {
   get name() {
-    return "monaco";
+    return "code_block";
   }
 
   get schema(): NodeSpec {

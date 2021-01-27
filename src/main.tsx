@@ -83,8 +83,8 @@ import Mermaid from "./nodes/Mermaid";
 
 // Init
 import "./init";
-
-export { schema, parser, serializer } from "./server";
+import "./styles/global.less";
+import { Toaster } from "react-hot-toast";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -670,7 +670,6 @@ export default class RichMarkdownEditor extends React.PureComponent<
                 <BlockMenu
                   view={this.view}
                   commands={this.commands}
-                  dictionary={dictionary}
                   isActive={this.state.blockMenuOpen}
                   search={this.state.blockMenuSearch}
                   onClose={this.handleCloseBlockMenu}
@@ -678,12 +677,12 @@ export default class RichMarkdownEditor extends React.PureComponent<
                   onLinkToolbarOpen={this.handleOpenLinkMenu}
                   onImageUploadStart={this.props.onImageUploadStart}
                   onImageUploadStop={this.props.onImageUploadStop}
-                  onShowToast={this.props.onShowToast}
                   embeds={this.props.embeds}
                 />
               </React.Fragment>
             )}
           </React.Fragment>
+          <Toaster />
         </ThemeProvider>
       </Flex>
     );
@@ -737,6 +736,7 @@ const StyledEditor = styled("div")<{
   .image.placeholder {
     position: relative;
     background: ${props => props.theme.background};
+
     img {
       opacity: 0.5;
     }
@@ -761,9 +761,11 @@ const StyledEditor = styled("div")<{
   .ProseMirror-hideselection *::selection {
     background: transparent;
   }
+
   .ProseMirror-hideselection *::-moz-selection {
     background: transparent;
   }
+
   .ProseMirror-hideselection {
     caret-color: transparent;
   }
@@ -794,6 +796,7 @@ const StyledEditor = styled("div")<{
     .caption {
       pointer-events: none;
     }
+
     .caption:empty {
       visibility: hidden;
     }
@@ -825,12 +828,14 @@ const StyledEditor = styled("div")<{
       }
     }
   }
+
   .heading-content {
     &:before {
       content: "​";
       display: inline;
     }
   }
+
   .heading-name {
     color: ${props => props.theme.text};
 
@@ -853,18 +858,23 @@ const StyledEditor = styled("div")<{
   h1:not(.placeholder):before {
     content: "H1";
   }
+
   h2:not(.placeholder):before {
     content: "H2";
   }
+
   h3:not(.placeholder):before {
     content: "H3";
   }
+
   h4:not(.placeholder):before {
     content: "H4";
   }
+
   h5:not(.placeholder):before {
     content: "H5";
   }
+
   h6:not(.placeholder):before {
     content: "H6";
   }
@@ -1309,6 +1319,7 @@ const StyledEditor = styled("div")<{
        * prosemirror-tables that causes Safari to hang when selecting a cell
        * in an empty table:
        * https://github.com/ProseMirror/prosemirror/issues/947 */
+
       &::after {
         content: "";
         cursor: pointer;
@@ -1325,12 +1336,15 @@ const StyledEditor = styled("div")<{
       &:hover::after {
         background: ${props => props.theme.text};
       }
+
       &.first::after {
         border-top-left-radius: 3px;
       }
+
       &.last::after {
         border-top-right-radius: 3px;
       }
+
       &.selected::after {
         background: ${props => props.theme.tableSelected};
       }
@@ -1353,12 +1367,15 @@ const StyledEditor = styled("div")<{
       &:hover::after {
         background: ${props => props.theme.text};
       }
+
       &.first::after {
         border-top-left-radius: 3px;
       }
+
       &.last::after {
         border-bottom-left-radius: 3px;
       }
+
       &.selected::after {
         background: ${props => props.theme.tableSelected};
       }
@@ -1382,6 +1399,7 @@ const StyledEditor = styled("div")<{
       &:hover::after {
         background: ${props => props.theme.text};
       }
+
       &.selected::after {
         background: ${props => props.theme.tableSelected};
       }

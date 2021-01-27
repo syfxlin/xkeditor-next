@@ -1,17 +1,23 @@
 import ResizeObserver from "resize-observer-polyfill";
-import * as React from "react";
-import { Ref, RefObject } from "react";
+import React, {
+  createRef,
+  FC,
+  forwardRef,
+  ReactNode,
+  Ref,
+  RefObject,
+  useEffect,
+  useState
+} from "react";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
 import styled from "styled-components";
 import { NodeSelection } from "prosemirror-state";
 
-const SSR = typeof window === "undefined";
-
 type Props = {
   active?: boolean;
   view: EditorView;
-  children: React.ReactNode;
+  children: ReactNode;
   forwardedRef?: Ref<HTMLDivElement>;
 };
 
@@ -23,12 +29,12 @@ const defaultPosition = {
 };
 
 const useComponentSize = (ref: Ref<HTMLDivElement>) => {
-  const [size, setSize] = React.useState({
+  const [size, setSize] = useState({
     width: 0,
     height: 0
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const sizeObserver = new ResizeObserver(entries => {
       entries.forEach(({ target }) => {
         if (
@@ -62,7 +68,7 @@ function usePosition({
   const selection = view.state.selection as NodeSelection;
   const { width: menuWidth, height: menuHeight } = useComponentSize(menuRef);
 
-  if (!active || !menuWidth || !menuHeight || SSR || isSelectingText) {
+  if (!active || !menuWidth || !menuHeight || isSelectingText) {
     return defaultPosition;
   }
 
@@ -145,16 +151,16 @@ function usePosition({
   }
 }
 
-function FloatingToolbar(props: Props) {
-  const menuRef = props.forwardedRef || React.createRef<HTMLDivElement>();
-  const [isSelectingText, setSelectingText] = React.useState(false);
+const FloatingToolbar: FC<Props> = props => {
+  const menuRef = props.forwardedRef || createRef<HTMLDivElement>();
+  const [isSelectingText, setSelectingText] = useState(false);
   const position = usePosition({
     menuRef,
     isSelectingText,
     props
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleMouseDown = () => {
       if (!props.active) {
         setSelectingText(true);
@@ -191,7 +197,7 @@ function FloatingToolbar(props: Props) {
       </Wrapper>
     </Portal>
   );
-}
+};
 
 const Wrapper = styled.div<{
   active?: boolean;
@@ -245,7 +251,7 @@ const Wrapper = styled.div<{
   }
 `;
 
-export default React.forwardRef(function FloatingToolbarWithForwardedRef(
+export default forwardRef(function FloatingToolbarWithForwardedRef(
   props: Props,
   ref: Ref<HTMLDivElement>
 ) {

@@ -1,15 +1,14 @@
 import uploadPlaceholderPlugin, {
   findPlaceholder
 } from "../lib/uploadPlaceholder";
-import { ToastType } from "../types";
 import { EditorView } from "prosemirror-view";
 import i18n from "../i18n";
+import toast from "react-hot-toast";
 
 export type InsertFilesOptions = {
   uploadImage?: (file: File) => Promise<string>;
   onImageUploadStart?: () => void;
   onImageUploadStop?: () => void;
-  onShowToast?: (message: string, id: string) => void;
 };
 
 const insertFiles = (
@@ -17,12 +16,7 @@ const insertFiles = (
   event: Event,
   pos: number,
   files: File[],
-  {
-    uploadImage,
-    onImageUploadStart,
-    onImageUploadStop,
-    onShowToast
-  }: InsertFilesOptions
+  { uploadImage, onImageUploadStart, onImageUploadStop }: InsertFilesOptions
 ): void => {
   // filter to only include image files
   const images = files.filter(file => /image/i.test(file.type));
@@ -89,9 +83,7 @@ const insertFiles = (
         view.dispatch(transaction);
 
         // let the user know
-        if (onShowToast) {
-          onShowToast(i18n.t("抱歉，上传图片时发生错误"), ToastType.Error);
-        }
+        toast.error(i18n.t("抱歉，上传图片时发生错误") as string);
       })
       // eslint-disable-next-line no-loop-func
       .finally(() => {

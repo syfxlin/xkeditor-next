@@ -16,19 +16,16 @@ import {
   WarningIcon
 } from "outline-icons";
 import { MenuItem } from "../types";
-import baseDictionary from "../dictionary";
+import { TFunction } from "react-i18next";
 
-const SSR = typeof window === "undefined";
-const isMac = !SSR && window.navigator.platform === "MacIntel";
+const isMac = window.navigator.platform === "MacIntel";
 const mod = isMac ? "⌘" : "ctrl";
 
-export default function blockMenuItems(
-  dictionary: typeof baseDictionary
-): MenuItem[] {
+export default function blockMenuItems(t: TFunction<string>): MenuItem[] {
   return [
     {
       name: "heading",
-      title: dictionary.h1,
+      title: t("标题 1"),
       keywords: "h1 heading1 title",
       icon: Heading1Icon,
       shortcut: "^ ⇧ 1",
@@ -36,7 +33,7 @@ export default function blockMenuItems(
     },
     {
       name: "heading",
-      title: dictionary.h2,
+      title: t("标题 2"),
       keywords: "h2 heading2",
       icon: Heading2Icon,
       shortcut: "^ ⇧ 2",
@@ -44,7 +41,7 @@ export default function blockMenuItems(
     },
     {
       name: "heading",
-      title: dictionary.h3,
+      title: t("标题 3"),
       keywords: "h3 heading3",
       icon: Heading3Icon,
       shortcut: "^ ⇧ 3",
@@ -55,20 +52,20 @@ export default function blockMenuItems(
     },
     {
       name: "checkbox_list",
-      title: dictionary.checkboxList,
+      title: t("Todo 列表"),
       icon: TodoListIcon,
       keywords: "checklist checkbox task",
       shortcut: "^ ⇧ 7"
     },
     {
       name: "bullet_list",
-      title: dictionary.bulletList,
+      title: t("无序列表"),
       icon: BulletedListIcon,
       shortcut: "^ ⇧ 8"
     },
     {
       name: "ordered_list",
-      title: dictionary.orderedList,
+      title: t("有序列表"),
       icon: OrderedListIcon,
       shortcut: "^ ⇧ 9"
     },
@@ -77,39 +74,39 @@ export default function blockMenuItems(
     },
     {
       name: "table",
-      title: dictionary.table,
+      title: t("表格"),
       icon: TableIcon,
       attrs: { rowsCount: 3, colsCount: 3 }
     },
     {
       name: "blockquote",
-      title: dictionary.quote,
+      title: t("引用"),
       icon: BlockQuoteIcon,
       shortcut: `${mod} ]`
     },
     {
       name: "code_block",
-      title: dictionary.codeBlock,
+      title: t("代码块"),
       icon: CodeIcon,
       shortcut: "^ ⇧ \\",
       keywords: "script"
     },
     {
       name: "hr",
-      title: dictionary.hr,
+      title: t("分割线"),
       icon: HorizontalRuleIcon,
       shortcut: `${mod} _`,
       keywords: "horizontal rule break line"
     },
     {
       name: "image",
-      title: dictionary.image,
+      title: t("图片"),
       icon: ImageIcon,
       keywords: "picture photo"
     },
     {
       name: "link",
-      title: dictionary.link,
+      title: t("链接"),
       icon: LinkIcon,
       shortcut: `${mod} k`,
       keywords: "link url uri href"
@@ -118,24 +115,24 @@ export default function blockMenuItems(
       name: "separator"
     },
     {
-      name: "container_notice",
-      title: dictionary.infoNotice,
+      name: "notice",
+      title: t("提示框（信息）"),
       icon: InfoIcon,
-      keywords: "container_notice card information",
+      keywords: "notice card information",
       attrs: { style: "info" }
     },
     {
-      name: "container_notice",
-      title: dictionary.warningNotice,
+      name: "notice",
+      title: t("提示框（警告）"),
       icon: WarningIcon,
-      keywords: "container_notice card error",
+      keywords: "notice card error",
       attrs: { style: "warning" }
     },
     {
-      name: "container_notice",
-      title: dictionary.tipNotice,
+      name: "notice",
+      title: t("提示框（提醒）"),
       icon: StarredIcon,
-      keywords: "container_notice card suggestion",
+      keywords: "notice card suggestion",
       attrs: { style: "tip" }
     }
   ];

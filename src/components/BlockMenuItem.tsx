@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Component, FC, useCallback } from "react";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
 import styled, { withTheme } from "styled-components";
 import theme from "../theme";
@@ -8,7 +9,7 @@ type Props = {
   disabled?: boolean;
   onClick: () => void;
   theme: typeof theme;
-  icon: typeof React.Component | React.FC<any>;
+  icon: typeof Component | FC<any>;
   title: string;
   shortcut?: string;
 };
@@ -23,7 +24,7 @@ function BlockMenuItem({
 }: Props) {
   const Icon = icon;
 
-  const ref = React.useCallback(
+  const ref = useCallback(
     node => {
       if (selected && node) {
         scrollIntoView(node, {

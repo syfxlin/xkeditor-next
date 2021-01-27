@@ -1,5 +1,4 @@
 import { Monaco } from "@monaco-editor/react";
-import OceanicNext from "../styles/monaco-oceanic-next";
 
 const addMermaidSupport = (monaco: Monaco) => {
   const graphType = [
@@ -90,8 +89,6 @@ const addMermaidSupport = (monaco: Monaco) => {
       ]
     }
   });
-  // @ts-ignore
-  monaco.editor.defineTheme("oceanic-next", OceanicNext);
   monaco.languages.registerCompletionItemProvider("mermaid", {
     provideCompletionItems(): any {
       const suggestions = [

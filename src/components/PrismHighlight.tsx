@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import refractor from "refractor";
 import { RefractorNode } from "refractor/core";
-import "../styles/prism-okaidia.css";
-import "../styles/prism-line-numbers.css";
+import "../styles/prism-okaidia.less";
+import "../styles/prism-line-numbers.less";
 
 type Props = {
   language?: string;

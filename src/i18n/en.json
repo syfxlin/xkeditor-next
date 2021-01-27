@@ -1,5 +1,25 @@
 {
   "预览": "View",
   "编辑": "Edit",
-  "抱歉，上传图片时发生错误": "Sorry, an error occurred uploading the image"
+  "抱歉，上传图片时发生错误": "Sorry, an error occurred uploading the image",
+  "粘贴 {{title}} 链接...": "Paste a {{title}} link…",
+  "粘贴链接...": "Paste a link…",
+  "没有可插入的块": "No results",
+  "标题 1": "Heading 1",
+  "标题 2": "Heading 2",
+  "标题 3": "Heading 3",
+  "Todo 列表": "Todo list",
+  "无序列表": "Bulleted list",
+  "有序列表": "Ordered list",
+  "表格": "Table",
+  "引用": "Quote",
+  "代码块": "Code block",
+  "分割线": "Divider",
+  "图片": "Image",
+  "链接": "Link",
+  "提示框（信息）": "Info notice",
+  "提示框（警告）": "Warn notice",
+  "提示框（提醒）": "Tip notice",
+  "抱歉，该链接不适用于此嵌入类型": "Sorry, that link won’t work for this embed type",
+  "": ""
 }

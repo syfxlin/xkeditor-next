@@ -1,8 +1,7 @@
 import { AllSelection, Plugin, Selection } from "prosemirror-state";
 import Extension from "../lib/Extension";
 
-const SSR = typeof window === "undefined";
-const isMac = !SSR && window.navigator.platform === "MacIntel";
+const isMac = window.navigator.platform === "MacIntel";
 
 export default class Keys extends Extension {
   get name() {

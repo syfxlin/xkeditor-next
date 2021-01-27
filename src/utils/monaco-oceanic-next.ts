@@ -1,3 +1,5 @@
+import { Monaco } from "@monaco-editor/react";
+
 const theme = {
   base: "vs-dark",
   inherit: true,
@@ -411,4 +413,9 @@ const theme = {
   }
 };
 
-export default theme;
+const addOceanicNextTheme = (monaco: Monaco) => {
+  // @ts-ignore
+  monaco.editor.defineTheme("oceanic-next", theme);
+};
+
+export default addOceanicNextTheme;

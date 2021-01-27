@@ -1,34 +1,32 @@
 import * as React from "react";
+import { Component, createRef } from "react";
 import capitalize from "lodash/capitalize";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
 import { findParentNode } from "prosemirror-utils";
 import styled from "styled-components";
-import { EmbedDescriptor, MenuItem, ToastType } from "../types";
+import { EmbedDescriptor, MenuItem } from "../types";
 import BlockMenuItem from "./BlockMenuItem";
 import Input from "./Input";
 import VisuallyHidden from "./VisuallyHidden";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
 import insertFiles from "../commands/insertFiles";
 import getMenuItems from "../menus/block";
-import baseDictionary from "../dictionary";
-
-const SSR = typeof window === "undefined";
+import { WithTranslation, withTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 type Props = {
   isActive: boolean;
   commands: Record<string, any>;
-  dictionary: typeof baseDictionary;
   view: EditorView;
   search: string;
   uploadImage?: (file: File) => Promise<string>;
   onImageUploadStart?: () => void;
   onImageUploadStop?: () => void;
-  onShowToast?: (message: string, id: any) => void;
   onLinkToolbarOpen: () => void;
   onClose: () => void;
   embeds: EmbedDescriptor[];
-};
+} & WithTranslation;
 
 type State = {
   insertItem?: EmbedDescriptor;
@@ -39,9 +37,9 @@ type State = {
   selectedIndex: number;
 };
 
-class BlockMenu extends React.Component<Props, State> {
-  menuRef = React.createRef<HTMLDivElement>();
-  inputRef = React.createRef<HTMLInputElement>();
+class BlockMenu extends Component<Props, State> {
+  menuRef = createRef<HTMLDivElement>();
+  inputRef = createRef<HTMLInputElement>();
 
   state: State = {
     left: -1000,
@@ -53,9 +51,7 @@ class BlockMenu extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    if (!SSR) {
-      window.addEventListener("keydown", this.handleKeyDown);
-    }
+    window.addEventListener("keydown", this.handleKeyDown);
   }
 
   shouldComponentUpdate(
@@ -84,9 +80,7 @@ class BlockMenu extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    if (!SSR) {
-      window.removeEventListener("keydown", this.handleKeyDown);
-    }
+    window.removeEventListener("keydown", this.handleKeyDown);
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
@@ -186,11 +180,8 @@ class BlockMenu extends React.Component<Props, State> {
       const href = event.currentTarget.value;
       const matches = this.state.insertItem.matcher(href);
 
-      if (!matches && this.props.onShowToast) {
-        this.props.onShowToast(
-          this.props.dictionary.embedInvalidLink,
-          ToastType.Error
-        );
+      if (!matches) {
+        toast.error(this.props.t("抱歉，该链接不适用于此嵌入类型") as string);
         return;
       }
 
@@ -249,8 +240,7 @@ class BlockMenu extends React.Component<Props, State> {
       view,
       uploadImage,
       onImageUploadStart,
-      onImageUploadStop,
-      onShowToast
+      onImageUploadStop
     } = this.props;
     const { state, dispatch } = view;
     const parent = findParentNode(node => !!node)(state.selection);
@@ -267,8 +257,7 @@ class BlockMenu extends React.Component<Props, State> {
       insertFiles(view, event, parent.pos, files, {
         uploadImage,
         onImageUploadStart,
-        onImageUploadStop,
-        onShowToast
+        onImageUploadStop
       });
     }
 
@@ -349,8 +338,7 @@ class BlockMenu extends React.Component<Props, State> {
     if (
       !props.isActive ||
       !paragraph.node ||
-      !(paragraph.node as HTMLElement).getBoundingClientRect ||
-      SSR
+      !(paragraph.node as HTMLElement).getBoundingClientRect
     ) {
       return {
         left: -1000,
@@ -385,8 +373,8 @@ class BlockMenu extends React.Component<Props, State> {
   }
 
   get filtered(): any[] {
-    const { dictionary, embeds, search = "", uploadImage } = this.props;
-    let items: (EmbedDescriptor | MenuItem)[] = getMenuItems(dictionary);
+    const { t, embeds, search = "", uploadImage } = this.props;
+    let items: (EmbedDescriptor | MenuItem)[] = getMenuItems(t);
     const embedItems: EmbedDescriptor[] = [];
 
     for (const embed of embeds) {
@@ -443,7 +431,7 @@ class BlockMenu extends React.Component<Props, State> {
   }
 
   render() {
-    const { dictionary, isActive, uploadImage } = this.props;
+    const { t, isActive, uploadImage } = this.props;
     const items = this.filtered;
     const { insertItem, ...positioning } = this.state;
 
@@ -461,8 +449,8 @@ class BlockMenu extends React.Component<Props, State> {
                 type="text"
                 placeholder={
                   insertItem.title
-                    ? dictionary.pasteLinkWithTitle(insertItem.title)
-                    : dictionary.pasteLink
+                    ? t("粘贴 {{title}} 链接...", { title: insertItem.title })
+                    : t("粘贴链接...")
                 }
                 onKeyDown={this.handleLinkInputKeydown}
                 onPaste={this.handleLinkInputPaste}
@@ -493,13 +481,13 @@ class BlockMenu extends React.Component<Props, State> {
                       icon={item.icon}
                       title={item.title}
                       shortcut={item.shortcut}
-                    ></BlockMenuItem>
+                    />
                   </ListItem>
                 );
               })}
               {items.length === 0 && (
                 <ListItem>
-                  <Empty>{dictionary.noResults}</Empty>
+                  <Empty>{t("没有可插入的块")}</Empty>
                 </ListItem>
               )}
             </List>
@@ -524,7 +512,6 @@ const LinkInputWrapper = styled.div`
   margin: 8px;
 `;
 
-// @ts-ignore
 const LinkInput = styled(Input)`
   height: 36px;
   width: 100%;
@@ -611,4 +598,4 @@ export const Wrapper = styled.div<{
   }
 `;
 
-export default BlockMenu;
+export default withTranslation()(BlockMenu);
