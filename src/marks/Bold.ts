@@ -43,6 +43,6 @@ export default class Bold extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "strong" };
+    return { mark: this.name };
   }
 }

@@ -124,7 +124,7 @@ export default class Table extends Node {
   }
 
   parseMarkdown() {
-    return { block: "table" };
+    return { block: this.name };
   }
 
   markdownPlugin(): PluginSimple {

@@ -37,10 +37,10 @@ export default class Sub extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "sub" };
+    return { mark: this.name };
   }
 
   markdownPlugin(): PluginSimple {
-    return markPlugin({ delim: "~", mark: "sub" });
+    return markPlugin({ delim: "~", mark: this.name });
   }
 }

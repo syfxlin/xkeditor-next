@@ -37,6 +37,6 @@ export default class ListItem extends Node {
   }
 
   parseMarkdown() {
-    return { block: "list_item" };
+    return { block: this.name };
   }
 }

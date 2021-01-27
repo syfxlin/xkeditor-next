@@ -6,10 +6,10 @@ import ReactDOM from "react-dom";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
-import customFence from "markdown-it-container";
 import { Command } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
+import { blockPlugin } from "../lib/markdown/container";
 
 export default class Notice extends Node {
   get styleOptions() {
@@ -21,7 +21,7 @@ export default class Notice extends Node {
   }
 
   get name() {
-    return "container_notice";
+    return "notice";
   }
 
   get schema(): NodeSpec {
@@ -119,17 +119,17 @@ export default class Notice extends Node {
 
   parseMarkdown() {
     return {
-      block: "container_notice",
+      block: this.name,
       getAttrs: (tok: Token) => ({ style: tok.info })
     };
   }
 
   markdownPlugin(): PluginSimple {
-    return md =>
-      // @ts-ignore
-      customFence(md, "notice", {
-        marker: ":",
-        validate: params => params.startsWith("notice")
+    return md => {
+      blockPlugin({
+        md,
+        name: this.name
       });
+    };
   }
 }

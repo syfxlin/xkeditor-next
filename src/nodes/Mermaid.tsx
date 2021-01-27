@@ -1,5 +1,5 @@
 import { NodeArgs } from "./Node";
-import { NodeSpec } from "prosemirror-model";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { mergeSpec, nodeKeys } from "../utils/editor";
 import { Dispatcher } from "../lib/Extension";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
@@ -8,9 +8,18 @@ import { ComponentProps } from "../lib/ComponentView";
 import React, { useEffect, useRef } from "react";
 import MonacoNode from "../components/MonacoNode";
 import mermaid from "mermaid";
+import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { PluginSimple } from "markdown-it";
+import { loader } from "@monaco-editor/react";
+import addMermaidSupport from "../utils/mermaid-language";
+import { blockPlugin } from "../lib/markdown/container";
 
 mermaid.initialize({
   startOnLoad: false
+});
+
+loader.init().then(monaco => {
+  addMermaidSupport(monaco);
 });
 
 export default class Mermaid extends ReactNode {
@@ -68,7 +77,7 @@ export default class Mermaid extends ReactNode {
         }
       }, [props.node.textContent]);
       return (
-        <MonacoNode {...props} height={300}>
+        <MonacoNode {...props} height={300} language={"mermaid"}>
           <div ref={ref} style={{ height: "100%" }} />
         </MonacoNode>
       );
@@ -81,5 +90,29 @@ export default class Mermaid extends ReactNode {
 
   inputRules({ type }: NodeArgs): InputRule[] {
     return [textblockTypeInputRule(/^:::\s?mermaid$/, type, { isEdit: true })];
+  }
+
+  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
+    state.write("\n:::mermaid\n");
+    state.renderContent(node);
+    state.ensureNewLine();
+    state.write(":::");
+    state.closeBlock(node);
+  }
+
+  parseMarkdown() {
+    return {
+      block: "mermaid"
+    };
+  }
+
+  markdownPlugin(): PluginSimple {
+    return md => {
+      blockPlugin({
+        md,
+        name: this.name,
+        parseInline: false
+      });
+    };
   }
 }

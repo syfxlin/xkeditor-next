@@ -176,7 +176,7 @@ export default class Link extends Mark {
 
   parseMarkdown() {
     return {
-      mark: "link",
+      mark: this.name,
       getAttrs: (tok: Token) => ({
         href: tok.attrGet("href"),
         title: tok.attrGet("title") || null

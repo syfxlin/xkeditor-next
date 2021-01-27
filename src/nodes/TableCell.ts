@@ -44,7 +44,7 @@ export default class TableCell extends Node {
 
   parseMarkdown() {
     return {
-      block: "td",
+      block: this.name,
       getAttrs: (tok: Token) => ({ alignment: tok.info })
     };
   }

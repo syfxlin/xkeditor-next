@@ -10,10 +10,19 @@ type Props = ComponentProps & {
   viewToolbar?: React.ReactNode;
   width?: string | number;
   height?: string | number;
+  language?: string;
 };
 
 const MonacoNode: React.FC<Props> = props => {
-  const { node, view, getPos, updateAttrs, width, height } = props;
+  const {
+    node,
+    view,
+    getPos,
+    updateAttrs,
+    width,
+    height,
+    language = "javascript"
+  } = props;
   const propsRef = useRef({
     node,
     view,
@@ -106,7 +115,7 @@ const MonacoNode: React.FC<Props> = props => {
         <MonacoEditor
           value={node.textContent}
           theme={"vs-dark"}
-          language={node.attrs.language}
+          language={language}
           onChange={handleChange}
           onMount={handleMount}
         />

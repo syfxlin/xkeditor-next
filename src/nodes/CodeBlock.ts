@@ -6,6 +6,6 @@ export default class CodeBlock extends CodeFence {
   }
 
   get markdownToken() {
-    return "code_block";
+    return this.name;
   }
 }

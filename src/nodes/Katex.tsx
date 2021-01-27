@@ -60,7 +60,7 @@ export default class Katex extends Node {
 
   parseMarkdown(): TokenConfig {
     return {
-      block: "katex",
+      block: this.name,
       noCloseToken: true
     };
   }

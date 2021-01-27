@@ -239,7 +239,7 @@ export default class MonacoBlock extends ReactNode {
   keys({ type }: NodeArgs) {
     return {
       "Shift-Ctrl-\\": setBlockType(type, { isEdit: true }),
-      ...nodeKeys(node => node.type.name === "monaco" && node.attrs.isEdit)
+      ...nodeKeys(node => node.type.name === this.name && node.attrs.isEdit)
     };
   }
 
@@ -259,7 +259,7 @@ export default class MonacoBlock extends ReactNode {
 
   parseMarkdown() {
     return {
-      block: "monaco",
+      block: this.name,
       getAttrs: (tok: Token) => ({ language: tok.info })
     };
   }

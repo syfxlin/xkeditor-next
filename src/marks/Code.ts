@@ -63,6 +63,6 @@ export default class Code extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "code_inline" };
+    return { mark: this.name };
   }
 }

@@ -43,7 +43,7 @@ export default class CheckboxList extends Node {
   }
 
   parseMarkdown() {
-    return { block: "checkbox_list" };
+    return { block: this.name };
   }
 
   markdownPlugin(): PluginSimple {

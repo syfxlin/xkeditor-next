@@ -82,7 +82,7 @@ export default class KatexInline extends ReactNode {
 
   parseMarkdown(): TokenConfig {
     return {
-      block: "katex_inline",
+      block: this.name,
       noCloseToken: true
     };
   }

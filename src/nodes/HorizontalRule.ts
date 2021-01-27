@@ -57,6 +57,6 @@ export default class HorizontalRule extends Node {
   }
 
   parseMarkdown() {
-    return { node: "hr" };
+    return { node: this.name };
   }
 }

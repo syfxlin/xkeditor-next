@@ -43,6 +43,6 @@ export default class Italic extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "em" };
+    return { mark: this.name };
   }
 }

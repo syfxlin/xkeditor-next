@@ -40,7 +40,7 @@ export default class TableHeadCell extends Node {
 
   parseMarkdown() {
     return {
-      block: "th",
+      block: this.name,
       getAttrs: (tok: Token) => ({ alignment: tok.info })
     };
   }

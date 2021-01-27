@@ -287,7 +287,7 @@ export default class Image extends ReactNode {
 
   parseMarkdown() {
     return {
-      node: "image",
+      node: this.name,
       getAttrs: (token: Token) => {
         return {
           src: token.attrGet("src"),

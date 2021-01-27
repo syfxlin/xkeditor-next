@@ -18,6 +18,6 @@ export default class TableRow extends Node {
   }
 
   parseMarkdown() {
-    return { block: "tr" };
+    return { block: this.name };
   }
 }

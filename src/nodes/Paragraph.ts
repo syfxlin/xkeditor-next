@@ -46,6 +46,6 @@ export default class Paragraph extends Node {
   }
 
   parseMarkdown() {
-    return { block: "paragraph" };
+    return { block: this.name };
   }
 }

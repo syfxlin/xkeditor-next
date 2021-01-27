@@ -71,6 +71,6 @@ export default class OrderedList extends Node {
   }
 
   parseMarkdown() {
-    return { block: "ordered_list" };
+    return { block: this.name };
   }
 }

@@ -2,7 +2,6 @@ import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import toggleWrap from "../commands/toggleWrap";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
-import customFence from "markdown-it-container";
 import ReactNode from "./ReactNode";
 import React, { useCallback } from "react";
 import { ComponentProps } from "../lib/ComponentView";
@@ -10,10 +9,11 @@ import { NodeArgs } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { Command } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
+import { blockPlugin } from "../lib/markdown/container";
 
 export default class Details extends ReactNode {
   get name() {
-    return "container_details";
+    return "details";
   }
 
   get schema(): NodeSpec {
@@ -92,25 +92,26 @@ export default class Details extends ReactNode {
         "\n"
     );
     state.renderContent(node);
+    state.ensureNewLine();
     state.write(":::");
     state.closeBlock(node);
   }
 
   parseMarkdown() {
     return {
-      block: "container_details",
+      block: this.name,
       getAttrs: (tok: Token) => ({
-        summary: tok.info.replace("details", "") || null
+        summary: tok.info || null
       })
     };
   }
 
   markdownPlugin(): PluginSimple {
-    return md =>
-      // @ts-ignore
-      customFence(md, "details", {
-        marker: ":",
-        validate: params => params.startsWith("details")
+    return md => {
+      blockPlugin({
+        md,
+        name: this.name
       });
+    };
   }
 }

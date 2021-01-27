@@ -37,6 +37,6 @@ export default class BulletList extends Node {
   }
 
   parseMarkdown() {
-    return { block: "bullet_list" };
+    return { block: this.name };
   }
 }

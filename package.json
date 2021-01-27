@@ -10,6 +10,7 @@
     "katex": "^0.12.0",
     "lodash": "^4.17.11",
     "markdown-it-container": "^3.0.0",
+    "markdown-it-directive": "^1.0.1",
     "mermaid": "^8.9.0",
     "monaco-editor": "^0.21.3",
     "outline-icons": "^1.23.0",

@@ -47,7 +47,7 @@ export default class HardBreak extends Node {
   }
 
   parseMarkdown() {
-    return { node: "br" };
+    return { node: this.name };
   }
 
   markdownPlugin(): PluginSimple {

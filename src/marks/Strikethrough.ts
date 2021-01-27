@@ -49,6 +49,6 @@ export default class Strikethrough extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "strikethrough" };
+    return { mark: this.name };
   }
 }

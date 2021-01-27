@@ -91,7 +91,7 @@ export default class CheckboxItem extends Node {
 
   parseMarkdown() {
     return {
-      block: "checkbox_item",
+      block: this.name,
       getAttrs: (tok: Token) => ({
         checked: tok.attrGet("checked") ? true : undefined
       })

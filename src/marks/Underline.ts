@@ -44,7 +44,7 @@ export default class Underline extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "underline" };
+    return { mark: this.name };
   }
 
   markdownPlugin(): PluginSimple {

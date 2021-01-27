@@ -89,7 +89,7 @@ export default class Embed extends ReactNode {
 
   parseMarkdown() {
     return {
-      node: "embed",
+      node: this.name,
       getAttrs: (token: Token) => ({
         href: token.attrGet("href"),
         matches: token.attrGet("matches"),

@@ -39,6 +39,6 @@ export default class Blockquote extends Node {
   }
 
   parseMarkdown() {
-    return { block: "blockquote" };
+    return { block: this.name };
   }
 }

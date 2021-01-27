@@ -37,10 +37,10 @@ export default class Sup extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "sup" };
+    return { mark: this.name };
   }
 
   markdownPlugin(): PluginSimple {
-    return markPlugin({ delim: "^", mark: "sup" });
+    return markPlugin({ delim: "^", mark: this.name });
   }
 }

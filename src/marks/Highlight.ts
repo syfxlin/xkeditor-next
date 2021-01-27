@@ -37,10 +37,10 @@ export default class Highlight extends Mark {
   }
 
   parseMarkdown() {
-    return { mark: "mark" };
+    return { mark: this.name };
   }
 
   markdownPlugin(): PluginSimple {
-    return markPlugin({ delim: "==", mark: "mark" });
+    return markPlugin({ delim: "==", mark: this.name });
   }
 }
