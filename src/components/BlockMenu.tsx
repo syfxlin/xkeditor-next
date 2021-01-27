@@ -14,10 +14,11 @@ import insertFiles from "../commands/insertFiles";
 import getMenuItems from "../menus/block";
 import { WithTranslation, withTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { Command } from "../lib/Extension";
 
 type Props = {
   isActive: boolean;
-  commands: Record<string, any>;
+  commands: Record<string, Command>;
   view: EditorView;
   search: string;
   uploadImage?: (file: File) => Promise<string>;
@@ -29,7 +30,7 @@ type Props = {
 } & WithTranslation;
 
 type State = {
-  insertItem?: EmbedDescriptor;
+  insertItem?: MenuItem;
   left?: number;
   top?: number;
   bottom?: number;
@@ -147,21 +148,20 @@ class BlockMenu extends Component<Props, State> {
     }
   };
 
-  insertItem = (item: EmbedDescriptor) => {
-    switch (item.name) {
-      case "image":
-        return this.triggerImagePick();
-      case "embed":
-        return this.triggerLinkInput(item);
-      case "link": {
-        this.clearSearch();
-        this.props.onClose();
-        this.props.onLinkToolbarOpen();
-        return;
-      }
-      default:
-        this.insertBlock(item);
+  insertItem = (item: MenuItem) => {
+    if (item.name === "image") {
+      return this.triggerImagePick();
     }
+    if (item.name === "link") {
+      this.clearSearch();
+      this.props.onClose();
+      this.props.onLinkToolbarOpen();
+      return;
+    }
+    if (item.matcher) {
+      return this.triggerInput(item);
+    }
+    this.insertBlock(item);
   };
 
   close = () => {
@@ -169,16 +169,18 @@ class BlockMenu extends Component<Props, State> {
     this.props.view.focus();
   };
 
-  handleLinkInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  handleInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!this.props.isActive) return;
-    if (!this.state.insertItem) return;
+    const insertItem = this.state.insertItem;
+    if (!insertItem) return;
+    if (!insertItem.matcher) return;
 
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
 
-      const href = event.currentTarget.value;
-      const matches = this.state.insertItem.matcher(href);
+      const value = event.currentTarget.value;
+      const matches = insertItem.matcher(value);
 
       if (!matches) {
         toast.error(this.props.t("抱歉，该链接不适用于此嵌入类型") as string);
@@ -186,11 +188,10 @@ class BlockMenu extends Component<Props, State> {
       }
 
       this.insertBlock({
-        name: "embed",
+        name: insertItem.name,
         attrs: {
-          href,
-          component: this.state.insertItem.component,
-          matches
+          ...insertItem.attrs,
+          ...matches
         }
       });
     }
@@ -201,23 +202,24 @@ class BlockMenu extends Component<Props, State> {
     }
   };
 
-  handleLinkInputPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+  handleInputPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     if (!this.props.isActive) return;
-    if (!this.state.insertItem) return;
+    const insertItem = this.state.insertItem;
+    if (!insertItem) return;
+    if (!insertItem.matcher) return;
 
-    const href = event.clipboardData.getData("text/plain");
-    const matches = this.state.insertItem.matcher(href);
+    const value = event.clipboardData.getData("text/plain");
+    const matches = insertItem.matcher(value);
 
     if (matches) {
       event.preventDefault();
       event.stopPropagation();
 
       this.insertBlock({
-        name: "embed",
+        name: insertItem.name,
         attrs: {
-          href,
-          component: this.state.insertItem.component,
-          matches
+          ...insertItem.attrs,
+          ...matches
         }
       });
     }
@@ -229,7 +231,7 @@ class BlockMenu extends Component<Props, State> {
     }
   };
 
-  triggerLinkInput = (item: EmbedDescriptor) => {
+  triggerInput = (item: MenuItem) => {
     this.setState({ insertItem: item });
   };
 
@@ -372,16 +374,19 @@ class BlockMenu extends Component<Props, State> {
     }
   }
 
-  get filtered(): any[] {
+  get filtered(): MenuItem[] {
     const { t, embeds, search = "", uploadImage } = this.props;
-    let items: (EmbedDescriptor | MenuItem)[] = getMenuItems(t);
-    const embedItems: EmbedDescriptor[] = [];
+    let items: MenuItem[] = getMenuItems(t);
+    const embedItems: MenuItem[] = [];
 
     for (const embed of embeds) {
       if (embed.title && embed.icon) {
         embedItems.push({
           ...embed,
-          name: "embed"
+          name: "embed",
+          attrs: {
+            component: embed.component
+          }
         });
       }
     }
@@ -452,8 +457,8 @@ class BlockMenu extends Component<Props, State> {
                     ? t("粘贴 {{title}} 链接...", { title: insertItem.title })
                     : t("粘贴链接...")
                 }
-                onKeyDown={this.handleLinkInputKeydown}
-                onPaste={this.handleLinkInputPaste}
+                onKeyDown={this.handleInputKeydown}
+                onPaste={this.handleInputPaste}
                 autoFocus
               />
             </LinkInputWrapper>

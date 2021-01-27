@@ -32,7 +32,7 @@ export default class Embed extends ReactNode {
 
             if (embeds) {
               for (const embed of embeds) {
-                const matches = embed.matcher(href);
+                const matches = embed.matcher?.(href);
                 if (matches) {
                   return {
                     href,

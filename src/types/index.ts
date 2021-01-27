@@ -16,9 +16,10 @@ export type MenuItem = {
   attrs?: Record<string, any>;
   visible?: boolean;
   active?: (state: EditorState) => boolean;
+  // 存在 matcher 就认为要开启 input
+  matcher?: (value: string) => Record<string, any> | null;
 };
 
 export type EmbedDescriptor = MenuItem & {
-  matcher: (url: string) => boolean | string[];
   component: typeof React.Component | React.FC<any>;
 };

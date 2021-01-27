@@ -14,14 +14,14 @@ type Props = {
   shortcut?: string;
 };
 
-function BlockMenuItem({
+const BlockMenuItem: FC<Props> = ({
   selected,
   disabled,
   onClick,
   title,
   shortcut,
   icon
-}: Props) {
+}) => {
   const Icon = icon;
 
   const ref = useCallback(
@@ -53,7 +53,7 @@ function BlockMenuItem({
       <Shortcut>{shortcut}</Shortcut>
     </MenuItem>
   );
-}
+};
 
 const MenuItem = styled.button<{
   selected: boolean;

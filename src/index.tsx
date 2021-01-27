@@ -220,9 +220,16 @@ class Example extends React.Component {
                 />
               ),
               matcher: url => {
-                return url.match(
+                const match = url.match(
                   /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
-                ) as RegExpMatchArray;
+                );
+                if (match) {
+                  return {
+                    href: url,
+                    matches: match
+                  };
+                }
+                return null;
               },
               component: YoutubeEmbed
             }

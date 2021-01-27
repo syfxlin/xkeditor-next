@@ -39,7 +39,7 @@ export default class MarkdownPaste extends Extension {
 
               if (embeds) {
                 for (const embed of embeds) {
-                  const matches = embed.matcher(text);
+                  const matches = embed.matcher?.(text);
                   if (matches) {
                     this.editor.commands.embed({
                       href: text,
