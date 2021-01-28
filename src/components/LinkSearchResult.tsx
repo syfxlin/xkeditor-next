@@ -1,18 +1,24 @@
-import * as React from "react";
+import React, { FC, MouseEvent, ReactNode, useCallback } from "react";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
 import styled from "styled-components";
 
 type Props = {
-  onClick: (event: React.MouseEvent) => void;
-  onMouseOver: (event: React.MouseEvent) => void;
-  icon: React.ReactNode;
+  onClick: (event: MouseEvent) => void;
+  onMouseOver: (event: MouseEvent) => void;
+  icon: ReactNode;
   selected: boolean;
   title: string;
   subtitle?: string;
 };
 
-function LinkSearchResult({ title, subtitle, selected, icon, ...rest }: Props) {
-  const ref = React.useCallback(
+const LinkSearchResult: FC<Props> = ({
+  title,
+  subtitle,
+  selected,
+  icon,
+  ...rest
+}) => {
+  const ref = useCallback(
     node => {
       if (selected && node) {
         scrollIntoView(node, {
@@ -39,7 +45,7 @@ function LinkSearchResult({ title, subtitle, selected, icon, ...rest }: Props) {
       </div>
     </ListItem>
   );
-}
+};
 
 const IconWrapper = styled.span`
   flex-shrink: 0;

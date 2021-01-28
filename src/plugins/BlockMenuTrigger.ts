@@ -4,6 +4,7 @@ import { isInTable } from "prosemirror-tables";
 import { findParentNode } from "prosemirror-utils";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
 import Extension from "../lib/Extension";
+import { t } from "../i18n";
 
 const MAX_MATCH = 500;
 const OPEN_REGEX = /^\/(\w+)?$/;
@@ -131,7 +132,7 @@ export default class BlockMenuTrigger extends Extension {
                     parent.pos + parent.node.nodeSize,
                     {
                       class: "placeholder",
-                      "data-empty-text": this.options.dictionary.newLineEmpty
+                      "data-empty-text": t("输入 '/' 以插入块...")
                     }
                   )
                 );
@@ -144,7 +145,7 @@ export default class BlockMenuTrigger extends Extension {
                     parent.pos + parent.node.nodeSize,
                     {
                       class: "placeholder",
-                      "data-empty-text": `  ${this.options.dictionary.newLineWithSlash}`
+                      "data-empty-text": `  ${t("继续输入进行过滤...")}`
                     }
                   )
                 );

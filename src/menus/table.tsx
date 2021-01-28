@@ -1,14 +1,12 @@
 import { TrashIcon } from "outline-icons";
 import { MenuItem } from "../types";
-import baseDictionary from "../dictionary";
+import { t } from "../i18n";
 
-export default function tableMenuItems(
-  dictionary: typeof baseDictionary
-): MenuItem[] {
+export default function tableMenuItems(): MenuItem[] {
   return [
     {
       name: "deleteTable",
-      tooltip: dictionary.deleteTable,
+      tooltip: t("删除表格"),
       icon: TrashIcon,
       active: () => false
     }

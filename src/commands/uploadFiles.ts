@@ -2,7 +2,7 @@ import { EditorView } from "prosemirror-view";
 import { Attrs } from "../lib/Extension";
 import uploadPlaceholder, { findPlaceholder } from "../lib/uploadPlaceholder";
 import toast from "react-hot-toast";
-import i18n from "../i18n";
+import { t } from "../i18n";
 
 export type UploadResponse = {
   error: boolean;
@@ -87,7 +87,7 @@ const uploadFiles = ({
         });
         view.dispatch(tr);
       }
-      toast.error(i18n.t("抱歉，上传时发生错误") as string);
+      toast.error(t("抱歉，上传时发生错误") as string);
     })
     .finally(() => {
       if (onStop) {

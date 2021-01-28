@@ -1,12 +1,12 @@
 import { EditorView } from "prosemirror-view";
-import baseDictionary from "../dictionary";
-import { ToastType } from "../types";
 import { Node } from "prosemirror-model";
+import { t } from "../i18n";
+import { toast } from "react-hot-toast";
 
-function findPlaceholderLink(
+const findPlaceholderLink = (
   doc: Node,
   href: string
-): false | { node: Node; pos: number } {
+): false | { node: Node; pos: number } => {
   let result: false | { node: Node; pos: number } = false;
 
   function findLinks(node: Node, pos = 0) {
@@ -34,20 +34,18 @@ function findPlaceholderLink(
 
   findLinks(doc);
   return result;
-}
+};
 
-const createAndInsertLink = async function(
+const createAndInsertLink = async (
   view: EditorView,
   title: string,
   href: string,
   options: {
-    dictionary: typeof baseDictionary;
     onCreateLink: (title: string) => Promise<string>;
-    onShowToast?: (message: string, code: string) => void;
   }
-): Promise<void> {
+): Promise<void> => {
   const { dispatch, state } = view;
-  const { onCreateLink, onShowToast } = options;
+  const { onCreateLink } = options;
 
   try {
     const url = await onCreateLink(title);
@@ -81,9 +79,7 @@ const createAndInsertLink = async function(
     );
 
     // let the user know
-    if (onShowToast) {
-      onShowToast(options.dictionary.createLinkError, ToastType.Error);
-    }
+    toast.error(t("抱歉，创建链接时发生错误") as string);
   }
 };
 

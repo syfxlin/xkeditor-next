@@ -1,5 +1,4 @@
-import * as React from "react";
-import { ChangeEvent, MouseEvent } from "react";
+import React, { ChangeEvent, Component, FC, MouseEvent } from "react";
 import { setTextSelection } from "prosemirror-utils";
 import { EditorView } from "prosemirror-view";
 import { Mark } from "prosemirror-model";
@@ -17,7 +16,7 @@ import Flex from "./Flex";
 import Input from "./Input";
 import ToolbarButton from "./ToolbarButton";
 import LinkSearchResult from "./LinkSearchResult";
-import baseDictionary from "../dictionary";
+import { WithTranslation, withTranslation } from "react-i18next";
 
 export type SearchResult = {
   title: string;
@@ -29,8 +28,7 @@ type Props = {
   mark?: Mark;
   from: number;
   to: number;
-  tooltip: typeof React.Component | React.FC<any>;
-  dictionary: typeof baseDictionary;
+  tooltip: typeof Component | FC<any>;
   onRemoveLink?: () => void;
   onCreateLink?: (title: string) => Promise<void>;
   onSearchLink?: (term: string) => Promise<SearchResult[]>;
@@ -41,10 +39,9 @@ type Props = {
     to: number;
   }) => void;
   onClickLink: (href: string, event: MouseEvent) => void;
-  onShowToast?: (message: string, code: string) => void;
   view: EditorView;
   theme: typeof theme;
-};
+} & WithTranslation;
 
 type State = {
   results: {
@@ -55,7 +52,7 @@ type State = {
   selectedIndex: number;
 };
 
-class LinkEditor extends React.Component<Props, State> {
+class LinkEditor extends Component<Props, State> {
   discardInputValue = false;
   initialValue = this.href;
   initialSelectionLength = this.props.to - this.props.from;
@@ -267,7 +264,7 @@ class LinkEditor extends React.Component<Props, State> {
   };
 
   render() {
-    const { dictionary, theme } = this.props;
+    const { t, theme } = this.props;
     const { value, selectedIndex } = this.state;
     const results =
       this.state.results[value.trim()] ||
@@ -293,9 +290,7 @@ class LinkEditor extends React.Component<Props, State> {
         <Input
           value={value}
           placeholder={
-            showCreateLink
-              ? dictionary.findOrCreateDoc
-              : dictionary.searchOrPasteLink
+            showCreateLink ? t("查找或创建文档...") : t("搜索或粘贴链接...")
           }
           onKeyDown={this.handleKeyDown}
           onChange={this.handleChange}
@@ -303,12 +298,12 @@ class LinkEditor extends React.Component<Props, State> {
         />
 
         <ToolbarButton onClick={this.handleOpenLink} disabled={!value}>
-          <Tooltip tooltip={dictionary.openLink} placement="top">
+          <Tooltip tooltip={t("打开链接")} placement="top">
             <OpenIcon color={theme.toolbarItem} />
           </Tooltip>
         </ToolbarButton>
         <ToolbarButton onClick={this.handleRemoveLink}>
-          <Tooltip tooltip={dictionary.removeLink} placement="top">
+          <Tooltip tooltip={t("删除链接")} placement="top">
             {this.initialValue ? (
               <TrashIcon color={theme.toolbarItem} />
             ) : (
@@ -335,7 +330,7 @@ class LinkEditor extends React.Component<Props, State> {
               <LinkSearchResult
                 key="create"
                 title={suggestedLinkTitle}
-                subtitle={dictionary.createNewDoc}
+                subtitle={t("建立新文件")}
                 icon={<PlusIcon color={theme.toolbarItem} />}
                 onMouseOver={() => this.handleFocusLink(results.length)}
                 onClick={() => {
@@ -355,7 +350,6 @@ class LinkEditor extends React.Component<Props, State> {
   }
 }
 
-// @ts-ignore
 const Wrapper = styled(Flex)`
   margin-left: -8px;
   margin-right: -8px;
@@ -370,12 +364,10 @@ const SearchResults = styled.ol`
   height: auto;
   left: 0;
   padding: 4px 8px 8px;
-  margin: 0;
-  margin-top: -3px;
-  margin-bottom: 0;
+  margin: -3px 0 0;
   border-radius: 0 0 4px 4px;
   overflow-y: auto;
   max-height: 25vh;
 `;
 
-export default withTheme(LinkEditor);
+export default withTranslation()(withTheme(LinkEditor));

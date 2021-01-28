@@ -6,13 +6,10 @@ import {
 } from "outline-icons";
 import isNodeActive from "../queries/isNodeActive";
 import { MenuItem } from "../types";
-import baseDictionary from "../dictionary";
 import { EditorState } from "prosemirror-state";
+import { t } from "../i18n";
 
-export default function imageMenuItems(
-  state: EditorState,
-  dictionary: typeof baseDictionary
-): MenuItem[] {
+export default function imageMenuItems(state: EditorState): MenuItem[] {
   const { schema } = state;
   const isLeftAligned = isNodeActive(schema.nodes.image, {
     layoutClass: "left-50"
@@ -24,14 +21,14 @@ export default function imageMenuItems(
   return [
     {
       name: "alignLeft",
-      tooltip: dictionary.alignLeft,
+      tooltip: t("左对齐"),
       icon: AlignImageLeftIcon,
       visible: true,
       active: isLeftAligned
     },
     {
       name: "alignCenter",
-      tooltip: dictionary.alignCenter,
+      tooltip: t("居中对齐"),
       icon: AlignImageCenterIcon,
       visible: true,
       active: state =>
@@ -41,7 +38,7 @@ export default function imageMenuItems(
     },
     {
       name: "alignRight",
-      tooltip: dictionary.alignRight,
+      tooltip: t("右对齐"),
       icon: AlignImageRightIcon,
       visible: true,
       active: isRightAligned
@@ -52,7 +49,7 @@ export default function imageMenuItems(
     },
     {
       name: "deleteImage",
-      tooltip: dictionary.deleteImage,
+      tooltip: t("删除图片"),
       icon: TrashIcon,
       visible: true,
       active: () => false

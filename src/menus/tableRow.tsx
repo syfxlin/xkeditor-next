@@ -1,17 +1,16 @@
 import { EditorState } from "prosemirror-state";
 import { InsertAboveIcon, InsertBelowIcon, TrashIcon } from "outline-icons";
 import { MenuItem } from "../types";
-import baseDictionary from "../dictionary";
+import { t } from "../i18n";
 
 export default function tableRowMenuItems(
   state: EditorState,
-  index: number,
-  dictionary: typeof baseDictionary
+  index: number
 ): MenuItem[] {
   return [
     {
       name: "addRowAfter",
-      tooltip: dictionary.addRowBefore,
+      tooltip: t("在上方插入行"),
       icon: InsertAboveIcon,
       attrs: { index: index - 1 },
       active: () => false,
@@ -19,7 +18,7 @@ export default function tableRowMenuItems(
     },
     {
       name: "addRowAfter",
-      tooltip: dictionary.addRowAfter,
+      tooltip: t("在下方插入行"),
       icon: InsertBelowIcon,
       attrs: { index },
       active: () => false
@@ -29,7 +28,7 @@ export default function tableRowMenuItems(
     },
     {
       name: "deleteRow",
-      tooltip: dictionary.deleteRow,
+      tooltip: t("删除行"),
       icon: TrashIcon,
       active: () => false
     }

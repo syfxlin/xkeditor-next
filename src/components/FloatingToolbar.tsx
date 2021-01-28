@@ -55,7 +55,7 @@ const useComponentSize = (ref: Ref<HTMLDivElement>) => {
   return size;
 };
 
-function usePosition({
+const usePosition = ({
   menuRef,
   isSelectingText,
   props
@@ -63,7 +63,7 @@ function usePosition({
   menuRef: Ref<HTMLDivElement>;
   isSelectingText: boolean;
   props: Props;
-}) {
+}) => {
   const { view, active } = props;
   const selection = view.state.selection as NodeSelection;
   const { width: menuWidth, height: menuHeight } = useComponentSize(menuRef);
@@ -149,7 +149,7 @@ function usePosition({
       visible: true
     };
   }
-}
+};
 
 const FloatingToolbar: FC<Props> = props => {
   const menuRef = props.forwardedRef || createRef<HTMLDivElement>();

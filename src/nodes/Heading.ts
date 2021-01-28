@@ -9,8 +9,9 @@ import backspaceToParagraph from "../commands/backspaceToParagraph";
 import toggleBlockType from "../commands/toggleBlockType";
 import headingToSlug from "../lib/headingToSlug";
 import Node, { NodeArgs } from "./Node";
-import { ToastType } from "../types";
 import { Command, Dispatcher } from "../lib/Extension";
+import { toast } from "react-hot-toast";
+import { t } from "../i18n";
 
 export default class Heading extends Node {
   className = "heading-name";
@@ -94,12 +95,7 @@ export default class Heading extends Node {
       const urlWithoutHash = window.location.href.split("#")[0];
       copy(urlWithoutHash + hash);
 
-      if (this.options.onShowToast) {
-        this.options.onShowToast(
-          this.options.dictionary.linkCopied,
-          ToastType.Info
-        );
-      }
+      toast.success(t("链接已复制到剪贴板") as string);
     };
   };
 

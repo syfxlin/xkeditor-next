@@ -185,7 +185,6 @@ class Example extends React.Component {
               }, 1500);
             });
           }}
-          onShowToast={(message, type) => window.alert(`${type}: ${message}`)}
           onSearchLink={async term => {
             console.log("Searched link: ", term);
 

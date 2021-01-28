@@ -4,11 +4,6 @@ import { EditorState } from "prosemirror-state";
 import { ApplyCommand, Attrs } from "../lib/Extension";
 import { UploadResponse } from "../commands/uploadFiles";
 
-export enum ToastType {
-  Error = "error",
-  Info = "info"
-}
-
 export type MenuItem = {
   icon?: typeof React.Component | React.FC<any>;
   name?: string;

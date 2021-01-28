@@ -10,11 +10,12 @@ import Token from "markdown-it/lib/token";
 import PrismHighlight from "../components/PrismHighlight";
 import { languages } from "../utils/languages";
 import copy from "copy-to-clipboard";
-import { ToastType } from "../types";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Selection } from "prosemirror-state";
 import { applyContent, mergeSpec, nodeKeys } from "../utils/editor";
 import { setBlockType } from "prosemirror-commands";
+import { toast } from "react-hot-toast";
+import { t } from "../i18n";
 
 export default class MonacoBlock extends ReactNode {
   get name() {
@@ -106,12 +107,7 @@ export default class MonacoBlock extends ReactNode {
       }, [updateAttrs, node]);
       const handleCopyToClipboard = useCallback(() => {
         copy(node.textContent);
-        if (this.options.onShowToast) {
-          this.options.onShowToast(
-            this.options.dictionary.codeCopied,
-            ToastType.Info
-          );
-        }
+        toast.success(t("已复制到剪贴板") as string);
       }, [node]);
 
       const handleMount = useCallback(

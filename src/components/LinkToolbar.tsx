@@ -1,20 +1,17 @@
 import assert from "assert";
-import * as React from "react";
+import React, { Component, createRef, FC } from "react";
 import { EditorView } from "prosemirror-view";
 import LinkEditor, { SearchResult } from "./LinkEditor";
 import FloatingToolbar from "./FloatingToolbar";
 import createAndInsertLink from "../commands/createAndInsertLink";
-import baseDictionary from "../dictionary";
 
 type Props = {
   isActive: boolean;
   view: EditorView;
-  tooltip: typeof React.Component | React.FC<any>;
-  dictionary: typeof baseDictionary;
+  tooltip: typeof Component | FC<any>;
   onCreateLink?: (title: string) => Promise<string>;
   onSearchLink?: (term: string) => Promise<SearchResult[]>;
   onClickLink: (href: string, event: React.MouseEvent) => void;
-  onShowToast?: (msg: string, code: string) => void;
   onClose: () => void;
 };
 
@@ -26,8 +23,8 @@ function isActive(props: Props) {
   return props.isActive && !!paragraph.node;
 }
 
-export default class LinkToolbar extends React.Component<Props> {
-  menuRef = React.createRef<HTMLDivElement>();
+export default class LinkToolbar extends Component<Props> {
+  menuRef = createRef<HTMLDivElement>();
 
   state = {
     left: -1000,
@@ -55,7 +52,7 @@ export default class LinkToolbar extends React.Component<Props> {
   };
 
   handleOnCreateLink = async (title: string) => {
-    const { dictionary, onCreateLink, view, onClose, onShowToast } = this.props;
+    const { onCreateLink, view, onClose } = this.props;
 
     onClose();
     this.props.view.focus();
@@ -81,10 +78,8 @@ export default class LinkToolbar extends React.Component<Props> {
         )
     );
 
-    createAndInsertLink(view, title, href, {
-      onCreateLink,
-      onShowToast,
-      dictionary
+    await createAndInsertLink(view, title, href, {
+      onCreateLink
     });
   };
 

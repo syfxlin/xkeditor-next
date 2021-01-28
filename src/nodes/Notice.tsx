@@ -10,13 +10,14 @@ import { Command } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
+import { t } from "../i18n";
 
 export default class Notice extends Node {
   get styleOptions() {
     return Object.entries({
-      info: this.options.dictionary.info,
-      warning: this.options.dictionary.warning,
-      tip: this.options.dictionary.tip
+      info: t("信息"),
+      warning: t("警告"),
+      tip: t("提示")
     });
   }
 

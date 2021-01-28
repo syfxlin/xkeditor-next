@@ -16,12 +16,11 @@ import isInList from "../queries/isInList";
 import isMarkActive from "../queries/isMarkActive";
 import isNodeActive from "../queries/isNodeActive";
 import { MenuItem } from "../types";
-import baseDictionary from "../dictionary";
+import { t } from "../i18n";
 
 export default function formattingMenuItems(
   state: EditorState,
-  isTemplate: boolean,
-  dictionary: typeof baseDictionary
+  isTemplate: boolean
 ): MenuItem[] {
   const { schema } = state;
   const isTable = isInTable(state);
@@ -31,7 +30,7 @@ export default function formattingMenuItems(
   return [
     {
       name: "placeholder",
-      tooltip: dictionary.placeholder,
+      tooltip: t("占位符"),
       icon: InputIcon,
       active: isMarkActive(schema.marks.placeholder),
       visible: isTemplate
@@ -42,32 +41,32 @@ export default function formattingMenuItems(
     },
     {
       name: "strong",
-      tooltip: dictionary.strong,
+      tooltip: t("粗体"),
       icon: BoldIcon,
       active: isMarkActive(schema.marks.strong)
     },
     {
       name: "em",
-      tooltip: dictionary.em,
+      tooltip: t("斜体"),
       icon: ItalicIcon,
       active: isMarkActive(schema.marks.em)
     },
     {
       name: "strikethrough",
-      tooltip: dictionary.strikethrough,
+      tooltip: t("删除线"),
       icon: StrikethroughIcon,
       active: isMarkActive(schema.marks.strikethrough)
     },
     {
       name: "mark",
-      tooltip: dictionary.mark,
+      tooltip: t("高亮"),
       icon: HighlightIcon,
       active: isMarkActive(schema.marks.mark),
       visible: !isTemplate
     },
     {
       name: "code_inline",
-      tooltip: dictionary.codeInline,
+      tooltip: t("行内代码"),
       icon: CodeIcon,
       active: isMarkActive(schema.marks.code_inline)
     },
@@ -77,7 +76,7 @@ export default function formattingMenuItems(
     },
     {
       name: "heading",
-      tooltip: dictionary.heading,
+      tooltip: t("标题 1"),
       icon: Heading1Icon,
       active: isNodeActive(schema.nodes.heading, { level: 1 }),
       attrs: { level: 1 },
@@ -85,7 +84,7 @@ export default function formattingMenuItems(
     },
     {
       name: "heading",
-      tooltip: dictionary.subheading,
+      tooltip: t("标题 2"),
       icon: Heading2Icon,
       active: isNodeActive(schema.nodes.heading, { level: 2 }),
       attrs: { level: 2 },
@@ -93,7 +92,7 @@ export default function formattingMenuItems(
     },
     {
       name: "blockquote",
-      tooltip: dictionary.quote,
+      tooltip: t("引用"),
       icon: BlockQuoteIcon,
       active: isNodeActive(schema.nodes.blockquote),
       attrs: { level: 2 },
@@ -104,7 +103,7 @@ export default function formattingMenuItems(
     },
     {
       name: "link",
-      tooltip: dictionary.createLink,
+      tooltip: t("链接"),
       icon: LinkIcon,
       active: isMarkActive(schema.marks.link),
       attrs: { href: "" }

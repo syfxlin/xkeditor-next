@@ -411,7 +411,7 @@ class BlockMenu extends Component<Props, State> {
 
   get filtered(): MenuItem[] {
     const { embeds, search = "", upload } = this.props;
-    let { items } = this.props;
+    const items = [...this.props.items];
     const embedItems: MenuItem[] = [];
 
     for (const embed of embeds) {
@@ -430,7 +430,7 @@ class BlockMenu extends Component<Props, State> {
       items.push({
         name: "separator"
       });
-      items = items.concat(embedItems);
+      items.push(...embedItems);
     }
 
     const filtered = items.filter(item => {

@@ -15,6 +15,7 @@ import { Command } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
+import { t } from "../i18n";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, class]
@@ -432,7 +433,7 @@ const Caption = styled.p`
 
   &:empty:before {
     color: ${props => props.theme.placeholder};
-    content: "Write a caption";
+    content: ${() => `"${t("图片描述")}"`};
     pointer-events: none;
   }
 `;

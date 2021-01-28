@@ -1,7 +1,6 @@
 /* global window File Promise */
 import * as React from "react";
 import { MouseEvent } from "react";
-import memoize from "lodash/memoize";
 import { EditorState, Plugin, Selection, Transaction } from "prosemirror-state";
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
@@ -20,7 +19,6 @@ import { baseKeymap } from "prosemirror-commands";
 import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
 import styled, { ThemeProvider } from "styled-components";
 import { dark as darkTheme, light as lightTheme } from "./theme";
-import baseDictionary from "./dictionary";
 import Flex from "./components/Flex";
 import { SearchResult } from "./components/LinkEditor";
 import { EmbedDescriptor } from "./types";
@@ -88,6 +86,7 @@ import "./styles/global.less";
 import { Toaster } from "react-hot-toast";
 import getMenuItems from "./menus/block";
 import { UploadResponse } from "./commands/uploadFiles";
+import { t } from "./i18n";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -102,7 +101,6 @@ export type Props = WithTranslation & {
   autoFocus?: boolean;
   readOnly?: boolean;
   readOnlyWriteCheckboxes?: boolean;
-  dictionary?: Partial<typeof baseDictionary>;
   dark?: boolean;
   theme?: typeof theme;
   template?: boolean;
@@ -124,7 +122,6 @@ export type Props = WithTranslation & {
   onClickHashtag?: (tag: string, event: MouseEvent) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   embeds: EmbedDescriptor[];
-  onShowToast?: (message: string, code: any) => void;
   tooltip: typeof React.Component | React.FC<any>;
   className?: string;
   style?: Record<string, string>;
@@ -150,7 +147,7 @@ type NodeViewCreator = (
 class RichMarkdownEditor extends React.PureComponent<Props, State> {
   static defaultProps = {
     defaultValue: "",
-    placeholder: "Write something nice…",
+    placeholder: t("写点有趣的内容..."),
     onImageUploadStart: () => {
       // no default behavior
     },
@@ -255,8 +252,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   }
 
   createExtensions() {
-    const dictionary = this.dictionary(this.props.dictionary);
-
     // adding nodes here? Update schema.ts for serialization on the server
     return new ExtensionManager(
       [
@@ -265,36 +260,20 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new HardBreak(),
         new Paragraph(),
         new Blockquote(),
-        // new CodeBlock({
-        //   dictionary,
-        //   initialReadOnly: this.props.readOnly,
-        //   onShowToast: this.props.onShowToast
-        // }),
-        // new CodeFence({
-        //   dictionary,
-        //   initialReadOnly: this.props.readOnly,
-        //   onShowToast: this.props.onShowToast
-        // }),
         new CheckboxList(),
         new CheckboxItem(),
         new BulletList(),
         new Embed(),
         new ListItem(),
-        new Notice({
-          dictionary
-        }),
+        new Notice(),
         new Heading({
-          dictionary,
-          onShowToast: this.props.onShowToast,
           offset: this.props.headingsOffset
         }),
         new HorizontalRule(),
         new Image({
-          dictionary,
           upload: this.props.upload,
           onUploadStart: this.props.onUploadStart,
-          onUploadStop: this.props.onUploadStop,
-          onShowToast: this.props.onShowToast
+          onUploadStop: this.props.onUploadStop
         }),
         new Table(),
         new TableCell({
@@ -329,7 +308,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
           onCancel: this.props.onCancel
         }),
         new BlockMenuTrigger({
-          dictionary,
           onOpen: this.handleOpenBlockMenu,
           onClose: this.handleCloseBlockMenu
         }),
@@ -611,12 +589,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     return this.props.theme || (this.props.dark ? darkTheme : lightTheme);
   };
 
-  dictionary = memoize(
-    (providedDictionary?: Partial<typeof baseDictionary>) => {
-      return { ...baseDictionary, ...providedDictionary };
-    }
-  );
-
   render = () => {
     const {
       t,
@@ -627,7 +599,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       className,
       onKeyDown
     } = this.props;
-    const dictionary = this.dictionary(this.props.dictionary);
 
     const menuItems = getMenuItems(t);
     const index = menuItems.findIndex(item => item.name === "link");
@@ -656,7 +627,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
               <React.Fragment>
                 <SelectionToolbar
                   view={this.view}
-                  dictionary={dictionary}
                   commands={this.commands}
                   isTemplate={this.props.template === true}
                   onSearchLink={this.props.onSearchLink}
@@ -666,12 +636,10 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                 />
                 <LinkToolbar
                   view={this.view}
-                  dictionary={dictionary}
                   isActive={this.state.linkMenuOpen}
                   onCreateLink={this.props.onCreateLink}
                   onSearchLink={this.props.onSearchLink}
                   onClickLink={this.props.onClickLink}
-                  onShowToast={this.props.onShowToast}
                   onClose={this.handleCloseLinkMenu}
                   tooltip={tooltip}
                 />
