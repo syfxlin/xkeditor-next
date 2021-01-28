@@ -1,6 +1,7 @@
 import { Plugin } from "prosemirror-state";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import Extension from "../lib/Extension";
+import uploadPlaceholderPlugin from "../lib/uploadPlaceholder";
 
 export default class Placeholder extends Extension {
   get name() {
@@ -16,6 +17,7 @@ export default class Placeholder extends Extension {
 
   get plugins() {
     return [
+      uploadPlaceholderPlugin,
       new Plugin({
         props: {
           decorations: state => {

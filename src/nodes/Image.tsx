@@ -7,8 +7,6 @@ import styled from "styled-components";
 // @ts-ignore
 import ImageZoom from "react-medium-image-zoom";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
-import uploadPlaceholderPlugin from "../lib/uploadPlaceholder";
-import insertFiles, { InsertFilesOptions } from "../commands/insertFiles";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
@@ -16,6 +14,7 @@ import { NodeArgs } from "./Node";
 import { Command } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, class]
@@ -27,14 +26,23 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
  */
 const IMAGE_INPUT_REGEX = /!\[(?<alt>.*?)]\((?<filename>.*?)(?=\“|\))\“?(?<layoutclass>[^\”]+)?\”?\)/;
 
-const uploadPlugin = (options: InsertFilesOptions) =>
+export const imagePlaceholder = (root: HTMLElement, meta: any) => {
+  root.className = "image placeholder";
+  for (const file of meta.files) {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    root.appendChild(img);
+  }
+};
+
+const uploadPlugin = (options: Partial<UploadFilesOptions>) =>
   new Plugin({
     props: {
       handleDOMEvents: {
         paste(view, event: ClipboardEvent): boolean {
           if (
             (view.props.editable && !view.props.editable(view.state)) ||
-            !options.uploadImage
+            !options.upload
           ) {
             return false;
           }
@@ -55,13 +63,22 @@ const uploadPlugin = (options: InsertFilesOptions) =>
           }
           const pos = tr.selection.from;
 
-          insertFiles(view, event, pos, files, options);
+          uploadFiles({
+            ...options,
+            view,
+            pos,
+            files,
+            name: "image",
+            getAttrs: res => ({ src: res.data[0].url }),
+            placeholder: imagePlaceholder,
+            event
+          });
           return true;
         },
         drop(view, event: DragEvent): boolean {
           if (
             (view.props.editable && !view.props.editable(view.state)) ||
-            !options.uploadImage
+            !options.upload
           ) {
             return false;
           }
@@ -81,7 +98,16 @@ const uploadPlugin = (options: InsertFilesOptions) =>
           });
 
           if (result) {
-            insertFiles(view, event, result.pos, files, options);
+            uploadFiles({
+              ...options,
+              view,
+              pos: result.pos,
+              files,
+              name: "image",
+              getAttrs: res => ({ src: res.data[0].url }),
+              placeholder: imagePlaceholder,
+              event
+            });
             return true;
           }
 
@@ -379,10 +405,7 @@ export default class Image extends ReactNode {
   }
 
   get plugins() {
-    return [
-      uploadPlaceholderPlugin,
-      uploadPlugin(this.options as InsertFilesOptions)
-    ];
+    return [uploadPlugin(this.options)];
   }
 }
 

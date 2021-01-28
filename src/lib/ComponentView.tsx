@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
 import { dark as darkTheme, light as lightTheme } from "../theme";
-import Editor from "../main";
+import { Editor } from "../main";
 import { Node as ProseMirrorNode } from "prosemirror-model";
 import Node from "../nodes/Node";
 import { Attrs } from "./Extension";

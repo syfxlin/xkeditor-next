@@ -10,23 +10,29 @@ import BlockMenuItem from "./BlockMenuItem";
 import Input from "./Input";
 import VisuallyHidden from "./VisuallyHidden";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
-import insertFiles from "../commands/insertFiles";
-import getMenuItems from "../menus/block";
 import { WithTranslation, withTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Command } from "../lib/Extension";
+import { ApplyCommand } from "../lib/Extension";
+import uploadFiles, { UploadResponse } from "../commands/uploadFiles";
 
 type Props = {
+  // 显示状态
   isActive: boolean;
-  commands: Record<string, Command>;
-  view: EditorView;
-  search: string;
-  uploadImage?: (file: File) => Promise<string>;
-  onImageUploadStart?: () => void;
-  onImageUploadStop?: () => void;
-  onLinkToolbarOpen: () => void;
   onClose: () => void;
+  // 内容和指令
+  items: MenuItem[];
+  commands: Record<string, ApplyCommand>;
   embeds: EmbedDescriptor[];
+  // 编辑器
+  view: EditorView;
+  // 搜索
+  search: string;
+  // 图片上传
+  upload?: (files: File[]) => Promise<UploadResponse>;
+  onUploadStart?: () => void;
+  onUploadStop?: () => void;
+  // 链接
+  onLinkToolbarOpen: () => void;
 } & WithTranslation;
 
 type State = {
@@ -36,7 +42,14 @@ type State = {
   bottom?: number;
   isAbove: boolean;
   selectedIndex: number;
+  mode: Mode;
 };
+
+enum Mode {
+  LIST,
+  INPUT,
+  UPLOAD
+}
 
 class BlockMenu extends Component<Props, State> {
   menuRef = createRef<HTMLDivElement>();
@@ -48,7 +61,8 @@ class BlockMenu extends Component<Props, State> {
     bottom: undefined,
     isAbove: false,
     selectedIndex: 0,
-    insertItem: undefined
+    insertItem: undefined,
+    mode: Mode.LIST
   };
 
   componentDidMount() {
@@ -72,6 +86,7 @@ class BlockMenu extends Component<Props, State> {
 
       this.setState({
         insertItem: undefined,
+        mode: Mode.LIST,
         selectedIndex: 0,
         ...position
       });
@@ -149,16 +164,10 @@ class BlockMenu extends Component<Props, State> {
   };
 
   insertItem = (item: MenuItem) => {
-    if (item.name === "image") {
-      return this.triggerImagePick();
+    if (item.upload) {
+      return this.triggerUpload(item);
     }
-    if (item.name === "link") {
-      this.clearSearch();
-      this.props.onClose();
-      this.props.onLinkToolbarOpen();
-      return;
-    }
-    if (item.matcher) {
+    if (item.input) {
       return this.triggerInput(item);
     }
     this.insertBlock(item);
@@ -171,16 +180,17 @@ class BlockMenu extends Component<Props, State> {
 
   handleInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!this.props.isActive) return;
+    if (this.state.mode !== Mode.INPUT) return;
     const insertItem = this.state.insertItem;
     if (!insertItem) return;
-    if (!insertItem.matcher) return;
+    if (!insertItem.input) return;
 
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
 
       const value = event.currentTarget.value;
-      const matches = insertItem.matcher(value);
+      const matches = insertItem.input.matcher(value);
 
       if (!matches) {
         toast.error(this.props.t("抱歉，该链接不适用于此嵌入类型") as string);
@@ -204,12 +214,13 @@ class BlockMenu extends Component<Props, State> {
 
   handleInputPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     if (!this.props.isActive) return;
+    if (this.state.mode !== Mode.INPUT) return;
     const insertItem = this.state.insertItem;
     if (!insertItem) return;
-    if (!insertItem.matcher) return;
+    if (!insertItem.input) return;
 
     const value = event.clipboardData.getData("text/plain");
-    const matches = insertItem.matcher(value);
+    const matches = insertItem.input.matcher(value);
 
     if (matches) {
       event.preventDefault();
@@ -225,25 +236,37 @@ class BlockMenu extends Component<Props, State> {
     }
   };
 
-  triggerImagePick = () => {
-    if (this.inputRef.current) {
-      this.inputRef.current.click();
+  triggerUpload = (item: MenuItem) => {
+    this.setState({ insertItem: item, mode: Mode.UPLOAD });
+    const input = this.inputRef.current;
+    const upload = item.upload;
+    if (input && upload) {
+      if (upload.accept) {
+        input.accept = upload.accept;
+      }
+      if (upload.capture) {
+        // @ts-ignore
+        input.capture = upload.capture;
+      }
+      if (upload.multiple) {
+        input.multiple = upload.multiple;
+      }
+      input.click();
     }
   };
 
   triggerInput = (item: MenuItem) => {
-    this.setState({ insertItem: item });
+    this.setState({ insertItem: item, mode: Mode.INPUT });
   };
 
-  handleImagePicked = (event: any) => {
+  handleUpload = (event: any) => {
+    if (this.state.mode !== Mode.UPLOAD) return;
+    const { insertItem } = this.state;
+    if (!insertItem) return;
+    if (!insertItem.upload) return;
+    if (!insertItem.name) return;
     const files = getDataTransferFiles(event);
-
-    const {
-      view,
-      uploadImage,
-      onImageUploadStart,
-      onImageUploadStop
-    } = this.props;
+    const { view, upload, onUploadStart, onUploadStop } = this.props;
     const { state, dispatch } = view;
     const parent = findParentNode(node => !!node)(state.selection);
 
@@ -256,10 +279,20 @@ class BlockMenu extends Component<Props, State> {
         )
       );
 
-      insertFiles(view, event, parent.pos, files, {
-        uploadImage,
-        onImageUploadStart,
-        onImageUploadStop
+      uploadFiles({
+        onStart: onUploadStart,
+        onStop: onUploadStop,
+        view,
+        pos: parent.pos,
+        files,
+        name: insertItem.name,
+        getAttrs: res => ({
+          ...insertItem.attrs,
+          ...insertItem.upload?.getAttrs(res)
+        }),
+        upload,
+        event,
+        placeholder: insertItem.upload.placeholder
       });
     }
 
@@ -285,15 +318,17 @@ class BlockMenu extends Component<Props, State> {
     }
   }
 
-  insertBlock(item: any) {
+  insertBlock(item: MenuItem) {
     this.clearSearch();
 
-    const command = this.props.commands[item.name as string];
-    if (command) {
-      command(item.attrs);
-    } else {
-      this.props.commands[`create${capitalize(item.name)}`](item.attrs);
+    let command = item.command;
+    if (!command) {
+      command = this.props.commands[item.name as string];
     }
+    if (!command) {
+      command = this.props.commands[`create${capitalize(item.name)}`];
+    }
+    command(item.attrs || {});
 
     this.props.onClose();
   }
@@ -375,8 +410,8 @@ class BlockMenu extends Component<Props, State> {
   }
 
   get filtered(): MenuItem[] {
-    const { t, embeds, search = "", uploadImage } = this.props;
-    let items: MenuItem[] = getMenuItems(t);
+    const { embeds, search = "", upload } = this.props;
+    let { items } = this.props;
     const embedItems: MenuItem[] = [];
 
     for (const embed of embeds) {
@@ -402,7 +437,7 @@ class BlockMenu extends Component<Props, State> {
       if (item.name === "separator") return true;
 
       // If no image upload callback has been passed, filter the image block out
-      if (!uploadImage && item.name === "image") return false;
+      if (!upload && item.upload) return false;
 
       const n = search.toLowerCase();
       return (
@@ -412,33 +447,30 @@ class BlockMenu extends Component<Props, State> {
     });
 
     // this block literally just trims unneccessary separators from the results
-    return filtered.reduce(
-      (acc: any[], item: EmbedDescriptor | MenuItem, index: number) => {
-        // trim separators from start / end
-        if (item.name === "separator" && index === 0) return acc;
-        if (item.name === "separator" && index === filtered.length - 1)
-          return acc;
+    return filtered.reduce((acc: MenuItem[], item: MenuItem, index: number) => {
+      // trim separators from start / end
+      if (item.name === "separator" && index === 0) return acc;
+      if (item.name === "separator" && index === filtered.length - 1)
+        return acc;
 
-        // trim double separators looking ahead / behind
-        const prev = filtered[index - 1];
-        if (prev && prev.name === "separator" && item.name === "separator")
-          return acc;
+      // trim double separators looking ahead / behind
+      const prev = filtered[index - 1];
+      if (prev && prev.name === "separator" && item.name === "separator")
+        return acc;
 
-        const next = filtered[index + 1];
-        if (next && next.name === "separator" && item.name === "separator")
-          return acc;
+      const next = filtered[index + 1];
+      if (next && next.name === "separator" && item.name === "separator")
+        return acc;
 
-        // otherwise, continue
-        return [...acc, item];
-      },
-      []
-    );
+      // otherwise, continue
+      return [...acc, item];
+    }, []);
   }
 
   render() {
-    const { t, isActive, uploadImage } = this.props;
+    const { t, isActive, upload } = this.props;
     const items = this.filtered;
-    const { insertItem, ...positioning } = this.state;
+    const { insertItem, mode, ...positioning } = this.state;
 
     return (
       <Portal>
@@ -448,21 +480,17 @@ class BlockMenu extends Component<Props, State> {
           ref={this.menuRef}
           {...positioning}
         >
-          {insertItem ? (
-            <LinkInputWrapper>
-              <LinkInput
-                type="text"
-                placeholder={
-                  insertItem.title
-                    ? t("粘贴 {{title}} 链接...", { title: insertItem.title })
-                    : t("粘贴链接...")
-                }
+          {mode === Mode.INPUT && insertItem && (
+            <InputWrapper>
+              <InputValue
+                {...insertItem.input}
                 onKeyDown={this.handleInputKeydown}
                 onPaste={this.handleInputPaste}
                 autoFocus
               />
-            </LinkInputWrapper>
-          ) : (
+            </InputWrapper>
+          )}
+          {mode === Mode.LIST && (
             <List>
               {items.map((item, index) => {
                 if (item.name === "separator") {
@@ -497,13 +525,12 @@ class BlockMenu extends Component<Props, State> {
               )}
             </List>
           )}
-          {uploadImage && (
+          {upload && (
             <VisuallyHidden>
               <input
                 type="file"
                 ref={this.inputRef}
-                onChange={this.handleImagePicked}
-                accept="image/*"
+                onChange={this.handleUpload}
               />
             </VisuallyHidden>
           )}
@@ -513,11 +540,11 @@ class BlockMenu extends Component<Props, State> {
   }
 }
 
-const LinkInputWrapper = styled.div`
+const InputWrapper = styled.div`
   margin: 8px;
 `;
 
-const LinkInput = styled(Input)`
+const InputValue = styled(Input)`
   height: 36px;
   width: 100%;
   color: ${props => props.theme.blockToolbarText};
@@ -564,8 +591,8 @@ export const Wrapper = styled.div<{
   left: ${props => props.left}px;
   background-color: ${props => props.theme.blockToolbarBackground};
   border-radius: 4px;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0.08) 0px 4px 8px, rgba(0, 0, 0, 0.08) 0px 2px 4px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px, rgba(0, 0, 0, 0.08) 0 4px 8px,
+    rgba(0, 0, 0, 0.08) 0 2px 4px;
   opacity: 0;
   transform: scale(0.95);
   transition: opacity 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275),

@@ -2,7 +2,7 @@ import { Schema } from "prosemirror-model";
 import { keymap } from "prosemirror-keymap";
 import { MarkdownParser } from "prosemirror-markdown";
 import { MarkdownSerializer } from "./markdown/serializer";
-import Editor from "../main";
+import { Editor } from "../main";
 import Extension, { Attrs, Command } from "./Extension";
 import makeRules from "./markdown/rules";
 import Node from "../nodes/Node";

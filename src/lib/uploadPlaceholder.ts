@@ -16,12 +16,7 @@ const uploadPlaceholder = new Plugin({
 
       if (action && action.add) {
         const element = document.createElement("div");
-        element.className = "image placeholder";
-
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(action.add.file);
-
-        element.appendChild(img);
+        action.add.placeholder(element, action.add);
 
         const deco = Decoration.widget(action.add.pos, element, {
           id: action.add.id

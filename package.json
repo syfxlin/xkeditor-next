@@ -6,6 +6,7 @@
     "@iktakahiro/markdown-it-katex": "^4.0.1",
     "@monaco-editor/react": "^4.0.7",
     "@types/mermaid": "^8.2.1",
+    "axios": "^0.21.1",
     "copy-to-clipboard": "^3.0.8",
     "i18next": "^19.8.4",
     "katex": "^0.12.0",

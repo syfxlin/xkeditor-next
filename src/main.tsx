@@ -32,6 +32,7 @@ import Extension from "./lib/Extension";
 import ExtensionManager from "./lib/ExtensionManager";
 import ComponentView from "./lib/ComponentView";
 import headingToSlug from "./lib/headingToSlug";
+import { WithTranslation, withTranslation } from "react-i18next";
 
 // nodes
 import ReactNode from "./nodes/ReactNode";
@@ -85,12 +86,14 @@ import Mermaid from "./nodes/Mermaid";
 import "./init";
 import "./styles/global.less";
 import { Toaster } from "react-hot-toast";
+import getMenuItems from "./menus/block";
+import { UploadResponse } from "./commands/uploadFiles";
 
 export { default as Extension } from "./lib/Extension";
 
 export const theme = lightTheme;
 
-export type Props = {
+export type Props = WithTranslation & {
   id?: string;
   value?: string;
   defaultValue: string;
@@ -108,12 +111,12 @@ export type Props = {
   handleDOMEvents?: {
     [name: string]: (view: EditorView, event: Event) => boolean;
   };
-  uploadImage?: (file: File) => Promise<string>;
+  upload?: (files: File[]) => Promise<UploadResponse>;
   onSave?: ({ done }: { done: boolean }) => void;
   onCancel?: () => void;
   onChange: (value: () => string) => void;
-  onImageUploadStart?: () => void;
-  onImageUploadStop?: () => void;
+  onUploadStart?: () => void;
+  onUploadStop?: () => void;
   onCreateLink?: (title: string) => Promise<string>;
   onSearchLink?: (term: string) => Promise<SearchResult[]>;
   onClickLink: (href: string, event: MouseEvent) => void;
@@ -144,10 +147,7 @@ type NodeViewCreator = (
   decorations: Decoration[]
 ) => NodeView;
 
-export default class RichMarkdownEditor extends React.PureComponent<
-  Props,
-  State
-> {
+class RichMarkdownEditor extends React.PureComponent<Props, State> {
   static defaultProps = {
     defaultValue: "",
     placeholder: "Write something nice…",
@@ -291,9 +291,9 @@ export default class RichMarkdownEditor extends React.PureComponent<
         new HorizontalRule(),
         new Image({
           dictionary,
-          uploadImage: this.props.uploadImage,
-          onImageUploadStart: this.props.onImageUploadStart,
-          onImageUploadStop: this.props.onImageUploadStop,
+          upload: this.props.upload,
+          onUploadStart: this.props.onUploadStart,
+          onUploadStop: this.props.onUploadStop,
           onShowToast: this.props.onShowToast
         }),
         new Table(),
@@ -619,6 +619,7 @@ export default class RichMarkdownEditor extends React.PureComponent<
 
   render = () => {
     const {
+      t,
       readOnly,
       readOnlyWriteCheckboxes,
       style,
@@ -628,6 +629,13 @@ export default class RichMarkdownEditor extends React.PureComponent<
     } = this.props;
     const dictionary = this.dictionary(this.props.dictionary);
 
+    const menuItems = getMenuItems(t);
+    const index = menuItems.findIndex(item => item.name === "link");
+    if (index !== -1) {
+      menuItems[index].command = () => {
+        this.handleOpenLinkMenu();
+      };
+    }
     return (
       <Flex
         onKeyDown={onKeyDown}
@@ -673,11 +681,12 @@ export default class RichMarkdownEditor extends React.PureComponent<
                   isActive={this.state.blockMenuOpen}
                   search={this.state.blockMenuSearch}
                   onClose={this.handleCloseBlockMenu}
-                  uploadImage={this.props.uploadImage}
+                  upload={this.props.upload}
                   onLinkToolbarOpen={this.handleOpenLinkMenu}
-                  onImageUploadStart={this.props.onImageUploadStart}
-                  onImageUploadStop={this.props.onImageUploadStop}
+                  onUploadStart={this.props.onUploadStart}
+                  onUploadStop={this.props.onUploadStop}
                   embeds={this.props.embeds}
+                  items={menuItems}
                 />
               </React.Fragment>
             )}
@@ -688,6 +697,9 @@ export default class RichMarkdownEditor extends React.PureComponent<
     );
   };
 }
+
+export default withTranslation()(RichMarkdownEditor);
+export type Editor = RichMarkdownEditor;
 
 const StyledEditor = styled("div")<{
   readOnly?: boolean;
@@ -706,7 +718,6 @@ const StyledEditor = styled("div")<{
     outline: none;
     word-wrap: break-word;
     white-space: pre-wrap;
-    white-space: break-spaces;
     -webkit-font-variant-ligatures: none;
     font-variant-ligatures: none;
     font-feature-settings: "liga" 0; /* the above doesn't seem to work in Edge */

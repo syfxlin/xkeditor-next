@@ -17,6 +17,7 @@ import {
 } from "outline-icons";
 import { MenuItem } from "../types";
 import { TFunction } from "react-i18next";
+import { imagePlaceholder } from "../nodes/Image";
 
 const isMac = window.navigator.platform === "MacIntel";
 const mod = isMac ? "⌘" : "ctrl";
@@ -102,7 +103,12 @@ export default function blockMenuItems(t: TFunction<string>): MenuItem[] {
       name: "image",
       title: t("图片"),
       icon: ImageIcon,
-      keywords: "picture photo"
+      keywords: "picture photo image",
+      upload: {
+        getAttrs: res => ({ src: res.data[0].url }),
+        placeholder: imagePlaceholder,
+        accept: "image/*"
+      }
     },
     {
       name: "link",

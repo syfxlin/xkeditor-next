@@ -200,12 +200,30 @@ class Example extends React.Component {
               }, Math.random() * 500);
             });
           }}
-          uploadImage={file => {
-            console.log("File upload triggered: ", file);
+          upload={fs => {
+            console.log("File upload triggered: ", fs);
 
             // Delay to simulate time taken to upload
             return new Promise(resolve => {
-              setTimeout(() => resolve("https://picsum.photos/600/600"), 1500);
+              setTimeout(
+                () =>
+                  resolve({
+                    error: false,
+                    message: "OK",
+                    code: 200,
+                    data: [
+                      {
+                        extname: "png",
+                        filename: "123",
+                        key: "123",
+                        md5: "123",
+                        size: 123,
+                        url: "https://picsum.photos/600/600"
+                      }
+                    ]
+                  }),
+                1500
+              );
             });
           }}
           embeds={[
@@ -219,17 +237,20 @@ class Example extends React.Component {
                   height={24}
                 />
               ),
-              matcher: url => {
-                const match = url.match(
-                  /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
-                );
-                if (match) {
-                  return {
-                    href: url,
-                    matches: match
-                  };
+              input: {
+                placeholder: "粘贴 Youtube 链接...",
+                matcher: url => {
+                  const match = url.match(
+                    /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
+                  );
+                  if (match) {
+                    return {
+                      href: url,
+                      matches: match
+                    };
+                  }
+                  return null;
                 }
-                return null;
               },
               component: YoutubeEmbed
             }

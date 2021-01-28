@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { InputRule } from "prosemirror-inputrules";
 import { EditorState, Plugin, Transaction } from "prosemirror-state";
-import Editor from "../main";
+import { Editor } from "../main";
 import { MarkType, NodeType, Schema } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
 
@@ -14,6 +14,8 @@ export type Dispatcher = (
 ) => boolean | void;
 
 export type Command = (attrs: Attrs) => Dispatcher;
+
+export type ApplyCommand = (attrs: Attrs) => boolean | void;
 
 export type ExtensionArgs = {
   schema: Schema;
