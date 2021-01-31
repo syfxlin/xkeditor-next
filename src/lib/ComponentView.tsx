@@ -25,7 +25,7 @@ export type ComponentProps = {
 };
 
 export default class ComponentView implements NodeView {
-  component: React.FC<ComponentProps>;
+  component: React.FC<ComponentProps> | typeof React.Component;
   editor: Editor;
   extension: Node;
   node: ProseMirrorNode;
@@ -38,7 +38,7 @@ export default class ComponentView implements NodeView {
 
   // See https://prosemirror.net/docs/ref/#view.NodeView
   constructor(
-    component: React.FC<ComponentProps>,
+    component: React.FC<ComponentProps> | typeof React.Component,
     {
       editor,
       extension,

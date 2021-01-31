@@ -650,7 +650,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   search={this.state.blockMenuSearch}
                   onClose={this.handleCloseBlockMenu}
                   upload={this.props.upload}
-                  onLinkToolbarOpen={this.handleOpenLinkMenu}
                   onUploadStart={this.props.onUploadStart}
                   onUploadStop={this.props.onUploadStop}
                   embeds={this.props.embeds}

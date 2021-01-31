@@ -75,7 +75,7 @@ export default class ExtensionManager {
 
       return {
         ...nodes,
-        [extension.markdownToken || extension.name]: md
+        [extension.markdownToken]: md
       };
     }, {});
 

@@ -1,8 +1,7 @@
 import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
-import Mark, { MarkArgs } from "./Mark";
+import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
 import { MarkSpec, Node } from "prosemirror-model";
-import StateInline from "markdown-it/lib/rules_inline/state_inline";
 
 function backticksFor(node: Node, side: -1 | 1) {
   const ticks = /`+/g;
@@ -50,12 +49,12 @@ export default class Code extends Mark {
     };
   }
 
-  toMarkdown() {
+  toMarkdown(): MarkSerializerConfig {
     return {
-      open(_state: StateInline, _mark: string, parent: Node, index: number) {
+      open: (state, mark, parent, index) => {
         return backticksFor(parent.child(index), -1);
       },
-      close(_state: StateInline, _mark: string, parent: Node, index: number) {
+      close: (state, mark, parent, index) => {
         return backticksFor(parent.child(index - 1), 1);
       },
       escape: false

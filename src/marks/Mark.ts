@@ -1,13 +1,37 @@
 import { toggleMark } from "prosemirror-commands";
-import Extension, { Command, Dispatcher } from "../lib/Extension";
-import { MarkSpec, MarkType, Schema } from "prosemirror-model";
+import Extension, { Attrs, Command, Dispatcher } from "../lib/Extension";
+import {
+  Fragment,
+  Mark as ProseMirrorMark,
+  MarkSpec,
+  MarkType,
+  Schema
+} from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple, PluginWithOptions, PluginWithParams } from "markdown-it";
-import { TokenConfig } from "prosemirror-markdown";
+import { MarkdownSerializerState, TokenConfig } from "prosemirror-markdown";
 
 export type MarkArgs = { type: MarkType; schema: Schema };
 
-export default abstract class Mark extends Extension {
+export type MarkSerializerMethod<S extends Schema = any> = (
+  state: MarkdownSerializerState<S>,
+  mark: ProseMirrorMark<S>,
+  parent: Fragment<S>,
+  index: number
+) => string;
+
+export interface MarkSerializerConfig<S extends Schema = any> {
+  open: string | MarkSerializerMethod<S>;
+  close: string | MarkSerializerMethod<S>;
+  mixable?: boolean;
+  expelEnclosingWhitespace?: boolean;
+  escape?: boolean;
+}
+
+export default abstract class Mark<
+  O extends Attrs = Attrs,
+  A extends Attrs = Attrs
+> extends Extension<O, A> {
   get type(): string {
     return "mark";
   }
@@ -15,11 +39,11 @@ export default abstract class Mark extends Extension {
   abstract get schema(): MarkSpec;
 
   get markdownToken(): string {
-    return "";
+    return this.name;
   }
 
-  toMarkdown(): Record<string, any> {
-    return {};
+  toMarkdown(): MarkSerializerConfig {
+    return {} as MarkSerializerConfig;
   }
 
   parseMarkdown(): TokenConfig | undefined {
@@ -34,7 +58,7 @@ export default abstract class Mark extends Extension {
     return undefined;
   }
 
-  commands({ type }: MarkArgs): Record<string, Command> | Command {
+  commands({ type }: MarkArgs): Record<string, Command<A>> | Command<A> {
     return () => toggleMark(type);
   }
 

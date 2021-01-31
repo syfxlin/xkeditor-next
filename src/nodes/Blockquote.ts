@@ -3,8 +3,9 @@ import Node, { NodeArgs } from "./Node";
 import toggleWrap from "../commands/toggleWrap";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Blockquote extends Node {
+export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "blockquote";
   }

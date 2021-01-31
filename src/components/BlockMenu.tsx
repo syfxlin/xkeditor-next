@@ -31,8 +31,6 @@ type Props = {
   upload?: (files: File[]) => Promise<UploadResponse>;
   onUploadStart?: () => void;
   onUploadStop?: () => void;
-  // 链接
-  onLinkToolbarOpen: () => void;
 } & WithTranslation;
 
 type State = {

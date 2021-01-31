@@ -1,15 +1,19 @@
 import { toggleMark } from "prosemirror-commands";
 import { Plugin } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
-import Mark, { MarkArgs } from "./Mark";
-import { MarkSpec, Node } from "prosemirror-model";
+import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
+import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
 import { Attrs, Dispatcher } from "../lib/Extension";
-import StateInline from "markdown-it/lib/rules_inline/state_inline";
 import Token from "markdown-it/lib/token";
 
 const LINK_INPUT_REGEX = /\[(.+)]\((\S+)\)/;
 
-function isPlainURL(link: Node, parent: Node, index: number, side: -1 | 1) {
+function isPlainURL(
+  link: ProseMirrorMark,
+  parent: Fragment,
+  index: number,
+  side: -1 | 1
+) {
   if (link.attrs.title || !/^\w+:/.test(link.attrs.href)) {
     return false;
   }
@@ -158,12 +162,12 @@ export default class Link extends Mark {
     ];
   }
 
-  toMarkdown() {
+  toMarkdown(): MarkSerializerConfig {
     return {
-      open(_state: StateInline, mark: Node, parent: Node, index: number) {
+      open: (state, mark, parent, index) => {
         return isPlainURL(mark, parent, index, 1) ? "<" : "[";
       },
-      close(state: any, mark: Node, parent: Node, index: number) {
+      close: (state, mark, parent, index) => {
         return isPlainURL(mark, parent, index, -1)
           ? ">"
           : "](" +

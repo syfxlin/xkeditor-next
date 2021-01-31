@@ -5,6 +5,9 @@ import { Editor } from "../main";
 import { MarkType, NodeType, Schema } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type EmptyAttrs = {};
+
 export type Attrs = Record<string, any>;
 
 export type Dispatcher = (
@@ -13,21 +16,26 @@ export type Dispatcher = (
   view?: EditorView
 ) => boolean | void;
 
-export type Command = (attrs: Attrs) => Dispatcher;
+export type Command<A extends Attrs = Attrs> = (attrs: A) => Dispatcher;
 
-export type ApplyCommand = (attrs: Attrs) => boolean | void;
+export type ApplyCommand<A extends Attrs = Attrs> = (
+  attrs: A
+) => boolean | void;
 
 export type ExtensionArgs = {
   schema: Schema;
   type?: MarkType | NodeType;
 };
 
-export default class Extension {
-  options: Record<string, any>;
+export default abstract class Extension<
+  O extends Attrs = Attrs,
+  A extends Attrs = Attrs
+> {
+  options: O;
   // @ts-ignore
   editor: Editor;
 
-  constructor(options: Record<string, any> = {}) {
+  constructor(options: O = {} as O) {
     this.options = {
       ...this.defaultOptions,
       ...options
@@ -42,9 +50,7 @@ export default class Extension {
     return "extension";
   }
 
-  get name(): string {
-    return "";
-  }
+  abstract get name(): string;
 
   get plugins(): Plugin[] {
     return [];
@@ -61,12 +67,12 @@ export default class Extension {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  commands(options: ExtensionArgs): Record<string, Command> | Command {
+  commands(options: ExtensionArgs): Record<string, Command<A>> | Command<A> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return attrs => () => false;
   }
 
-  get defaultOptions(): any {
-    return {};
+  get defaultOptions(): O {
+    return {} as O;
   }
 }

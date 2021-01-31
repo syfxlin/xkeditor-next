@@ -18,7 +18,7 @@ export type MenuItem = {
   command?: ApplyCommand;
   // 是否开启输入框，输入校验
   input?: InputHTMLAttributes<HTMLInputElement> & {
-    matcher: (value: string) => Record<string, any> | null;
+    matcher: (value: string) => Attrs | null;
   };
   upload?: {
     getAttrs: (res: UploadResponse) => Attrs;
