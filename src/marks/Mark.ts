@@ -59,7 +59,7 @@ export default abstract class Mark<
   }
 
   commands({ type }: MarkArgs): Record<string, Command<A>> | Command<A> {
-    return () => toggleMark(type);
+    return attrs => toggleMark(type, attrs);
   }
 
   keys(options: MarkArgs): Record<string, Dispatcher> {

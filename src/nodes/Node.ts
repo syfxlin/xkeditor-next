@@ -23,6 +23,7 @@ import { UploadResponse } from "../commands/uploadFiles";
 export type NodeArgs = { type: NodeType; schema: Schema };
 
 export type NodeMenuItem = {
+  name: string;
   icon?: typeof React.Component | React.FC<any>;
   title?: string;
   shortcut?: string;
@@ -44,6 +45,7 @@ export type NodeMenuItem = {
 };
 
 export type NodeToolbarItem = {
+  name: string;
   icon?: typeof React.Component | React.FC<any>;
   title?: string;
   shortcut?: string;
@@ -88,7 +90,7 @@ export default abstract class Node<
     type,
     schema
   }: NodeArgs): Record<string, Command<A>> | Command<A> {
-    return () => toggleBlockType(type, schema.nodes.paragraph);
+    return attrs => toggleBlockType(type, schema.nodes.paragraph, attrs);
   }
 
   keys(options: NodeArgs): Record<string, Dispatcher> {

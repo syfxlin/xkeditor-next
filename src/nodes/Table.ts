@@ -1,4 +1,4 @@
-import Node, { NodeArgs } from "./Node";
+import Node, { NodeArgs, NodeMenuItem } from "./Node";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import {
   addColumnAfter,
@@ -27,6 +27,8 @@ import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { TableIcon } from "outline-icons";
+import { t } from "../i18n";
 
 export default class Table extends Node {
   get name() {
@@ -169,6 +171,18 @@ export default class Table extends Node {
           }
         }
       })
+    ];
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("表格"),
+        icon: TableIcon,
+        keywords: "table",
+        attrs: { rowsCount: 3, colsCount: 3 }
+      }
     ];
   }
 }

@@ -20,7 +20,10 @@ import { TFunction } from "react-i18next";
 import { imagePlaceholder } from "../nodes/Image";
 
 const isMac = window.navigator.platform === "MacIntel";
-const mod = isMac ? "⌘" : "ctrl";
+export const mod = isMac ? "⌘" : "Ctrl";
+export const alt = isMac ? "⌥" : "Alt";
+export const shift = isMac ? "⇧" : "Shift";
+export const ctrl = isMac ? "^" : "Ctrl";
 
 export default function blockMenuItems(t: TFunction<string>): MenuItem[] {
   return [

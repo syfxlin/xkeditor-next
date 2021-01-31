@@ -117,7 +117,7 @@ const MonacoNode: React.FC<Props> = props => {
       <section className={node.attrs.isEdit ? "" : "hidden"}>
         <MonacoEditor
           value={node.textContent}
-          theme={"oceanic-next"}
+          theme={"vs-dark"}
           language={language}
           onChange={handleChange}
           onMount={handleMount}

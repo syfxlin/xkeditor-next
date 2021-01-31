@@ -1,8 +1,11 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
-import Node, { NodeArgs } from "./Node";
+import Node, { NodeArgs, NodeMenuItem } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { t } from "../i18n";
+import { OrderedListIcon } from "outline-icons";
+import { ctrl, shift } from "../menus/block";
 
 export default class OrderedList extends Node {
   get name() {
@@ -44,7 +47,7 @@ export default class OrderedList extends Node {
 
   keys({ type, schema }: NodeArgs) {
     return {
-      "Shift-Ctrl-9": toggleList(type, schema.nodes.list_item)
+      "Ctrl-Shift-9": toggleList(type, schema.nodes.list_item)
     };
   }
 
@@ -72,5 +75,17 @@ export default class OrderedList extends Node {
 
   parseMarkdown() {
     return { block: this.name };
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("有序列表"),
+        icon: OrderedListIcon,
+        shortcut: `${ctrl} ${shift} 9`,
+        keywords: "orderedlist list"
+      }
+    ];
   }
 }

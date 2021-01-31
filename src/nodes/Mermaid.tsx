@@ -1,7 +1,7 @@
-import { NodeArgs } from "./Node";
+import { NodeArgs, NodeMenuItem } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { mergeSpec, nodeKeys } from "../utils/editor";
-import { Dispatcher } from "../lib/Extension";
+import { Command, Dispatcher } from "../lib/Extension";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
@@ -12,6 +12,9 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
 import { useDebounce } from "react-use";
+import { t } from "../i18n";
+import { HomeIcon } from "outline-icons";
+import toggleBlockType from "../commands/toggleBlockType";
 
 export default class Mermaid extends ReactNode {
   get name() {
@@ -87,6 +90,11 @@ export default class Mermaid extends ReactNode {
     return [textblockTypeInputRule(/^:::\s?mermaid$/, type, { isEdit: true })];
   }
 
+  commands({ type, schema }: NodeArgs): Record<string, Command> | Command {
+    return () =>
+      toggleBlockType(type, schema.nodes.paragraph, { isEdit: true });
+  }
+
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.write("\n:::mermaid\n");
     state.renderContent(node);
@@ -109,5 +117,16 @@ export default class Mermaid extends ReactNode {
         parseInline: false
       });
     };
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("Mermaid 图"),
+        icon: HomeIcon,
+        keywords: "mermaid graph"
+      }
+    ];
   }
 }

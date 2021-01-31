@@ -2,7 +2,7 @@ import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import React, { ChangeEvent, useCallback, useEffect, useRef } from "react";
-import { NodeArgs } from "./Node";
+import { NodeArgs, NodeMenuItem } from "./Node";
 import { textblockTypeInputRule } from "prosemirror-inputrules";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
@@ -16,6 +16,8 @@ import { applyContent, mergeSpec, nodeKeys } from "../utils/editor";
 import { setBlockType } from "prosemirror-commands";
 import { toast } from "react-hot-toast";
 import { t } from "../i18n";
+import { CodeIcon } from "outline-icons";
+import { ctrl, shift } from "../menus/block";
 
 export default class MonacoBlock extends ReactNode {
   get name() {
@@ -175,13 +177,17 @@ export default class MonacoBlock extends ReactNode {
       );
 
       return (
-        <div className={"code-block"} contentEditable={false}>
+        <div
+          className={"code-block"}
+          contentEditable={false}
+          // TODO: Fix height
+          style={{ height: 300 }}
+        >
           {node.attrs.isEdit ? (
             <section>
               <MonacoEditor
                 value={node.textContent}
-                height={300}
-                theme={"oceanic-next"}
+                theme={"vs-dark"}
                 language={node.attrs.language}
                 onChange={handleChange}
                 onMount={handleMount}
@@ -234,7 +240,7 @@ export default class MonacoBlock extends ReactNode {
 
   keys({ type }: NodeArgs) {
     return {
-      "Shift-Ctrl-\\": setBlockType(type, { isEdit: true }),
+      "Ctrl-Shift-\\": setBlockType(type, { isEdit: true }),
       ...nodeKeys(node => node.type.name === this.name && node.attrs.isEdit)
     };
   }
@@ -258,5 +264,17 @@ export default class MonacoBlock extends ReactNode {
       block: this.name,
       getAttrs: (tok: Token) => ({ language: tok.info })
     };
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("代码块"),
+        icon: CodeIcon,
+        shortcut: `${ctrl} ${shift}\\`,
+        keywords: "code monaco script"
+      }
+    ];
   }
 }

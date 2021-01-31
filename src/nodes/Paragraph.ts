@@ -21,7 +21,7 @@ export default class Paragraph extends Node {
 
   keys({ type }: NodeArgs) {
     return {
-      "Shift-Ctrl-0": setBlockType(type)
+      "Ctrl-Shift-0": setBlockType(type)
     };
   }
 

@@ -5,11 +5,14 @@ import { PluginSimple } from "markdown-it";
 import ReactNode from "./ReactNode";
 import React, { useCallback } from "react";
 import { ComponentProps } from "../lib/ComponentView";
-import { NodeArgs } from "./Node";
+import { NodeArgs, NodeMenuItem } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { Command } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
+import { t } from "../i18n";
+// @ts-ignore
+import { HomeIcon } from "outline-icons";
 
 export default class Details extends ReactNode {
   get name() {
@@ -113,5 +116,16 @@ export default class Details extends ReactNode {
         name: this.name
       });
     };
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("描述"),
+        icon: HomeIcon,
+        keywords: "details summary"
+      }
+    ];
   }
 }

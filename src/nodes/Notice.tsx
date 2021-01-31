@@ -3,7 +3,7 @@ import toggleWrap from "../commands/toggleWrap";
 import { InfoIcon, StarredIcon, WarningIcon } from "outline-icons";
 import * as React from "react";
 import ReactDOM from "react-dom";
-import Node, { NodeArgs } from "./Node";
+import Node, { NodeArgs, NodeMenuItem } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import { Command } from "../lib/Extension";
@@ -132,5 +132,31 @@ export default class Notice extends Node {
         name: this.name
       });
     };
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("提示框（信息）"),
+        icon: InfoIcon,
+        keywords: "notice card information",
+        attrs: { style: "info" }
+      },
+      {
+        name: this.name,
+        title: t("提示框（警告）"),
+        icon: WarningIcon,
+        keywords: "notice card error",
+        attrs: { style: "warning" }
+      },
+      {
+        name: this.name,
+        title: t("提示框（提醒）"),
+        icon: StarredIcon,
+        keywords: "notice card suggestion",
+        attrs: { style: "tip" }
+      }
+    ];
   }
 }

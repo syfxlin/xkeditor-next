@@ -10,12 +10,13 @@ import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
-import { NodeArgs } from "./Node";
+import { NodeArgs, NodeMenuItem } from "./Node";
 import { Command } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
 import { t } from "../i18n";
+import { ImageIcon } from "outline-icons";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, class]
@@ -407,6 +408,22 @@ export default class Image extends ReactNode {
 
   get plugins() {
     return [uploadPlugin(this.options)];
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: "image",
+        title: t("图片"),
+        icon: ImageIcon,
+        keywords: "picture photo image",
+        upload: {
+          getAttrs: res => ({ src: res.data[0].url }),
+          placeholder: imagePlaceholder,
+          accept: "image/*"
+        }
+      }
+    ];
   }
 }
 

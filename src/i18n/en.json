@@ -6,6 +6,9 @@
   "标题 1": "Heading 1",
   "标题 2": "Heading 2",
   "标题 3": "Heading 3",
+  "标题 4": "Heading 4",
+  "标题 5": "Heading 5",
+  "标题 6": "Heading 6",
   "Todo 列表": "Todo list",
   "无序列表": "Bulleted list",
   "有序列表": "Ordered list",
@@ -50,5 +53,7 @@
   "输入 '/' 以插入块...": "Type '/' to insert…",
   "继续输入进行过滤...": "Keep typing to filter…",
   "写点有趣的内容...": "Write something nice…",
-  "图片描述": "Write a caption"
+  "图片描述": "Write a caption",
+  "描述": "Details",
+  "Mermaid 图": "Mermaid graph"
 }

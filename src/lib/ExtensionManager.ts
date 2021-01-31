@@ -214,4 +214,19 @@ export default class ExtensionManager {
         };
       }, {});
   }
+
+  menuItems({ schema }: { schema: Schema }) {
+    return (this.extensions.filter(extension =>
+      ["node"].includes(extension.type)
+    ) as Node[])
+      .filter(extension => extension.menuItems)
+      .map(extension =>
+        extension.menuItems({
+          // @ts-ignore
+          type: schema[`${extension.type}s`][extension.name],
+          schema
+        })
+      )
+      .reduce((allItems, items) => [...allItems, ...items], []);
+  }
 }

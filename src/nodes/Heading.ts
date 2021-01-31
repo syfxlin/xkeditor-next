@@ -8,10 +8,12 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import backspaceToParagraph from "../commands/backspaceToParagraph";
 import toggleBlockType from "../commands/toggleBlockType";
 import headingToSlug from "../lib/headingToSlug";
-import Node, { NodeArgs } from "./Node";
+import Node, { NodeArgs, NodeMenuItem } from "./Node";
 import { Command, Dispatcher } from "../lib/Extension";
 import { toast } from "react-hot-toast";
 import { t } from "../i18n";
+import { Heading1Icon } from "outline-icons";
+import { ctrl, shift } from "../menus/block";
 
 export default class Heading extends Node {
   className = "heading-name";
@@ -104,7 +106,7 @@ export default class Heading extends Node {
       (items: Record<string, Dispatcher>, level: number) => ({
         ...items,
         ...{
-          [`Shift-Ctrl-${level}`]: setBlockType(type, { level })
+          [`Ctrl-Shift-${level}`]: setBlockType(type, { level })
         }
       }),
       {}
@@ -181,6 +183,21 @@ export default class Heading extends Node {
       textblockTypeInputRule(new RegExp(`^(#{1,${level}})\\s$`), type, () => ({
         level
       }))
+    );
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return this.options.levels.map(
+      (level: number): NodeMenuItem => {
+        return {
+          name: this.name,
+          title: t(`标题 ${level}`),
+          icon: Heading1Icon,
+          keywords: `heading${level} title${level}`,
+          shortcut: `${ctrl} ${shift} ${level}`,
+          attrs: { level }
+        };
+      }
     );
   }
 }

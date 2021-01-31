@@ -1,9 +1,12 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
-import Node, { NodeArgs } from "./Node";
+import Node, { NodeArgs, NodeMenuItem } from "./Node";
 import toggleWrap from "../commands/toggleWrap";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { EmptyAttrs } from "../lib/Extension";
+import { BlockQuoteIcon } from "outline-icons";
+import { t } from "../i18n";
+import { mod } from "../menus/block";
 
 export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -30,7 +33,6 @@ export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
 
   keys({ type }: NodeArgs) {
     return {
-      "Ctrl->": toggleWrap(type),
       "Mod-]": toggleWrap(type)
     };
   }
@@ -41,5 +43,17 @@ export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
 
   parseMarkdown() {
     return { block: this.name };
+  }
+
+  menuItems(): NodeMenuItem[] {
+    return [
+      {
+        name: this.name,
+        title: t("引用"),
+        icon: BlockQuoteIcon,
+        shortcut: `${mod} ]`,
+        keywords: "blockquote quote"
+      }
+    ];
   }
 }

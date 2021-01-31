@@ -84,9 +84,9 @@ import Mermaid from "./nodes/Mermaid";
 import "./init";
 import "./styles/global.less";
 import { Toaster } from "react-hot-toast";
-import getMenuItems from "./menus/block";
 import { UploadResponse } from "./commands/uploadFiles";
 import { t } from "./i18n";
+import { NodeMenuItem } from "./nodes/Node";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -195,6 +195,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   marks: { [name: string]: MarkSpec };
   // @ts-ignore
   commands: Record<string, any>;
+  // @ts-ignore
+  menuItems: NodeMenuItem[];
 
   componentDidMount() {
     this.init();
@@ -249,6 +251,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     this.nodeViews = this.createNodeViews();
     this.view = this.createView();
     this.commands = this.createCommands();
+    this.menuItems = this.createMenuItems();
   }
 
   createExtensions() {
@@ -371,6 +374,12 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     return this.extensions.commands({
       schema: this.schema,
       view: this.view
+    });
+  }
+
+  createMenuItems() {
+    return this.extensions.menuItems({
+      schema: this.schema
     });
   }
 
@@ -591,7 +600,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
 
   render = () => {
     const {
-      t,
       readOnly,
       readOnlyWriteCheckboxes,
       style,
@@ -600,13 +608,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       onKeyDown
     } = this.props;
 
-    const menuItems = getMenuItems(t);
-    const index = menuItems.findIndex(item => item.name === "link");
-    if (index !== -1) {
-      menuItems[index].command = () => {
-        this.handleOpenLinkMenu();
-      };
-    }
     return (
       <Flex
         onKeyDown={onKeyDown}
@@ -653,7 +654,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   onUploadStart={this.props.onUploadStart}
                   onUploadStop={this.props.onUploadStop}
                   embeds={this.props.embeds}
-                  items={menuItems}
+                  items={this.menuItems}
                 />
               </React.Fragment>
             )}
