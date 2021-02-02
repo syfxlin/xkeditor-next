@@ -4,11 +4,19 @@ import ReactNode from "./ReactNode";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { NodeArgs } from "./Node";
-import { Command, MenuItem } from "../lib/Extension";
+import { ApplyCommand, Attrs, Command } from "../lib/Extension";
 import { ComponentProps } from "../lib/ComponentView";
+import { EditorView } from "prosemirror-view";
 
-export type EmbedDescriptor = MenuItem & {
-  component: typeof React.Component | React.FC<any>;
+export type EmbedDescriptor = {
+  title: string;
+  matcher: (value: string) => Attrs | null;
+  component: typeof React.Component | React.FC<ComponentProps>;
+  icon?: typeof React.Component | React.FC<any>;
+  shortcut?: string;
+  keywords?: string;
+  attrs?: Attrs | ((view: EditorView) => Attrs);
+  command?: ApplyCommand;
 };
 
 export default class Embed extends ReactNode {
@@ -36,7 +44,7 @@ export default class Embed extends ReactNode {
 
             if (embeds) {
               for (const embed of embeds) {
-                const matches = embed.input?.matcher(href);
+                const matches = embed.matcher(href);
                 if (matches) {
                   return {
                     href,
@@ -60,17 +68,9 @@ export default class Embed extends ReactNode {
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ isEditable, isSelected, theme, node }) => {
-      const Component = node.attrs.component;
-
-      return (
-        <Component
-          attrs={node.attrs}
-          isEditable={isEditable}
-          isSelected={isSelected}
-          theme={theme}
-        />
-      );
+    return props => {
+      const Component = props.node.attrs.component;
+      return <Component {...props} />;
     };
   }
 

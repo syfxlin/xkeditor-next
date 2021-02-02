@@ -26,7 +26,7 @@ export default function(embeds: any[]): (md: MarkdownIt) => void {
     if (!embeds) return false;
 
     for (const embed of embeds) {
-      const matches = embed.input.matcher(href);
+      const matches = embed.matcher(href);
       if (matches) {
         return {
           ...embed,

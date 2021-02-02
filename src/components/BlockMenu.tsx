@@ -6,14 +6,25 @@ import { EditorView } from "prosemirror-view";
 import { findParentNode } from "prosemirror-utils";
 import styled from "styled-components";
 import BlockMenuItem from "./BlockMenuItem";
-import Input from "./Input";
 import VisuallyHidden from "./VisuallyHidden";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { WithTranslation, withTranslation } from "react-i18next";
-import toast from "react-hot-toast";
 import { ApplyCommand, Attrs, MenuItem } from "../lib/Extension";
 import uploadFiles, { UploadResponse } from "../commands/uploadFiles";
 import { EmbedDescriptor } from "../nodes/Embed";
+import { blockMenuInput } from "./BlockMenuComponent";
+
+export type BlockComponentProps = {
+  item: MenuItem;
+  insertBlock: (item: MenuItem) => void;
+
+  isActive: boolean;
+  close: () => void;
+  view: EditorView;
+  upload?: (files: File[]) => Promise<UploadResponse>;
+  onUploadStart?: () => void;
+  onUploadStop?: () => void;
+} & WithTranslation;
 
 type Props = {
   // 显示状态
@@ -45,7 +56,7 @@ type State = {
 
 enum Mode {
   LIST,
-  INPUT,
+  COMPONENT,
   UPLOAD
 }
 
@@ -62,6 +73,12 @@ class BlockMenu extends Component<Props, State> {
     insertItem: undefined,
     mode: Mode.LIST
   };
+
+  constructor(props: Props) {
+    super(props);
+    this.insertBlock = this.insertBlock.bind(this);
+    this.close = this.close.bind(this);
+  }
 
   componentDidMount() {
     window.addEventListener("keydown", this.handleKeyDown);
@@ -165,8 +182,8 @@ class BlockMenu extends Component<Props, State> {
     if (item.upload) {
       return this.triggerUpload(item);
     }
-    if (item.input) {
-      return this.triggerInput(item);
+    if (item.component) {
+      return this.triggerComponent(item);
     }
     this.insertBlock(item);
   };
@@ -184,64 +201,6 @@ class BlockMenu extends Component<Props, State> {
   close = () => {
     this.props.onClose();
     this.props.view.focus();
-  };
-
-  handleInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!this.props.isActive) return;
-    if (this.state.mode !== Mode.INPUT) return;
-    const insertItem = this.state.insertItem;
-    if (!insertItem) return;
-    if (!insertItem.input) return;
-
-    if (event.key === "Enter") {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const value = event.currentTarget.value;
-      const matches = insertItem.input.matcher(value);
-
-      if (!matches) {
-        toast.error(this.props.t("抱歉，该链接不适用于此嵌入类型") as string);
-        return;
-      }
-
-      this.insertBlock({
-        ...insertItem,
-        attrs: {
-          ...this.getAttrs(insertItem.attrs),
-          ...matches
-        }
-      });
-    }
-
-    if (event.key === "Escape") {
-      this.props.onClose();
-      this.props.view.focus();
-    }
-  };
-
-  handleInputPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
-    if (!this.props.isActive) return;
-    if (this.state.mode !== Mode.INPUT) return;
-    const insertItem = this.state.insertItem;
-    if (!insertItem) return;
-    if (!insertItem.input) return;
-
-    const value = event.clipboardData.getData("text/plain");
-    const matches = insertItem.input.matcher(value);
-
-    if (matches) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      this.insertBlock({
-        ...insertItem,
-        attrs: {
-          ...this.getAttrs(insertItem.attrs),
-          ...matches
-        }
-      });
-    }
   };
 
   triggerUpload = (item: MenuItem) => {
@@ -263,8 +222,8 @@ class BlockMenu extends Component<Props, State> {
     }
   };
 
-  triggerInput = (item: MenuItem) => {
-    this.setState({ insertItem: item, mode: Mode.INPUT });
+  triggerComponent = (item: MenuItem) => {
+    this.setState({ insertItem: item, mode: Mode.COMPONENT });
   };
 
   handleUpload = (event: any) => {
@@ -429,7 +388,12 @@ class BlockMenu extends Component<Props, State> {
           name: "embed",
           attrs: {
             component: embed.component
-          }
+          },
+          component: blockMenuInput(embed.matcher, {
+            placeholder: this.props.t("粘贴 {{title}} 链接...", {
+              title: embed.title
+            })
+          })
         });
       }
     }
@@ -476,7 +440,16 @@ class BlockMenu extends Component<Props, State> {
   }
 
   render() {
-    const { t, isActive, upload } = this.props;
+    const {
+      t,
+      i18n,
+      tReady,
+      isActive,
+      upload,
+      view,
+      onUploadStart,
+      onUploadStop
+    } = this.props;
     const items = this.filtered;
     const { insertItem, mode, ...positioning } = this.state;
 
@@ -488,15 +461,20 @@ class BlockMenu extends Component<Props, State> {
           ref={this.menuRef}
           {...positioning}
         >
-          {mode === Mode.INPUT && insertItem && (
-            <InputWrapper>
-              <InputValue
-                {...insertItem.input}
-                onKeyDown={this.handleInputKeydown}
-                onPaste={this.handleInputPaste}
-                autoFocus
-              />
-            </InputWrapper>
+          {mode === Mode.COMPONENT && insertItem && insertItem.component && (
+            <insertItem.component
+              item={insertItem}
+              insertBlock={this.insertBlock}
+              isActive={isActive}
+              close={this.close}
+              view={view}
+              upload={upload}
+              onUploadStart={onUploadStart}
+              onUploadStop={onUploadStop}
+              t={t}
+              i18n={i18n}
+              tReady={tReady}
+            />
           )}
           {mode === Mode.LIST && (
             <List>
@@ -547,16 +525,6 @@ class BlockMenu extends Component<Props, State> {
     );
   }
 }
-
-const InputWrapper = styled.div`
-  margin: 8px;
-`;
-
-const InputValue = styled(Input)`
-  height: 36px;
-  width: 100%;
-  color: ${props => props.theme.blockToolbarText};
-`;
 
 const List = styled.ol`
   list-style: none;

@@ -55,5 +55,6 @@
   "写点有趣的内容...": "Write something nice…",
   "图片描述": "Write a caption",
   "描述": "Details",
-  "Mermaid 图": "Mermaid graph"
+  "Mermaid 图": "Mermaid graph",
+  "粘贴 {{title}} 链接...": "Paste a {{title}} link…"
 }

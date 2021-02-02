@@ -2,7 +2,7 @@ import * as React from "react";
 import debounce from "lodash/debounce";
 import ReactDOM from "react-dom";
 import Editor from "./main";
-import { Attrs } from "./lib/Extension";
+import { ComponentProps } from "./lib/ComponentView";
 
 const element = document.getElementById("root");
 const savedText = localStorage.getItem("saved");
@@ -51,22 +51,12 @@ const docSearchResults = [
   }
 ];
 
-class YoutubeEmbed extends React.Component<{
-  attrs: Attrs;
-  isSelected: boolean;
-}> {
-  render() {
-    const { attrs } = this.props;
-    const videoId = attrs.matches[1];
-
-    return (
-      <iframe
-        className={this.props.isSelected ? "ProseMirror-selectednode" : ""}
-        src={`https://www.youtube.com/embed/${videoId}?modestbranding=1`}
-      />
-    );
-  }
-}
+const YoutubeEmbed: React.FC<ComponentProps> = ({ isSelected, node }) => (
+  <iframe
+    className={isSelected ? "ProseMirror-selectednode" : ""}
+    src={`https://www.youtube.com/embed/${node.attrs.matches[1]}?modestbranding=1`}
+  />
+);
 
 class Example extends React.Component {
   state = {
@@ -236,20 +226,17 @@ class Example extends React.Component {
                   height={24}
                 />
               ),
-              input: {
-                placeholder: "粘贴 Youtube 链接...",
-                matcher: url => {
-                  const match = url.match(
-                    /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
-                  );
-                  if (match) {
-                    return {
-                      href: url,
-                      matches: match
-                    };
-                  }
-                  return null;
+              matcher: url => {
+                const match = url.match(
+                  /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
+                );
+                if (match) {
+                  return {
+                    href: url,
+                    matches: match
+                  };
                 }
+                return null;
               },
               component: YoutubeEmbed
             }
