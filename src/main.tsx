@@ -21,12 +21,11 @@ import styled, { ThemeProvider } from "styled-components";
 import { dark as darkTheme, light as lightTheme } from "./theme";
 import Flex from "./components/Flex";
 import { SearchResult } from "./components/LinkEditor";
-import { EmbedDescriptor } from "./types";
 import SelectionToolbar from "./components/SelectionToolbar";
 import BlockMenu from "./components/BlockMenu";
 import LinkToolbar from "./components/LinkToolbar";
 import Tooltip from "./components/Tooltip";
-import Extension from "./lib/Extension";
+import Extension, { MenuItem, ToolbarItem, ToolbarMode } from "./lib/Extension";
 import ExtensionManager from "./lib/ExtensionManager";
 import ComponentView from "./lib/ComponentView";
 import headingToSlug from "./lib/headingToSlug";
@@ -40,7 +39,7 @@ import Blockquote from "./nodes/Blockquote";
 import BulletList from "./nodes/BulletList";
 import CheckboxList from "./nodes/CheckboxList";
 import CheckboxItem from "./nodes/CheckboxItem";
-import Embed from "./nodes/Embed";
+import Embed, { EmbedDescriptor } from "./nodes/Embed";
 import HardBreak from "./nodes/HardBreak";
 import Heading from "./nodes/Heading";
 import HorizontalRule from "./nodes/HorizontalRule";
@@ -86,7 +85,6 @@ import "./styles/global.less";
 import { Toaster } from "react-hot-toast";
 import { UploadResponse } from "./commands/uploadFiles";
 import { t } from "./i18n";
-import { NodeMenuItem } from "./nodes/Node";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -196,7 +194,12 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   // @ts-ignore
   commands: Record<string, any>;
   // @ts-ignore
-  menuItems: NodeMenuItem[];
+  menuItems: MenuItem[];
+  // @ts-ignore
+  toolbarItems: (ToolbarMode & {
+    name: string;
+    items: ToolbarItem[];
+  })[];
 
   componentDidMount() {
     this.init();
@@ -251,7 +254,38 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     this.nodeViews = this.createNodeViews();
     this.view = this.createView();
     this.commands = this.createCommands();
-    this.menuItems = this.createMenuItems();
+    const menuItems = this.createMenuItems();
+    this.menuItems = "h1 h2 h3 | checkbox_list bullet_list ordered_list"
+      .split(" ")
+      .map(id => {
+        id = id.trim();
+        if (["|", "separator"].includes(id)) {
+          return { name: "separator" };
+        }
+        return menuItems[id];
+      });
+    const toolbarResult = this.createToolbarItemsAndModes();
+    const toolbar = {
+      default: "bold",
+      table: "deleteTable",
+      table_col:
+        "alignLeft alignCenter alignRight | addColumnBefore addColumnAfter | deleteColumn"
+    };
+    this.toolbarItems = Object.entries(toolbar)
+      .map(([mode, items]) => {
+        return {
+          ...toolbarResult.modes[mode],
+          name: mode,
+          items: items.split(" ").map(id => {
+            id = id.trim();
+            if (["|", "separator"].includes(id)) {
+              return { name: "separator" };
+            }
+            return toolbarResult.items[id];
+          })
+        };
+      })
+      .sort((a, b) => a.priority - b.priority);
   }
 
   createExtensions() {
@@ -381,6 +415,10 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     return this.extensions.menuItems({
       schema: this.schema
     });
+  }
+
+  createToolbarItemsAndModes() {
+    return this.extensions.toolbarItems({ schema: this.schema });
   }
 
   createNodes() {
@@ -634,6 +672,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   onClickLink={this.props.onClickLink}
                   onCreateLink={this.props.onCreateLink}
                   tooltip={tooltip}
+                  items={this.toolbarItems}
                 />
                 <LinkToolbar
                   view={this.view}

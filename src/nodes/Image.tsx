@@ -10,8 +10,8 @@ import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
-import { NodeArgs, NodeMenuItem } from "./Node";
-import { Command } from "../lib/Extension";
+import { NodeArgs } from "./Node";
+import { Command, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
@@ -410,9 +410,9 @@ export default class Image extends ReactNode {
     return [uploadPlugin(this.options)];
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      image: {
         name: "image",
         title: t("图片"),
         icon: ImageIcon,
@@ -423,7 +423,7 @@ export default class Image extends ReactNode {
           accept: "image/*"
         }
       }
-    ];
+    };
   }
 }
 

@@ -1,8 +1,7 @@
 import { TrashIcon } from "outline-icons";
-import { MenuItem } from "../types";
 import { t } from "../i18n";
 
-export default function tableMenuItems(): MenuItem[] {
+export default function tableMenuItems(): any[] {
   return [
     {
       name: "deleteTable",

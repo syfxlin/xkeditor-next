@@ -3,11 +3,6 @@ import * as React from "react";
 import { Portal } from "react-portal";
 import { some } from "lodash";
 import { EditorView } from "prosemirror-view";
-import getTableColMenuItems from "../menus/tableCol";
-import getTableRowMenuItems from "../menus/tableRow";
-import getTableMenuItems from "../menus/table";
-import getFormattingMenuItems from "../menus/formatting";
-import getImageMenuItems from "../menus/image";
 import FloatingToolbar from "./FloatingToolbar";
 import LinkEditor, { SearchResult } from "./LinkEditor";
 import Menu from "./Menu";
@@ -17,8 +12,8 @@ import isNodeActive from "../queries/isNodeActive";
 import getColumnIndex from "../queries/getColumnIndex";
 import getRowIndex from "../queries/getRowIndex";
 import createAndInsertLink from "../commands/createAndInsertLink";
-import { MenuItem } from "../types";
 import { NodeSelection } from "prosemirror-state";
+import { ToolbarItem, ToolbarMode } from "../lib/Extension";
 
 type Props = {
   tooltip: typeof React.Component | React.FC<any>;
@@ -28,6 +23,10 @@ type Props = {
   onClickLink: (href: string, event: React.MouseEvent) => void;
   onCreateLink?: (title: string) => Promise<string>;
   view: EditorView;
+  items: (ToolbarMode & {
+    name: string;
+    items: ToolbarItem[];
+  })[];
 };
 
 function isActive(props: Props) {
@@ -117,18 +116,35 @@ export default class SelectionToolbar extends React.Component<Props> {
     const isImageSelection =
       selection.node && selection.node.type.name === "image";
 
-    let items: MenuItem[] = [];
-    if (isTableSelection) {
-      items = getTableMenuItems();
-    } else if (colIndex !== undefined) {
-      items = getTableColMenuItems(state, colIndex);
-    } else if (rowIndex !== undefined) {
-      items = getTableRowMenuItems(state, rowIndex);
-    } else if (isImageSelection) {
-      items = getImageMenuItems(state);
-    } else {
-      items = getFormattingMenuItems(state, isTemplate);
+    let items: ToolbarItem[] = [];
+    let defaultItems: ToolbarItem[] = [];
+    let selected = false;
+    console.log(this.props.items);
+    for (const mode of this.props.items) {
+      if (mode.name === "default") {
+        defaultItems = mode.items;
+        continue;
+      }
+      if (mode.active(view)) {
+        items = mode.items;
+        selected = true;
+        break;
+      }
     }
+    if (!selected) {
+      items = defaultItems;
+    }
+    // if (isTableSelection) {
+    //   items = getTableMenuItems();
+    // } else if (colIndex !== undefined) {
+    //   items = getTableColMenuItems(state, colIndex);
+    // } else if (rowIndex !== undefined) {
+    //   items = getTableRowMenuItems(state, rowIndex);
+    // } else if (isImageSelection) {
+    //   items = getImageMenuItems(state);
+    // } else {
+    //   items = getFormattingMenuItems(state, isTemplate);
+    // }
 
     if (!items.length) {
       return null;
@@ -147,7 +163,7 @@ export default class SelectionToolbar extends React.Component<Props> {
               {...rest}
             />
           ) : (
-            <Menu items={items} {...rest} />
+            <Menu {...rest} items={items} />
           )}
         </FloatingToolbar>
       </Portal>

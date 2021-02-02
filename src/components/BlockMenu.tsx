@@ -5,15 +5,15 @@ import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
 import { findParentNode } from "prosemirror-utils";
 import styled from "styled-components";
-import { EmbedDescriptor, MenuItem } from "../types";
 import BlockMenuItem from "./BlockMenuItem";
 import Input from "./Input";
 import VisuallyHidden from "./VisuallyHidden";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { WithTranslation, withTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { ApplyCommand } from "../lib/Extension";
+import { ApplyCommand, Attrs, MenuItem } from "../lib/Extension";
 import uploadFiles, { UploadResponse } from "../commands/uploadFiles";
+import { EmbedDescriptor } from "../nodes/Embed";
 
 type Props = {
   // 显示状态
@@ -171,6 +171,16 @@ class BlockMenu extends Component<Props, State> {
     this.insertBlock(item);
   };
 
+  getAttrs = (attrs?: Attrs | ((view: EditorView) => Attrs) | undefined) => {
+    if (attrs === undefined) {
+      return {};
+    } else if (typeof attrs === "function") {
+      return attrs(this.props.view);
+    } else {
+      return attrs;
+    }
+  };
+
   close = () => {
     this.props.onClose();
     this.props.view.focus();
@@ -196,9 +206,9 @@ class BlockMenu extends Component<Props, State> {
       }
 
       this.insertBlock({
-        name: insertItem.name,
+        ...insertItem,
         attrs: {
-          ...insertItem.attrs,
+          ...this.getAttrs(insertItem.attrs),
           ...matches
         }
       });
@@ -225,9 +235,9 @@ class BlockMenu extends Component<Props, State> {
       event.stopPropagation();
 
       this.insertBlock({
-        name: insertItem.name,
+        ...insertItem,
         attrs: {
-          ...insertItem.attrs,
+          ...this.getAttrs(insertItem.attrs),
           ...matches
         }
       });
@@ -285,7 +295,7 @@ class BlockMenu extends Component<Props, State> {
         files,
         name: insertItem.name,
         getAttrs: res => ({
-          ...insertItem.attrs,
+          ...this.getAttrs(insertItem.attrs),
           ...insertItem.upload?.getAttrs(res)
         }),
         upload,

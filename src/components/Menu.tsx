@@ -4,17 +4,39 @@ import { withTheme } from "styled-components";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarSeparator from "./ToolbarSeparator";
 import theme from "../theme";
-import { MenuItem } from "../types";
+import { Attrs, ToolbarItem } from "../lib/Extension";
+import capitalize from "lodash/capitalize";
 
 type Props = {
   tooltip: typeof React.Component | React.FC<any>;
   commands: Record<string, any>;
   view: EditorView;
   theme: typeof theme;
-  items: MenuItem[];
+  items: ToolbarItem[];
 };
 
 class Menu extends React.Component<Props> {
+  getAttrs = (attrs?: Attrs | ((view: EditorView) => Attrs) | undefined) => {
+    if (attrs === undefined) {
+      return {};
+    } else if (typeof attrs === "function") {
+      return attrs(this.props.view);
+    } else {
+      return attrs;
+    }
+  };
+
+  handleClick = (item: ToolbarItem) => () => {
+    let command = item.command;
+    if (!command) {
+      command = this.props.commands[item.name as string];
+    }
+    if (!command) {
+      command = this.props.commands[`create${capitalize(item.name)}`];
+    }
+    command?.(this.getAttrs(item.attrs));
+  };
+
   render() {
     const { view, items } = this.props;
     const { state } = view;
@@ -35,12 +57,13 @@ class Menu extends React.Component<Props> {
           return (
             <ToolbarButton
               key={index}
-              onClick={() =>
-                item.name && this.props.commands[item.name](item.attrs)
-              }
+              onClick={this.handleClick(item)}
               active={isActive}
             >
-              <Tooltip tooltip={item.tooltip} placement="top">
+              <Tooltip
+                tooltip={`${item.title}\n${item.shortcut}`}
+                placement="top"
+              >
                 <Icon color={this.props.theme.toolbarItem} />
               </Tooltip>
             </ToolbarButton>

@@ -1,6 +1,6 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
-import Node, { NodeArgs, NodeMenuItem } from "./Node";
+import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import checkboxPlugin from "../lib/markdown/checkboxes";
@@ -8,6 +8,7 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { t } from "../i18n";
 import { TodoListIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
+import { MenuItems } from "../lib/Extension";
 
 export default class CheckboxList extends Node {
   get name() {
@@ -53,15 +54,15 @@ export default class CheckboxList extends Node {
     return checkboxPlugin;
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      checkbox_list: {
         name: this.name,
         title: t("Todo 列表"),
         icon: TodoListIcon,
         keywords: "checklist task todolist",
         shortcut: `${ctrl} ${shift} 7`
       }
-    ];
+    };
   }
 }

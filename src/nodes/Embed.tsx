@@ -4,8 +4,12 @@ import ReactNode from "./ReactNode";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { NodeArgs } from "./Node";
-import { Command } from "../lib/Extension";
+import { Command, MenuItem } from "../lib/Extension";
 import { ComponentProps } from "../lib/ComponentView";
+
+export type EmbedDescriptor = MenuItem & {
+  component: typeof React.Component | React.FC<any>;
+};
 
 export default class Embed extends ReactNode {
   get name() {

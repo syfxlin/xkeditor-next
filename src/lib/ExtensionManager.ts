@@ -3,7 +3,12 @@ import { keymap } from "prosemirror-keymap";
 import { MarkdownParser } from "prosemirror-markdown";
 import { MarkdownSerializer } from "./markdown/serializer";
 import { Editor } from "../main";
-import Extension, { Attrs, Command } from "./Extension";
+import Extension, {
+  Attrs,
+  Command,
+  ToolbarItem,
+  ToolbarMode
+} from "./Extension";
 import makeRules from "./markdown/rules";
 import Node from "../nodes/Node";
 import Mark from "../marks/Mark";
@@ -227,6 +232,35 @@ export default class ExtensionManager {
           schema
         })
       )
-      .reduce((allItems, items) => [...allItems, ...items], []);
+      .reduce((allItems, items) => ({ ...allItems, ...items }), {});
+  }
+
+  toolbarItems({ schema }: { schema: Schema }) {
+    const results = (this.extensions.filter(extension =>
+      ["mark", "node"].includes(extension.type)
+    ) as (Mark | Node)[])
+      .filter(extension => extension.toolbarItems)
+      .map(extension =>
+        extension.toolbarItems({
+          // @ts-ignore
+          type: schema[`${extension.type}s`][extension.name],
+          schema
+        })
+      );
+    return {
+      items: results.reduce<{ [id: string]: ToolbarItem }>(
+        (allItems, result) => ({ ...allItems, ...result.items }),
+        {}
+      ),
+      modes: results
+        .filter(result => result.modes)
+        .reduce<{ [mode: string]: ToolbarMode }>(
+          (allModes, result) => ({
+            ...allModes,
+            ...result.modes
+          }),
+          {}
+        )
+    };
   }
 }

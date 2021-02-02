@@ -1,5 +1,10 @@
 import { toggleMark } from "prosemirror-commands";
-import Extension, { Attrs, Command, Dispatcher } from "../lib/Extension";
+import Extension, {
+  Attrs,
+  Command,
+  Dispatcher,
+  ToolbarResult
+} from "../lib/Extension";
 import {
   Fragment,
   Mark as ProseMirrorMark,
@@ -68,5 +73,12 @@ export default abstract class Mark<
 
   inputRules(options: MarkArgs): InputRule[] {
     return super.inputRules(options);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  toolbarItems(options: MarkArgs): ToolbarResult {
+    return {
+      items: {}
+    };
   }
 }

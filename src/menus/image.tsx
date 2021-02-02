@@ -5,11 +5,10 @@ import {
   TrashIcon
 } from "outline-icons";
 import isNodeActive from "../queries/isNodeActive";
-import { MenuItem } from "../types";
 import { EditorState } from "prosemirror-state";
 import { t } from "../i18n";
 
-export default function imageMenuItems(state: EditorState): MenuItem[] {
+export default function imageMenuItems(state: EditorState): any[] {
   const { schema } = state;
   const isLeftAligned = isNodeActive(schema.nodes.image, {
     layoutClass: "left-50"
@@ -31,7 +30,7 @@ export default function imageMenuItems(state: EditorState): MenuItem[] {
       tooltip: t("居中对齐"),
       icon: AlignImageCenterIcon,
       visible: true,
-      active: state =>
+      active: (state: any) =>
         isNodeActive(schema.nodes.image)(state) &&
         !isLeftAligned(state) &&
         !isRightAligned(state)

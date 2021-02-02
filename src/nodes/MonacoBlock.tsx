@@ -2,7 +2,7 @@ import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import React, { ChangeEvent, useCallback, useEffect, useRef } from "react";
-import { NodeArgs, NodeMenuItem } from "./Node";
+import { NodeArgs } from "./Node";
 import { textblockTypeInputRule } from "prosemirror-inputrules";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { t } from "../i18n";
 import { CodeIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
+import { MenuItems } from "../lib/Extension";
 
 export default class MonacoBlock extends ReactNode {
   get name() {
@@ -266,15 +267,15 @@ export default class MonacoBlock extends ReactNode {
     };
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      code_block: {
         name: this.name,
         title: t("代码块"),
         icon: CodeIcon,
         shortcut: `${ctrl} ${shift}\\`,
         keywords: "code monaco script"
       }
-    ];
+    };
   }
 }

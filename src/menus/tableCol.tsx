@@ -8,13 +8,12 @@ import {
 } from "outline-icons";
 import { EditorState } from "prosemirror-state";
 import isNodeActive from "../queries/isNodeActive";
-import { MenuItem } from "../types";
 import { t } from "../i18n";
 
 export default function tableColMenuItems(
   state: EditorState,
   index: number
-): MenuItem[] {
+): any[] {
   const { schema } = state;
 
   return [

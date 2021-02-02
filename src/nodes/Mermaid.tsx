@@ -1,7 +1,7 @@
-import { NodeArgs, NodeMenuItem } from "./Node";
+import { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { mergeSpec, nodeKeys } from "../utils/editor";
-import { Command, Dispatcher } from "../lib/Extension";
+import { Command, Dispatcher, MenuItems } from "../lib/Extension";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
@@ -119,14 +119,14 @@ export default class Mermaid extends ReactNode {
     };
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      mermaid: {
         name: this.name,
         title: t("Mermaid 图"),
         icon: HomeIcon,
         keywords: "mermaid graph"
       }
-    ];
+    };
   }
 }

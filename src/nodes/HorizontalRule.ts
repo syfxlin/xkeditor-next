@@ -1,7 +1,7 @@
 import { InputRule } from "prosemirror-inputrules";
-import Node, { NodeArgs, NodeMenuItem } from "./Node";
+import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { Command, Dispatcher } from "../lib/Extension";
+import { Command, Dispatcher, MenuItems } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { HorizontalRuleIcon } from "outline-icons";
 import { mod } from "../menus/block";
@@ -63,15 +63,15 @@ export default class HorizontalRule extends Node {
     return { node: this.name };
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      hr: {
         name: this.name,
         title: t("分割线"),
         icon: HorizontalRuleIcon,
         shortcut: `${mod} _`,
         keywords: "horizontal rule break line"
       }
-    ];
+    };
   }
 }

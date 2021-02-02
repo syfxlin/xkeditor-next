@@ -5,9 +5,9 @@ import { PluginSimple } from "markdown-it";
 import ReactNode from "./ReactNode";
 import React, { useCallback } from "react";
 import { ComponentProps } from "../lib/ComponentView";
-import { NodeArgs, NodeMenuItem } from "./Node";
+import { NodeArgs } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { Command } from "../lib/Extension";
+import { Command, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
@@ -118,14 +118,14 @@ export default class Details extends ReactNode {
     };
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      details: {
         name: this.name,
         title: t("描述"),
         icon: HomeIcon,
         keywords: "details summary"
       }
-    ];
+    };
   }
 }

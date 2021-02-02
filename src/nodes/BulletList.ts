@@ -1,11 +1,12 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
-import Node, { NodeArgs, NodeMenuItem } from "./Node";
+import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { BulletedListIcon } from "outline-icons";
 import { t } from "../i18n";
 import { ctrl, shift } from "../menus/block";
+import { MenuItems } from "../lib/Extension";
 
 export default class BulletList extends Node {
   get name() {
@@ -43,15 +44,15 @@ export default class BulletList extends Node {
     return { block: this.name };
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      bullet_list: {
         name: this.name,
         title: t("无序列表"),
         icon: BulletedListIcon,
         shortcut: `${ctrl} ${shift} 8`,
         keywords: "bulletlist list"
       }
-    ];
+    };
   }
 }

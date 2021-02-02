@@ -1,4 +1,4 @@
-import Node, { NodeArgs, NodeMenuItem } from "./Node";
+import Node, { NodeArgs } from "./Node";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import {
   addColumnAfter,
@@ -22,13 +22,30 @@ import {
   moveRow
 } from "prosemirror-utils";
 import { Plugin, TextSelection } from "prosemirror-state";
-import { Command, Dispatcher } from "../lib/Extension";
+import {
+  Command,
+  Dispatcher,
+  MenuItems,
+  ToolbarResult
+} from "../lib/Extension";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { TableIcon } from "outline-icons";
+import {
+  AlignCenterIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+  InsertLeftIcon,
+  InsertRightIcon,
+  TableIcon,
+  TrashIcon
+} from "outline-icons";
 import { t } from "../i18n";
+import { MarkArgs } from "../marks/Mark";
+import getColumnIndex from "../queries/getColumnIndex";
+import getRowIndex from "../queries/getRowIndex";
+import isNodeActive from "../queries/isNodeActive";
 
 export default class Table extends Node {
   get name() {
@@ -174,15 +191,116 @@ export default class Table extends Node {
     ];
   }
 
-  menuItems(): NodeMenuItem[] {
-    return [
-      {
+  menuItems(): MenuItems {
+    return {
+      table: {
         name: this.name,
         title: t("表格"),
         icon: TableIcon,
         keywords: "table",
         attrs: { rowsCount: 3, colsCount: 3 }
       }
-    ];
+    };
+  }
+
+  toolbarItems({ schema }: MarkArgs): ToolbarResult {
+    return {
+      items: {
+        deleteTable: {
+          name: "deleteTable",
+          title: t("删除表格"),
+          icon: TrashIcon,
+          active: () => false
+        },
+        alignLeft: {
+          name: "setColumnAttr",
+          title: t("左对齐"),
+          icon: AlignLeftIcon,
+          attrs: view => {
+            return {
+              index: getColumnIndex(view.state.selection),
+              alignment: "left"
+            };
+          },
+          active: isNodeActive(schema.nodes.th, {
+            colspan: 1,
+            rowspan: 1,
+            alignment: "left"
+          })
+        },
+        alignCenter: {
+          name: "setColumnAttr",
+          title: t("居中对齐"),
+          icon: AlignCenterIcon,
+          attrs: view => {
+            return {
+              index: getColumnIndex(view.state.selection),
+              alignment: "center"
+            };
+          },
+          active: isNodeActive(schema.nodes.th, {
+            colspan: 1,
+            rowspan: 1,
+            alignment: "center"
+          })
+        },
+        alignRight: {
+          name: "setColumnAttr",
+          title: t("右对齐"),
+          icon: AlignRightIcon,
+          attrs: view => {
+            return {
+              index: getColumnIndex(view.state.selection),
+              alignment: "right"
+            };
+          },
+          active: isNodeActive(schema.nodes.th, {
+            colspan: 1,
+            rowspan: 1,
+            alignment: "right"
+          })
+        },
+        addColumnBefore: {
+          name: "addColumnBefore",
+          title: t("在左边插入列"),
+          icon: InsertLeftIcon,
+          active: () => false
+        },
+        addColumnAfter: {
+          name: "addColumnAfter",
+          title: t("在右边插入列"),
+          icon: InsertRightIcon,
+          active: () => false
+        },
+        deleteColumn: {
+          name: "deleteColumn",
+          title: t("删除列"),
+          icon: TrashIcon,
+          active: () => false
+        }
+      },
+      modes: {
+        table: {
+          priority: 0,
+          active: view => {
+            const colIndex = getColumnIndex(view.state.selection);
+            const rowIndex = getRowIndex(view.state.selection);
+            return colIndex !== undefined && rowIndex !== undefined;
+          }
+        },
+        table_col: {
+          priority: 1,
+          active: view => {
+            return getColumnIndex(view.state.selection) !== undefined;
+          }
+        },
+        table_row: {
+          priority: 2,
+          active: view => {
+            return getRowIndex(view.state.selection) !== undefined;
+          }
+        }
+      }
+    };
   }
 }

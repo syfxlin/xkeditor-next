@@ -15,13 +15,12 @@ import { EditorState } from "prosemirror-state";
 import isInList from "../queries/isInList";
 import isMarkActive from "../queries/isMarkActive";
 import isNodeActive from "../queries/isNodeActive";
-import { MenuItem } from "../types";
 import { t } from "../i18n";
 
 export default function formattingMenuItems(
   state: EditorState,
   isTemplate: boolean
-): MenuItem[] {
+): any[] {
   const { schema } = state;
   const isTable = isInTable(state);
   const isList = isInList(state);
