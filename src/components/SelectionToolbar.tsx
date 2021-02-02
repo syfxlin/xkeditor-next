@@ -119,7 +119,6 @@ export default class SelectionToolbar extends React.Component<Props> {
     let items: ToolbarItem[] = [];
     let defaultItems: ToolbarItem[] = [];
     let selected = false;
-    console.log(this.props.items);
     for (const mode of this.props.items) {
       if (mode.name === "default") {
         defaultItems = mode.items;

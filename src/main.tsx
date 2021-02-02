@@ -85,6 +85,7 @@ import "./styles/global.less";
 import { Toaster } from "react-hot-toast";
 import { UploadResponse } from "./commands/uploadFiles";
 import { t } from "./i18n";
+import Emoji from "./nodes/Emoji";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -359,6 +360,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new Katex(),
         new KatexInline(),
         new Mermaid(),
+        new Emoji(),
         //
         ...this.props.extensions
       ],
