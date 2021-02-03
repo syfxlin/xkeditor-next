@@ -41,10 +41,8 @@ type Props = {
   onClickLink: (href: string, event: React.MouseEvent) => void;
   onCreateLink?: (title: string) => Promise<string>;
   view: EditorView;
-  items: (ToolbarMode & {
-    name: string;
-    items: ToolbarItem[];
-  })[];
+  items: ToolbarItem[];
+  modes: ToolbarMode[];
 } & WithTranslation;
 
 function isActive(props: Props) {
@@ -134,25 +132,23 @@ class SelectionToolbar extends React.Component<Props> {
     const isImageSelection =
       selection.node && selection.node.type.name === "image";
 
-    let items: ToolbarItem[] = [];
-    let defaultItems: ToolbarItem[] = [];
-    let selected = false;
-    for (const mode of this.props.items) {
-      if (mode.name === "default") {
-        defaultItems = mode.items;
-        continue;
-      }
+    let items: ToolbarItem[] = this.props.items;
+    let component:
+      | React.FC<ToolbarComponentProps>
+      | typeof React.Component
+      | null = null;
+    for (const mode of this.props.modes) {
       if (mode.active(view)) {
-        items = mode.items;
-        selected = true;
+        if (mode.items) {
+          items = mode.items;
+        } else if (mode.component) {
+          component = mode.component;
+        }
         break;
       }
     }
-    if (!selected) {
-      items = defaultItems;
-    }
 
-    if (!items.length) {
+    if (items.length === 0 && component === null) {
       return null;
     }
 

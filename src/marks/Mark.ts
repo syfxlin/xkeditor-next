@@ -4,7 +4,7 @@ import Extension, {
   Command,
   Dispatcher,
   MenuItems,
-  ToolbarResult
+  ToolbarItems
 } from "../lib/Extension";
 import {
   Fragment,
@@ -83,7 +83,7 @@ export default abstract class Mark<
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  toolbarItems(options: MarkArgs): ToolbarResult {
+  toolbarItems(options: MarkArgs): ToolbarItems {
     return {};
   }
 }

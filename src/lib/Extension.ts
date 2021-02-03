@@ -47,8 +47,22 @@ export type MenuItem = {
   };
 };
 
+export type ToolbarItems = {
+  default?: { [group: number]: ToolbarItem[] };
+  modes?: ToolbarMode[];
+};
+
+export type ToolbarMode = {
+  name: string;
+  priority: number;
+  active: (view: EditorView) => boolean;
+  items?: ToolbarItem[];
+  component?: React.FC<ToolbarComponentProps> | typeof React.Component;
+};
+
 export type ToolbarItem = {
   name: string;
+  priority?: number;
   command?: ApplyCommand;
   title?: string;
   icon?: typeof React.Component | React.FC<any>;
@@ -56,17 +70,6 @@ export type ToolbarItem = {
   attrs?: Attrs | ((view: EditorView) => Attrs);
   visible?: boolean;
   active?: (state: EditorState) => boolean;
-  component?: React.FC<ToolbarComponentProps> | typeof React.Component;
-};
-
-export type ToolbarMode = {
-  priority: number;
-  active: (view: EditorView) => boolean;
-};
-
-export type ToolbarResult = {
-  items?: { [id: string]: ToolbarItem };
-  modes?: { [mode: string]: ToolbarMode };
 };
 
 export type ExtensionArgs = {

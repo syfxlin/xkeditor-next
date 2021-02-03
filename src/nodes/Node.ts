@@ -10,7 +10,7 @@ import Extension, {
   Command,
   Dispatcher,
   MenuItems,
-  ToolbarResult
+  ToolbarItems
 } from "../lib/Extension";
 import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple, PluginWithOptions, PluginWithParams } from "markdown-it";
@@ -71,7 +71,7 @@ export default abstract class Node<
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  toolbarItems(options: MarkArgs): ToolbarResult {
+  toolbarItems(options: MarkArgs): ToolbarItems {
     return {};
   }
 }

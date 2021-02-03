@@ -257,19 +257,27 @@ export default class ExtensionManager {
         })
       );
     return {
-      items: results.reduce<{ [id: string]: ToolbarItem }>(
-        (allItems, result) => ({ ...allItems, ...result.items }),
-        {}
-      ),
+      default: results
+        .map(items => items.default)
+        .reduce<{ [group: number]: ToolbarItem[] }>((allItems, items) => {
+          if (items) {
+            for (const group in items) {
+              if (allItems[group] !== undefined) {
+                allItems[group] = [...allItems[group], ...items[group]];
+              } else {
+                allItems[group] = [...items[group]];
+              }
+            }
+          }
+          return allItems;
+        }, {}),
       modes: results
-        .filter(result => result.modes)
-        .reduce<{ [mode: string]: ToolbarMode }>(
-          (allModes, result) => ({
-            ...allModes,
-            ...result.modes
-          }),
-          {}
+        .map(items => items.modes)
+        .reduce<ToolbarMode[]>(
+          (allModes, modes) => [...(allModes || []), ...(modes || [])],
+          []
         )
+        .sort((a, b) => a.priority - b.priority)
     };
   }
 }

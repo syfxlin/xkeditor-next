@@ -22,12 +22,7 @@ import {
   moveRow
 } from "prosemirror-utils";
 import { Plugin, TextSelection } from "prosemirror-state";
-import {
-  Command,
-  Dispatcher,
-  MenuItems,
-  ToolbarResult
-} from "../lib/Extension";
+import { Command, Dispatcher, MenuItems, ToolbarItems } from "../lib/Extension";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
@@ -205,104 +200,109 @@ export default class Table extends Node {
     };
   }
 
-  toolbarItems({ schema }: MarkArgs): ToolbarResult {
+  toolbarItems({ schema }: MarkArgs): ToolbarItems {
     return {
-      items: {
-        deleteTable: {
-          name: "deleteTable",
-          title: t("删除表格"),
-          icon: TrashIcon,
-          active: () => false
-        },
-        alignLeft: {
-          name: "setColumnAttr",
-          title: t("左对齐"),
-          icon: AlignLeftIcon,
-          attrs: view => {
-            return {
-              index: getColumnIndex(view.state.selection),
-              alignment: "left"
-            };
-          },
-          active: isNodeActive(schema.nodes.th, {
-            colspan: 1,
-            rowspan: 1,
-            alignment: "left"
-          })
-        },
-        alignCenter: {
-          name: "setColumnAttr",
-          title: t("居中对齐"),
-          icon: AlignCenterIcon,
-          attrs: view => {
-            return {
-              index: getColumnIndex(view.state.selection),
-              alignment: "center"
-            };
-          },
-          active: isNodeActive(schema.nodes.th, {
-            colspan: 1,
-            rowspan: 1,
-            alignment: "center"
-          })
-        },
-        alignRight: {
-          name: "setColumnAttr",
-          title: t("右对齐"),
-          icon: AlignRightIcon,
-          attrs: view => {
-            return {
-              index: getColumnIndex(view.state.selection),
-              alignment: "right"
-            };
-          },
-          active: isNodeActive(schema.nodes.th, {
-            colspan: 1,
-            rowspan: 1,
-            alignment: "right"
-          })
-        },
-        addColumnBefore: {
-          name: "addColumnBefore",
-          title: t("在左边插入列"),
-          icon: InsertLeftIcon,
-          active: () => false
-        },
-        addColumnAfter: {
-          name: "addColumnAfter",
-          title: t("在右边插入列"),
-          icon: InsertRightIcon,
-          active: () => false
-        },
-        deleteColumn: {
-          name: "deleteColumn",
-          title: t("删除列"),
-          icon: TrashIcon,
-          active: () => false
-        }
-      },
-      modes: {
-        table: {
+      modes: [
+        {
+          name: "table",
           priority: 0,
           active: view => {
             const colIndex = getColumnIndex(view.state.selection);
             const rowIndex = getRowIndex(view.state.selection);
             return colIndex !== undefined && rowIndex !== undefined;
-          }
+          },
+          items: [
+            {
+              name: "deleteTable",
+              title: t("删除表格"),
+              icon: TrashIcon,
+              active: () => false
+            }
+          ]
         },
-        table_col: {
+        {
+          name: "tableCol",
           priority: 1,
           active: view => {
             return getColumnIndex(view.state.selection) !== undefined;
-          }
+          },
+          items: [
+            {
+              name: "setColumnAttr",
+              title: t("左对齐"),
+              icon: AlignLeftIcon,
+              attrs: view => {
+                return {
+                  index: getColumnIndex(view.state.selection),
+                  alignment: "left"
+                };
+              },
+              active: isNodeActive(schema.nodes.th, {
+                colspan: 1,
+                rowspan: 1,
+                alignment: "left"
+              })
+            },
+            {
+              name: "setColumnAttr",
+              title: t("居中对齐"),
+              icon: AlignCenterIcon,
+              attrs: view => {
+                return {
+                  index: getColumnIndex(view.state.selection),
+                  alignment: "center"
+                };
+              },
+              active: isNodeActive(schema.nodes.th, {
+                colspan: 1,
+                rowspan: 1,
+                alignment: "center"
+              })
+            },
+            {
+              name: "setColumnAttr",
+              title: t("右对齐"),
+              icon: AlignRightIcon,
+              attrs: view => {
+                return {
+                  index: getColumnIndex(view.state.selection),
+                  alignment: "right"
+                };
+              },
+              active: isNodeActive(schema.nodes.th, {
+                colspan: 1,
+                rowspan: 1,
+                alignment: "right"
+              })
+            },
+            {
+              name: "addColumnBefore",
+              title: t("在左边插入列"),
+              icon: InsertLeftIcon,
+              active: () => false
+            },
+            {
+              name: "addColumnAfter",
+              title: t("在右边插入列"),
+              icon: InsertRightIcon,
+              active: () => false
+            },
+            {
+              name: "deleteColumn",
+              title: t("删除列"),
+              icon: TrashIcon,
+              active: () => false
+            }
+          ]
         },
-        table_row: {
+        {
+          name: "tableRow",
           priority: 2,
           active: view => {
             return getRowIndex(view.state.selection) !== undefined;
           }
         }
-      }
+      ]
     };
   }
 }

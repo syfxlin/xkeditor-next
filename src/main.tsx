@@ -194,10 +194,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   // @ts-ignore
   menuItems: MenuItem[];
   // @ts-ignore
-  toolbarItems: (ToolbarMode & {
-    name: string;
-    items: ToolbarItem[];
-  })[];
+  toolbarItems: ToolbarItem[];
+  // @ts-ignore
+  toolbarModes: ToolbarMode[];
 
   componentDidMount() {
     this.init();
@@ -253,28 +252,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     this.view = this.createView();
     this.commands = this.createCommands();
     this.menuItems = this.createMenuItems();
-    const toolbarResult = this.createToolbarItemsAndModes();
-    const toolbar = {
-      default: "bold",
-      table: "deleteTable",
-      table_col:
-        "alignLeft alignCenter alignRight | addColumnBefore addColumnAfter | deleteColumn"
-    };
-    this.toolbarItems = Object.entries(toolbar)
-      .map(([mode, items]) => {
-        return {
-          ...toolbarResult.modes[mode],
-          name: mode,
-          items: items.split(" ").map(id => {
-            id = id.trim();
-            if (["|", "separator"].includes(id)) {
-              return { name: "separator" };
-            }
-            return toolbarResult.items[id];
-          })
-        };
-      })
-      .sort((a, b) => a.priority - b.priority);
+    const itemsAndModes = this.createToolbarItemsAndModes();
+    this.toolbarItems = itemsAndModes.items;
+    this.toolbarModes = itemsAndModes.modes;
   }
 
   createExtensions() {
@@ -418,7 +398,21 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   }
 
   createToolbarItemsAndModes() {
-    return this.extensions.toolbarItems({ schema: this.schema });
+    const toolbarItems = this.extensions.toolbarItems({ schema: this.schema });
+    const items: ToolbarItem[] = [];
+    for (const key in toolbarItems.default) {
+      items.push(
+        ...toolbarItems.default[key].sort(
+          (a, b) => (a.priority || 0) - (b.priority || 0)
+        )
+      );
+      items.push({ name: "separator" });
+    }
+    items.pop();
+    return {
+      items,
+      modes: toolbarItems.modes
+    };
   }
 
   createNodes() {
@@ -665,6 +659,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   onCreateLink={this.props.onCreateLink}
                   tooltip={tooltip}
                   items={this.toolbarItems}
+                  modes={this.toolbarModes}
                 />
                 <BlockMenu
                   view={this.view}
