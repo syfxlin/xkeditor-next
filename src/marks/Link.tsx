@@ -1,14 +1,13 @@
+import React from "react";
 import { toggleMark } from "prosemirror-commands";
 import { Plugin } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
 import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
 import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
-import { Attrs, Dispatcher, MenuItems } from "../lib/Extension";
+import { Attrs, Dispatcher, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
-import { mod } from "../menus/block";
-import { t } from "../i18n";
-// @ts-ignore
-import { LinkIcon } from "outline-icons";
+import isMarkActive from "../queries/isMarkActive";
+import LinkEditor from "../components/LinkEditor";
 
 const LINK_INPUT_REGEX = /\[(.+)]\((\S+)\)/;
 
@@ -193,15 +192,27 @@ export default class Link extends Mark {
     };
   }
 
-  menuItems(): MenuItems {
+  toolbarItems({ type }: MarkArgs): ToolbarItems {
     return {
-      3: [
+      modes: [
         {
-          name: this.name,
-          title: t("链接"),
-          icon: LinkIcon,
-          shortcut: `${mod} k`,
-          keywords: "link url uri href"
+          name: "link_editor",
+          priority: 3,
+          active: view => isMarkActive(type)(view.state),
+          component: ({ range, view, onClickLink }) => {
+            if (!range) {
+              return null;
+            }
+            return (
+              <LinkEditor
+                mark={range.mark}
+                from={range.from}
+                to={range.to}
+                view={view}
+                onClickLink={onClickLink}
+              />
+            );
+          }
         }
       ]
     };

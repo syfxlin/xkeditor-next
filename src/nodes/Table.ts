@@ -31,6 +31,8 @@ import {
   AlignCenterIcon,
   AlignLeftIcon,
   AlignRightIcon,
+  InsertAboveIcon,
+  InsertBelowIcon,
   InsertLeftIcon,
   InsertRightIcon,
   TableIcon,
@@ -276,6 +278,9 @@ export default class Table extends Node {
               })
             },
             {
+              name: "separator"
+            },
+            {
               name: "addColumnBefore",
               title: t("在左边插入列"),
               icon: InsertLeftIcon,
@@ -286,6 +291,9 @@ export default class Table extends Node {
               title: t("在右边插入列"),
               icon: InsertRightIcon,
               active: () => false
+            },
+            {
+              name: "separator"
             },
             {
               name: "deleteColumn",
@@ -300,7 +308,32 @@ export default class Table extends Node {
           priority: 2,
           active: view => {
             return getRowIndex(view.state.selection) !== undefined;
-          }
+          },
+          items: [
+            {
+              name: "addRowAfter",
+              title: t("在上方插入行"),
+              icon: InsertAboveIcon,
+              attrs: view => ({ index: getRowIndex(view.state.selection) - 1 }),
+              active: () => false
+            },
+            {
+              name: "addRowAfter",
+              title: t("在下方插入行"),
+              icon: InsertBelowIcon,
+              attrs: view => ({ index: getRowIndex(view.state.selection) }),
+              active: () => false
+            },
+            {
+              name: "separator"
+            },
+            {
+              name: "deleteRow",
+              title: t("删除行"),
+              icon: TrashIcon,
+              active: () => false
+            }
+          ]
         }
       ]
     };

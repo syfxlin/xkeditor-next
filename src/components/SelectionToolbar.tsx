@@ -1,36 +1,33 @@
-import assert from "assert";
 import * as React from "react";
+import { Component, MouseEvent } from "react";
 import { Portal } from "react-portal";
 import { some } from "lodash";
 import { EditorView } from "prosemirror-view";
 import FloatingToolbar from "./FloatingToolbar";
-import LinkEditor, { SearchResult } from "./LinkEditor";
+import { SearchResult } from "./LinkEditor";
 import Menu from "./Menu";
 import isMarkActive from "../queries/isMarkActive";
 import getMarkRange from "../queries/getMarkRange";
 import isNodeActive from "../queries/isNodeActive";
 import getColumnIndex from "../queries/getColumnIndex";
 import getRowIndex from "../queries/getRowIndex";
-import createAndInsertLink from "../commands/createAndInsertLink";
 import { NodeSelection } from "prosemirror-state";
 import { ToolbarItem, ToolbarMode } from "../lib/Extension";
 import { WithTranslation, withTranslation } from "react-i18next";
-import { UploadResponse } from "../commands/uploadFiles";
 import { Mark } from "prosemirror-model";
 
 export type ToolbarComponentProps = {
-  range: {
-    mark: Mark;
-    from: number;
-    to: number;
-  };
-  item: ToolbarItem;
-  insertBlock: (item: ToolbarItem) => void;
-
+  range:
+    | {
+        mark: Mark;
+        from: number;
+        to: number;
+      }
+    | false;
   view: EditorView;
-  upload?: (files: File[]) => Promise<UploadResponse>;
-  onUploadStart?: () => void;
-  onUploadStop?: () => void;
+
+  // TODO: update
+  onClickLink: (href: string, event: MouseEvent) => void;
 } & WithTranslation;
 
 type Props = {
@@ -65,53 +62,6 @@ function isActive(props: Props) {
 }
 
 class SelectionToolbar extends React.Component<Props> {
-  handleOnCreateLink = async (title: string) => {
-    const { onCreateLink, view } = this.props;
-
-    if (!onCreateLink) {
-      return;
-    }
-
-    const { dispatch, state } = view;
-    const { from, to } = state.selection;
-    assert(from !== to);
-
-    const href = `creating#${title}…`;
-    const markType = state.schema.marks.link;
-
-    // Insert a placeholder link
-    dispatch(
-      view.state.tr
-        .removeMark(from, to, markType)
-        .addMark(from, to, markType.create({ href }))
-    );
-
-    createAndInsertLink(view, title, href, {
-      onCreateLink
-    });
-  };
-
-  handleOnSelectLink = ({
-    href,
-    from,
-    to
-  }: {
-    href: string;
-    from: number;
-    to: number;
-  }): void => {
-    const { view } = this.props;
-    const { state, dispatch } = view;
-
-    const markType = state.schema.marks.link;
-
-    dispatch(
-      state.tr
-        .removeMark(from, to, markType)
-        .addMark(from, to, markType.create({ href }))
-    );
-  };
-
   render() {
     const { onCreateLink, isTemplate, ...rest } = this.props;
     const { view } = rest;
@@ -133,7 +83,7 @@ class SelectionToolbar extends React.Component<Props> {
       selection.node && selection.node.type.name === "image";
 
     let items: ToolbarItem[] = this.props.items;
-    let component:
+    let Component:
       | React.FC<ToolbarComponentProps>
       | typeof React.Component
       | null = null;
@@ -142,28 +92,21 @@ class SelectionToolbar extends React.Component<Props> {
         if (mode.items) {
           items = mode.items;
         } else if (mode.component) {
-          component = mode.component;
+          Component = mode.component;
         }
         break;
       }
     }
 
-    if (items.length === 0 && component === null) {
+    if (items.length === 0 && Component === null) {
       return null;
     }
 
     return (
       <Portal>
         <FloatingToolbar view={view} active={isActive(this.props)}>
-          {link && range ? (
-            <LinkEditor
-              mark={range.mark}
-              from={range.from}
-              to={range.to}
-              onCreateLink={onCreateLink ? this.handleOnCreateLink : undefined}
-              onSelectLink={this.handleOnSelectLink}
-              {...rest}
-            />
+          {Component ? (
+            <Component {...rest} range={range} />
           ) : (
             <Menu {...rest} items={items} />
           )}

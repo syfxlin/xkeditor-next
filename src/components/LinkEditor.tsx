@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component, FC, MouseEvent } from "react";
+import React, { ChangeEvent, Component, MouseEvent } from "react";
 import { setTextSelection } from "prosemirror-utils";
 import { EditorView } from "prosemirror-view";
 import { Mark } from "prosemirror-model";
@@ -17,6 +17,7 @@ import Input from "./Input";
 import ToolbarButton from "./ToolbarButton";
 import LinkSearchResult from "./LinkSearchResult";
 import { WithTranslation, withTranslation } from "react-i18next";
+import Tooltip from "./Tooltip";
 
 export type SearchResult = {
   title: string;
@@ -28,17 +29,9 @@ type Props = {
   mark?: Mark;
   from: number;
   to: number;
-  tooltip: typeof Component | FC<any>;
-  onRemoveLink?: () => void;
-  onCreateLink?: (title: string) => Promise<void>;
-  onSearchLink?: (term: string) => Promise<SearchResult[]>;
-  onSelectLink: (options: {
-    href: string;
-    title?: string;
-    from: number;
-    to: number;
-  }) => void;
   onClickLink: (href: string, event: MouseEvent) => void;
+  onRemoveLink?: () => void;
+  onSearchLink?: (term: string) => Promise<SearchResult[]>;
   view: EditorView;
   theme: typeof theme;
 } & WithTranslation;
@@ -99,6 +92,45 @@ class LinkEditor extends Component<Props, State> {
     this.save(href, href);
   };
 
+  handleOnCreateLink = async (title: string) => {
+    const { view } = this.props;
+
+    const { dispatch, state } = view;
+    const { from, to } = state.selection;
+
+    const href = `creating#${title}…`;
+    const markType = state.schema.marks.link;
+
+    // Insert a placeholder link
+    dispatch(
+      view.state.tr
+        .removeMark(from, to, markType)
+        .addMark(from, to, markType.create({ href }))
+    );
+  };
+
+  handleOnSelectLink = ({
+    href,
+    from,
+    to
+  }: {
+    href: string;
+    from: number;
+    to: number;
+    title?: string;
+  }): void => {
+    const { view } = this.props;
+    const { state, dispatch } = view;
+
+    const markType = state.schema.marks.link;
+
+    dispatch(
+      state.tr
+        .removeMark(from, to, markType)
+        .addMark(from, to, markType.create({ href }))
+    );
+  };
+
   save = (href: string, title?: string): void => {
     href = href.trim();
 
@@ -113,7 +145,7 @@ class LinkEditor extends Component<Props, State> {
       href = `https://${href}`;
     }
 
-    this.props.onSelectLink({ href, title, from, to });
+    this.handleOnSelectLink({ href, title, from, to });
   };
 
   handleKeyDown = (event: React.KeyboardEvent): void => {
@@ -122,13 +154,12 @@ class LinkEditor extends Component<Props, State> {
         event.preventDefault();
         const { selectedIndex, value } = this.state;
         const results = this.state.results[value] || [];
-        const { onCreateLink } = this.props;
 
         if (selectedIndex >= 0) {
           const result = results[selectedIndex];
           if (result) {
             this.save(result.url, result.title);
-          } else if (onCreateLink && selectedIndex === results.length) {
+          } else if (selectedIndex === results.length) {
             this.handleCreateLink(this.suggestedLinkTitle);
           }
         } else {
@@ -222,12 +253,11 @@ class LinkEditor extends Component<Props, State> {
 
   handleCreateLink = (value: string) => {
     this.discardInputValue = true;
-    const { onCreateLink } = this.props;
 
     value = value.trim();
     if (value.length === 0) return;
 
-    if (onCreateLink) return onCreateLink(value);
+    return this.handleOnCreateLink(value);
   };
 
   handleRemoveLink = (): void => {
@@ -271,13 +301,11 @@ class LinkEditor extends Component<Props, State> {
       this.state.results[this.state.previousValue] ||
       [];
 
-    const Tooltip = this.props.tooltip;
     const looksLikeUrl = value.match(/^https?:\/\//i);
 
     const suggestedLinkTitle = this.suggestedLinkTitle;
 
     const showCreateLink =
-      !!this.props.onCreateLink &&
       !(suggestedLinkTitle === this.initialValue) &&
       suggestedLinkTitle.length > 0 &&
       !looksLikeUrl;
@@ -298,12 +326,12 @@ class LinkEditor extends Component<Props, State> {
         />
 
         <ToolbarButton onClick={this.handleOpenLink} disabled={!value}>
-          <Tooltip tooltip={t("打开链接")} placement="top">
+          <Tooltip tooltip={t("打开链接")}>
             <OpenIcon color={theme.toolbarItem} />
           </Tooltip>
         </ToolbarButton>
         <ToolbarButton onClick={this.handleRemoveLink}>
-          <Tooltip tooltip={t("删除链接")} placement="top">
+          <Tooltip tooltip={t("删除链接")}>
             {this.initialValue ? (
               <TrashIcon color={theme.toolbarItem} />
             ) : (
