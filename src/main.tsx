@@ -256,7 +256,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     this.view = this.createView();
     this.commands = this.createCommands();
     const menuItems = this.createMenuItems();
-    this.menuItems = "h1 h2 h3 | checkbox_list bullet_list ordered_list"
+    this.menuItems = "h1 h2 h3 | checkbox_list bullet_list ordered_list | link"
       .split(" ")
       .map(id => {
         id = id.trim();

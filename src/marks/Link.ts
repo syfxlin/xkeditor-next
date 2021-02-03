@@ -3,8 +3,13 @@ import { Plugin } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
 import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
 import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
-import { Attrs, Dispatcher } from "../lib/Extension";
+import { Attrs, Dispatcher, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
+import { NodeArgs } from "../nodes/Node";
+import { mod } from "../menus/block";
+import { t } from "../i18n";
+// @ts-ignore
+import { LinkIcon } from "outline-icons";
 
 const LINK_INPUT_REGEX = /\[(.+)]\((\S+)\)/;
 
@@ -185,6 +190,18 @@ export default class Link extends Mark {
         href: tok.attrGet("href"),
         title: tok.attrGet("title") || null
       })
+    };
+  }
+
+  menuItems(options: NodeArgs): MenuItems {
+    return {
+      link: {
+        name: this.name,
+        title: t("链接"),
+        icon: LinkIcon,
+        shortcut: `${mod} k`,
+        keywords: "link url uri href"
+      }
     };
   }
 }

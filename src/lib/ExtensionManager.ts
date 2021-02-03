@@ -222,8 +222,8 @@ export default class ExtensionManager {
 
   menuItems({ schema }: { schema: Schema }) {
     return (this.extensions.filter(extension =>
-      ["node"].includes(extension.type)
-    ) as Node[])
+      ["mark", "node"].includes(extension.type)
+    ) as (Node | Mark)[])
       .filter(extension => extension.menuItems)
       .map(extension =>
         extension.menuItems({

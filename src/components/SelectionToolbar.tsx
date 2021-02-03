@@ -14,6 +14,7 @@ import getRowIndex from "../queries/getRowIndex";
 import createAndInsertLink from "../commands/createAndInsertLink";
 import { NodeSelection } from "prosemirror-state";
 import { ToolbarItem, ToolbarMode } from "../lib/Extension";
+import { WithTranslation, withTranslation } from "react-i18next";
 
 type Props = {
   tooltip: typeof React.Component | React.FC<any>;
@@ -27,7 +28,7 @@ type Props = {
     name: string;
     items: ToolbarItem[];
   })[];
-};
+} & WithTranslation;
 
 function isActive(props: Props) {
   const { view } = props;
@@ -48,7 +49,7 @@ function isActive(props: Props) {
   return some(nodes, n => n.content.size);
 }
 
-export default class SelectionToolbar extends React.Component<Props> {
+class SelectionToolbar extends React.Component<Props> {
   handleOnCreateLink = async (title: string) => {
     const { onCreateLink, view } = this.props;
 
@@ -133,17 +134,6 @@ export default class SelectionToolbar extends React.Component<Props> {
     if (!selected) {
       items = defaultItems;
     }
-    // if (isTableSelection) {
-    //   items = getTableMenuItems();
-    // } else if (colIndex !== undefined) {
-    //   items = getTableColMenuItems(state, colIndex);
-    // } else if (rowIndex !== undefined) {
-    //   items = getTableRowMenuItems(state, rowIndex);
-    // } else if (isImageSelection) {
-    //   items = getImageMenuItems(state);
-    // } else {
-    //   items = getFormattingMenuItems(state, isTemplate);
-    // }
 
     if (!items.length) {
       return null;
@@ -169,3 +159,5 @@ export default class SelectionToolbar extends React.Component<Props> {
     );
   }
 }
+
+export default withTranslation()(SelectionToolbar);

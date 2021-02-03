@@ -3,6 +3,7 @@ import Extension, {
   Attrs,
   Command,
   Dispatcher,
+  MenuItems,
   ToolbarResult
 } from "../lib/Extension";
 import {
@@ -15,6 +16,7 @@ import {
 import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple, PluginWithOptions, PluginWithParams } from "markdown-it";
 import { MarkdownSerializerState, TokenConfig } from "prosemirror-markdown";
+import { NodeArgs } from "../nodes/Node";
 
 export type MarkArgs = { type: MarkType; schema: Schema };
 
@@ -73,6 +75,11 @@ export default abstract class Mark<
 
   inputRules(options: MarkArgs): InputRule[] {
     return super.inputRules(options);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  menuItems(options: NodeArgs): MenuItems {
+    return {};
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
