@@ -72,8 +72,6 @@ export default abstract class Node<
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   toolbarItems(options: MarkArgs): ToolbarResult {
-    return {
-      items: {}
-    };
+    return {};
   }
 }

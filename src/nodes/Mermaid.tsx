@@ -121,12 +121,14 @@ export default class Mermaid extends ReactNode {
 
   menuItems(): MenuItems {
     return {
-      mermaid: {
-        name: this.name,
-        title: t("Mermaid 图"),
-        icon: HomeIcon,
-        keywords: "mermaid graph"
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("Mermaid 图"),
+          icon: HomeIcon,
+          keywords: "mermaid graph"
+        }
+      ]
     };
   }
 }

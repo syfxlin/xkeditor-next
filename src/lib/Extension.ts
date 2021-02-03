@@ -7,6 +7,7 @@ import { EditorView } from "prosemirror-view";
 import * as React from "react";
 import { UploadResponse } from "../commands/uploadFiles";
 import { BlockComponentProps } from "../components/BlockMenu";
+import { ToolbarComponentProps } from "../components/SelectionToolbar";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type EmptyAttrs = {};
@@ -25,17 +26,17 @@ export type ApplyCommand<A extends Attrs = Attrs> = (
   attrs: A
 ) => boolean | void;
 
-export type MenuItems = { [id: string]: MenuItem };
+export type MenuItems = { [group: number]: MenuItem[] };
 
 export type MenuItem = {
   name: string;
+  command?: ApplyCommand;
+  priority?: number;
   title?: string;
   icon?: typeof React.Component | React.FC<any>;
   shortcut?: string;
   keywords?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
-  // 如果定义了 Command，那么就使用这个 Command，否则就采用扩展里定义的 Command，如果有多个则选择 create 前缀的 Command
-  command?: ApplyCommand;
   component?: React.FC<BlockComponentProps> | typeof React.Component;
   upload?: {
     getAttrs: (res: UploadResponse) => Attrs;
@@ -48,14 +49,14 @@ export type MenuItem = {
 
 export type ToolbarItem = {
   name: string;
+  command?: ApplyCommand;
   title?: string;
   icon?: typeof React.Component | React.FC<any>;
   shortcut?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
   visible?: boolean;
   active?: (state: EditorState) => boolean;
-  // 如果定义了 Command，那么就使用这个 Command，否则就采用扩展里定义的 Command，如果有多个则选择 create 前缀的 Command
-  command?: ApplyCommand;
+  component?: React.FC<ToolbarComponentProps> | typeof React.Component;
 };
 
 export type ToolbarMode = {
@@ -64,7 +65,7 @@ export type ToolbarMode = {
 };
 
 export type ToolbarResult = {
-  items: { [id: string]: ToolbarItem };
+  items?: { [id: string]: ToolbarItem };
   modes?: { [mode: string]: ToolbarMode };
 };
 

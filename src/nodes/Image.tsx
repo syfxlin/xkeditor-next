@@ -412,17 +412,19 @@ export default class Image extends ReactNode {
 
   menuItems(): MenuItems {
     return {
-      image: {
-        name: "image",
-        title: t("图片"),
-        icon: ImageIcon,
-        keywords: "picture photo image",
-        upload: {
-          getAttrs: res => ({ src: res.data[0].url }),
-          placeholder: imagePlaceholder,
-          accept: "image/*"
+      3: [
+        {
+          name: "image",
+          title: t("图片"),
+          icon: ImageIcon,
+          keywords: "picture photo image",
+          upload: {
+            getAttrs: res => ({ src: res.data[0].url }),
+            placeholder: imagePlaceholder,
+            accept: "image/*"
+          }
         }
-      }
+      ]
     };
   }
 }

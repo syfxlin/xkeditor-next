@@ -46,13 +46,15 @@ export default class BulletList extends Node {
 
   menuItems(): MenuItems {
     return {
-      bullet_list: {
-        name: this.name,
-        title: t("无序列表"),
-        icon: BulletedListIcon,
-        shortcut: `${ctrl} ${shift} 8`,
-        keywords: "bulletlist list"
-      }
+      2: [
+        {
+          name: this.name,
+          title: t("无序列表"),
+          icon: BulletedListIcon,
+          shortcut: `${ctrl} ${shift} 8`,
+          keywords: "bulletlist list"
+        }
+      ]
     };
   }
 }

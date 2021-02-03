@@ -65,13 +65,15 @@ export default class HorizontalRule extends Node {
 
   menuItems(): MenuItems {
     return {
-      hr: {
-        name: this.name,
-        title: t("分割线"),
-        icon: HorizontalRuleIcon,
-        shortcut: `${mod} _`,
-        keywords: "horizontal rule break line"
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("分割线"),
+          icon: HorizontalRuleIcon,
+          shortcut: `${mod} _`,
+          keywords: "horizontal rule break line"
+        }
+      ]
     };
   }
 }

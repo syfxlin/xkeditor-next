@@ -56,13 +56,15 @@ export default class CheckboxList extends Node {
 
   menuItems(): MenuItems {
     return {
-      checkbox_list: {
-        name: this.name,
-        title: t("Todo 列表"),
-        icon: TodoListIcon,
-        keywords: "checklist task todolist",
-        shortcut: `${ctrl} ${shift} 7`
-      }
+      2: [
+        {
+          name: this.name,
+          title: t("Todo 列表"),
+          icon: TodoListIcon,
+          keywords: "checklist task todolist",
+          shortcut: `${ctrl} ${shift} 7`
+        }
+      ]
     };
   }
 }

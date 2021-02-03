@@ -47,13 +47,15 @@ export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
 
   menuItems(): MenuItems {
     return {
-      blockquote: {
-        name: this.name,
-        title: t("引用"),
-        icon: BlockQuoteIcon,
-        shortcut: `${mod} ]`,
-        keywords: "blockquote quote"
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("引用"),
+          icon: BlockQuoteIcon,
+          shortcut: `${mod} ]`,
+          keywords: "blockquote quote"
+        }
+      ]
     };
   }
 }

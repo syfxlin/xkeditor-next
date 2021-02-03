@@ -120,12 +120,14 @@ export default class Details extends ReactNode {
 
   menuItems(): MenuItems {
     return {
-      details: {
-        name: this.name,
-        title: t("描述"),
-        icon: HomeIcon,
-        keywords: "details summary"
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("描述"),
+          icon: HomeIcon,
+          keywords: "details summary"
+        }
+      ]
     };
   }
 }

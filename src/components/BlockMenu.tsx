@@ -13,12 +13,12 @@ import { ApplyCommand, Attrs, MenuItem } from "../lib/Extension";
 import uploadFiles, { UploadResponse } from "../commands/uploadFiles";
 import { EmbedDescriptor } from "../nodes/Embed";
 import { blockMenuInput } from "./BlockMenuComponent";
+import FloatingToolbar from "./FloatingToolbar";
 
 export type BlockComponentProps = {
   item: MenuItem;
   insertBlock: (item: MenuItem) => void;
 
-  isActive: boolean;
   close: () => void;
   view: EditorView;
   upload?: (files: File[]) => Promise<UploadResponse>;
@@ -455,28 +455,13 @@ class BlockMenu extends Component<Props, State> {
 
     return (
       <Portal>
-        <Wrapper
-          id="block-menu-container"
-          active={isActive}
-          ref={this.menuRef}
-          {...positioning}
-        >
-          {mode === Mode.COMPONENT && insertItem && insertItem.component && (
-            <insertItem.component
-              item={insertItem}
-              insertBlock={this.insertBlock}
-              isActive={isActive}
-              close={this.close}
-              view={view}
-              upload={upload}
-              onUploadStart={onUploadStart}
-              onUploadStop={onUploadStop}
-              t={t}
-              i18n={i18n}
-              tReady={tReady}
-            />
-          )}
-          {mode === Mode.LIST && (
+        {mode === Mode.LIST && (
+          <Wrapper
+            id="block-menu-container"
+            active={isActive}
+            ref={this.menuRef}
+            {...positioning}
+          >
             <List>
               {items.map((item, index) => {
                 if (item.name === "separator") {
@@ -510,17 +495,38 @@ class BlockMenu extends Component<Props, State> {
                 </ListItem>
               )}
             </List>
-          )}
-          {upload && (
-            <VisuallyHidden>
-              <input
-                type="file"
-                ref={this.inputRef}
-                onChange={this.handleUpload}
-              />
-            </VisuallyHidden>
-          )}
-        </Wrapper>
+          </Wrapper>
+        )}
+        {mode === Mode.COMPONENT && insertItem && insertItem.component && (
+          <FloatingToolbar
+            ref={this.menuRef}
+            active={isActive}
+            view={this.props.view}
+          >
+            <insertItem.component
+              item={insertItem}
+              insertBlock={this.insertBlock}
+              isActive={isActive}
+              close={this.close}
+              view={view}
+              upload={upload}
+              onUploadStart={onUploadStart}
+              onUploadStop={onUploadStop}
+              t={t}
+              i18n={i18n}
+              tReady={tReady}
+            />
+          </FloatingToolbar>
+        )}
+        {upload && (
+          <VisuallyHidden>
+            <input
+              type="file"
+              ref={this.inputRef}
+              onChange={this.handleUpload}
+            />
+          </VisuallyHidden>
+        )}
       </Portal>
     );
   }

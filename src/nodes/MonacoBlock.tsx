@@ -269,13 +269,15 @@ export default class MonacoBlock extends ReactNode {
 
   menuItems(): MenuItems {
     return {
-      code_block: {
-        name: this.name,
-        title: t("代码块"),
-        icon: CodeIcon,
-        shortcut: `${ctrl} ${shift}\\`,
-        keywords: "code monaco script"
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("代码块"),
+          icon: CodeIcon,
+          shortcut: `${ctrl} ${shift}\\`,
+          keywords: "code monaco script"
+        }
+      ]
     };
   }
 }

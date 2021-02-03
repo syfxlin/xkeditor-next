@@ -23,7 +23,6 @@ import Flex from "./components/Flex";
 import { SearchResult } from "./components/LinkEditor";
 import SelectionToolbar from "./components/SelectionToolbar";
 import BlockMenu from "./components/BlockMenu";
-import LinkToolbar from "./components/LinkToolbar";
 import Tooltip from "./components/Tooltip";
 import Extension, { MenuItem, ToolbarItem, ToolbarMode } from "./lib/Extension";
 import ExtensionManager from "./lib/ExtensionManager";
@@ -128,7 +127,6 @@ export type Props = WithTranslation & {
 
 type State = {
   blockMenuOpen: boolean;
-  linkMenuOpen: boolean;
   blockMenuSearch: string;
 };
 
@@ -163,7 +161,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
 
   state = {
     blockMenuOpen: false,
-    linkMenuOpen: false,
     blockMenuSearch: ""
   };
 
@@ -255,16 +252,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     this.nodeViews = this.createNodeViews();
     this.view = this.createView();
     this.commands = this.createCommands();
-    const menuItems = this.createMenuItems();
-    this.menuItems = "h1 h2 h3 | checkbox_list bullet_list ordered_list | link"
-      .split(" ")
-      .map(id => {
-        id = id.trim();
-        if (["|", "separator"].includes(id)) {
-          return { name: "separator" };
-        }
-        return menuItems[id];
-      });
+    this.menuItems = this.createMenuItems();
     const toolbarResult = this.createToolbarItemsAndModes();
     const toolbar = {
       default: "bold",
@@ -329,7 +317,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new TemplatePlaceholder(),
         new Underline(),
         new Link({
-          onKeyboardShortcut: this.handleOpenLinkMenu,
+          // TODO: update
+          // onKeyboardShortcut: this.handleOpenLinkMenu,
           onClickLink: this.props.onClickLink,
           onClickHashtag: this.props.onClickHashtag,
           onHoverLink: this.props.onHoverLink
@@ -414,9 +403,18 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   }
 
   createMenuItems() {
-    return this.extensions.menuItems({
+    const menuItems = this.extensions.menuItems({
       schema: this.schema
     });
+    const result: MenuItem[] = [];
+    for (const key in menuItems) {
+      result.push(
+        ...menuItems[key].sort((a, b) => (a.priority || 0) - (b.priority || 0))
+      );
+      result.push({ name: "separator" });
+    }
+    result.pop();
+    return result;
   }
 
   createToolbarItemsAndModes() {
@@ -559,14 +557,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     }
   };
 
-  handleOpenLinkMenu = () => {
-    this.setState({ linkMenuOpen: true });
-  };
-
-  handleCloseLinkMenu = () => {
-    this.setState({ linkMenuOpen: false });
-  };
-
   handleOpenBlockMenu = (search: string) => {
     this.setState({ blockMenuOpen: true, blockMenuSearch: search });
   };
@@ -675,15 +665,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   onCreateLink={this.props.onCreateLink}
                   tooltip={tooltip}
                   items={this.toolbarItems}
-                />
-                <LinkToolbar
-                  view={this.view}
-                  isActive={this.state.linkMenuOpen}
-                  onCreateLink={this.props.onCreateLink}
-                  onSearchLink={this.props.onSearchLink}
-                  onClickLink={this.props.onClickLink}
-                  onClose={this.handleCloseLinkMenu}
-                  tooltip={tooltip}
                 />
                 <BlockMenu
                   view={this.view}

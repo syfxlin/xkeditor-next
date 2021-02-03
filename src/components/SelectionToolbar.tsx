@@ -15,6 +15,23 @@ import createAndInsertLink from "../commands/createAndInsertLink";
 import { NodeSelection } from "prosemirror-state";
 import { ToolbarItem, ToolbarMode } from "../lib/Extension";
 import { WithTranslation, withTranslation } from "react-i18next";
+import { UploadResponse } from "../commands/uploadFiles";
+import { Mark } from "prosemirror-model";
+
+export type ToolbarComponentProps = {
+  range: {
+    mark: Mark;
+    from: number;
+    to: number;
+  };
+  item: ToolbarItem;
+  insertBlock: (item: ToolbarItem) => void;
+
+  view: EditorView;
+  upload?: (files: File[]) => Promise<UploadResponse>;
+  onUploadStart?: () => void;
+  onUploadStop?: () => void;
+} & WithTranslation;
 
 type Props = {
   tooltip: typeof React.Component | React.FC<any>;

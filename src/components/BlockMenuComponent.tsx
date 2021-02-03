@@ -82,27 +82,19 @@ export function blockMenuInput(
     );
 
     return (
-      <InputWrapper>
-        <InputValue
-          {...inputAttrs}
-          onKeyDown={handleInputKeydown}
-          onPaste={handleInputPaste}
-          autoFocus
-        />
-      </InputWrapper>
+      <InputValue
+        {...inputAttrs}
+        onKeyDown={handleInputKeydown}
+        onPaste={handleInputPaste}
+        autoFocus
+      />
     );
   };
 
   return BlockMenuInput;
 }
 
-const InputWrapper = styled.div`
-  margin: 8px;
-`;
-
 const InputValue = styled(Input)`
-  height: 36px;
   width: 100%;
-
-  color: ${props => props.theme.blockToolbarText};
+  color: ${props => props.theme.textLight};
 `;

@@ -232,7 +232,16 @@ export default class ExtensionManager {
           schema
         })
       )
-      .reduce((allItems, items) => ({ ...allItems, ...items }), {});
+      .reduce((allItems, items) => {
+        for (const group in items) {
+          if (allItems[group] !== undefined) {
+            allItems[group] = [...allItems[group], ...items[group]];
+          } else {
+            allItems[group] = [...items[group]];
+          }
+        }
+        return allItems;
+      }, {});
   }
 
   toolbarItems({ schema }: { schema: Schema }) {

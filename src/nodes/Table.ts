@@ -193,13 +193,15 @@ export default class Table extends Node {
 
   menuItems(): MenuItems {
     return {
-      table: {
-        name: this.name,
-        title: t("表格"),
-        icon: TableIcon,
-        keywords: "table",
-        attrs: { rowsCount: 3, colsCount: 3 }
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("表格"),
+          icon: TableIcon,
+          keywords: "table",
+          attrs: { rowsCount: 3, colsCount: 3 }
+        }
+      ]
     };
   }
 

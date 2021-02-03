@@ -5,7 +5,6 @@ import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
 import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
 import { Attrs, Dispatcher, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
-import { NodeArgs } from "../nodes/Node";
 import { mod } from "../menus/block";
 import { t } from "../i18n";
 // @ts-ignore
@@ -101,6 +100,7 @@ export default class Link extends Mark {
     return {
       "Mod-k": (state, dispatch) => {
         if (state.selection.empty) {
+          // TODO: update
           this.options.onKeyboardShortcut();
           return true;
         }
@@ -193,15 +193,17 @@ export default class Link extends Mark {
     };
   }
 
-  menuItems(options: NodeArgs): MenuItems {
+  menuItems(): MenuItems {
     return {
-      link: {
-        name: this.name,
-        title: t("链接"),
-        icon: LinkIcon,
-        shortcut: `${mod} k`,
-        keywords: "link url uri href"
-      }
+      3: [
+        {
+          name: this.name,
+          title: t("链接"),
+          icon: LinkIcon,
+          shortcut: `${mod} k`,
+          keywords: "link url uri href"
+        }
+      ]
     };
   }
 }

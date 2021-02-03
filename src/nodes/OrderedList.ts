@@ -80,13 +80,15 @@ export default class OrderedList extends Node {
 
   menuItems(): MenuItems {
     return {
-      ordered_list: {
-        name: this.name,
-        title: t("有序列表"),
-        icon: OrderedListIcon,
-        shortcut: `${ctrl} ${shift} 9`,
-        keywords: "orderedlist list"
-      }
+      2: [
+        {
+          name: this.name,
+          title: t("有序列表"),
+          icon: OrderedListIcon,
+          shortcut: `${ctrl} ${shift} 9`,
+          keywords: "orderedlist list"
+        }
+      ]
     };
   }
 }

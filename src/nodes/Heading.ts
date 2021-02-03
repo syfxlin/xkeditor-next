@@ -187,17 +187,16 @@ export default class Heading extends Node {
   }
 
   menuItems(): MenuItems {
-    const items: MenuItems = {};
-    this.options.levels.forEach((level: number) => {
-      items[`h${level}`] = {
+    return {
+      1: this.options.levels.map((level: number) => ({
         name: this.name,
         title: t(`标题 ${level}`),
         icon: Heading1Icon,
         keywords: `heading${level} title${level}`,
         shortcut: `${ctrl} ${shift} ${level}`,
-        attrs: { level }
-      };
-    });
-    return items;
+        attrs: { level },
+        priority: level
+      }))
+    };
   }
 }
