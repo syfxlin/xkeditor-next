@@ -7,7 +7,7 @@ import { Attrs, Dispatcher, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import isMarkActive from "../queries/isMarkActive";
 import markInputRule from "../lib/markInputRule";
-import LinkInputComponent from "../components/LinkInputComponent";
+import linkInputComponent from "../components/LinkInputComponent";
 import { t } from "../i18n";
 import { ctrl } from "../menus/block";
 import { LinkTwo } from "@icon-park/react";
@@ -223,7 +223,7 @@ export default class Link extends Mark<LinkOptions, LinkAttrs> {
           name: "link_editor",
           priority: 3,
           active: view => isMarkActive(type)(view.state),
-          component: LinkInputComponent(this.options.onClickLink)
+          component: linkInputComponent(this.options.onClickLink)
         }
       ]
     };

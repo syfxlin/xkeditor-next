@@ -177,8 +177,10 @@ class Example extends React.Component {
             },
             save: options => console.log("Save triggered", options),
             cancel: () => console.log("Cancel triggered"),
-            onClickLink: (href, event) =>
-              console.log("Clicked link: ", href, event),
+            onClickLink: (href, event) => {
+              console.log("Clicked link: ", href, event);
+              window.open(href, "_blank");
+            },
             onHoverLink: event => {
               console.log(
                 "Hovered link: ",

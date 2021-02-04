@@ -91,7 +91,7 @@ export const theme = lightTheme;
 
 export type Props = {
   value?: string;
-  onChange: (value: string) => void;
+  onChange: (value: () => string) => void;
   readOnly?: boolean;
   dark?: boolean;
   config?: {
@@ -136,6 +136,15 @@ type NodeViewCreator = (
   getPos: (() => number) | boolean,
   decorations: Decoration[]
 ) => NodeView;
+
+export type EditorContextType = Partial<
+  Props &
+    State & {
+      editor: RichMarkdownEditor;
+    }
+>;
+
+export const EditorContext = React.createContext<EditorContextType>({});
 
 class RichMarkdownEditor extends React.PureComponent<Props, State> {
   static defaultProps = {
@@ -477,9 +486,21 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       nodeViews: this.nodeViews,
       handleDOMEvents: this.props.action?.handleDOMEvents,
       dispatchTransaction: transaction => {
-        const { state } = this.view.state.applyTransaction(transaction);
+        const { state, transactions } = this.view.state.applyTransaction(
+          transaction
+        );
 
         this.view.updateState(state);
+
+        // If any of the transactions being dispatched resulted in the doc
+        // changing then call our own change handler to let the outside world
+        // know
+        if (
+          transactions.some(tr => tr.docChanged) &&
+          (!this.props.readOnly || transactions.some(isEditingCheckbox))
+        ) {
+          this.handleChange();
+        }
 
         // Because Prosemirror and React are not linked we must tell React that
         // a render is needed whenever the Prosemirror state changes.
@@ -511,7 +532,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   handleChange = () => {
     if (!this.props.onChange) return;
 
-    this.props.onChange(this.value());
+    this.props.onChange(() => this.value());
   };
 
   handleSave = () => {
@@ -604,50 +625,54 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   render = () => {
     const { readOnly } = this.props;
     return (
-      <Flex
-        onKeyDown={this.props.action?.onKeydown}
-        style={this.props.config?.style}
-        className={this.props.config?.className}
-        align="flex-start"
-        justify="center"
-        column
+      <EditorContext.Provider
+        value={{ ...this.props, ...this.state, editor: this }}
       >
         <ThemeProvider theme={this.theme()}>
-          <React.Fragment>
-            <StyledEditor
-              readOnly={readOnly}
-              ref={ref => (this.element = ref)}
-            />
-            {!readOnly && this.view && (
-              <React.Fragment>
-                <SelectionToolbar
-                  view={this.view}
-                  commands={this.commands}
-                  items={this.toolbarItems}
-                  modes={this.toolbarModes}
-                />
-                <BlockMenu
-                  view={this.view}
-                  commands={this.commands}
-                  isActive={this.state.blockMenuOpen}
-                  search={this.state.blockMenuSearch}
-                  onClose={this.handleCloseBlockMenu}
-                  upload={this.props.action?.upload}
-                  embeds={this.props.config?.embeds}
-                  items={this.menuItems}
-                />
-              </React.Fragment>
-            )}
-          </React.Fragment>
-          <Toaster />
+          <Flex
+            onKeyDown={this.props.action?.onKeydown}
+            style={this.props.config?.style}
+            className={this.props.config?.className}
+            align="flex-start"
+            justify="center"
+            column
+          >
+            <>
+              <StyledEditor
+                readOnly={readOnly}
+                ref={ref => (this.element = ref)}
+              />
+              {!readOnly && this.view && (
+                <>
+                  <SelectionToolbar
+                    view={this.view}
+                    commands={this.commands}
+                    items={this.toolbarItems}
+                    modes={this.toolbarModes}
+                  />
+                  <BlockMenu
+                    view={this.view}
+                    commands={this.commands}
+                    isActive={this.state.blockMenuOpen}
+                    search={this.state.blockMenuSearch}
+                    onClose={this.handleCloseBlockMenu}
+                    upload={this.props.action?.upload}
+                    embeds={this.props.config?.embeds}
+                    items={this.menuItems}
+                  />
+                </>
+              )}
+            </>
+            <Toaster />
+          </Flex>
         </ThemeProvider>
-      </Flex>
+      </EditorContext.Provider>
     );
   };
 }
 
-export default RichMarkdownEditor;
 export type Editor = RichMarkdownEditor;
+export default RichMarkdownEditor;
 
 const StyledEditor = styled("div")<{
   readOnly?: boolean;
