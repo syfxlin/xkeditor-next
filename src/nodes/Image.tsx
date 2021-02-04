@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { NodeSelection, Plugin, TextSelection } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
 import { setTextSelection } from "prosemirror-utils";
@@ -16,14 +15,14 @@ import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
 import { t } from "../i18n";
-import {
-  AlignImageCenterIcon,
-  AlignImageLeftIcon,
-  AlignImageRightIcon,
-  ImageIcon,
-  TrashIcon
-} from "outline-icons";
 import isNodeActive from "../queries/isNodeActive";
+import {
+  AlignHorizontally,
+  AlignLeft,
+  AlignRight,
+  Delete,
+  Pic
+} from "@icon-park/react";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, class]
@@ -431,7 +430,7 @@ export default class Image extends ReactNode<any, ImageAttrs> {
         {
           name: "image",
           title: t("图片"),
-          icon: ImageIcon,
+          icon: Pic,
           keywords: "picture photo image",
           upload: {
             getAttrs: res => ({ src: res.data[0].url }),
@@ -463,13 +462,13 @@ export default class Image extends ReactNode<any, ImageAttrs> {
             {
               name: "alignLeft",
               title: t("左对齐"),
-              icon: AlignImageLeftIcon,
+              icon: AlignLeft,
               active: isLeftAligned
             },
             {
               name: "alignCenter",
               title: t("居中对齐"),
-              icon: AlignImageCenterIcon,
+              icon: AlignHorizontally,
               active: state =>
                 isNodeActive(type)(state) &&
                 !isLeftAligned(state) &&
@@ -478,7 +477,7 @@ export default class Image extends ReactNode<any, ImageAttrs> {
             {
               name: "alignRight",
               title: t("右对齐"),
-              icon: AlignImageRightIcon,
+              icon: AlignRight,
               active: isRightAligned
             },
             {
@@ -487,7 +486,7 @@ export default class Image extends ReactNode<any, ImageAttrs> {
             {
               name: "deleteImage",
               title: t("删除图片"),
-              icon: TrashIcon,
+              icon: Delete,
               active: () => false
             }
           ]

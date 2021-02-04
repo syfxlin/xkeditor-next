@@ -1,3 +1,4 @@
+import React from "react";
 import Node, { NodeArgs } from "./Node";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import {
@@ -33,21 +34,21 @@ import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import {
-  AlignCenterIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-  InsertAboveIcon,
-  InsertBelowIcon,
-  InsertLeftIcon,
-  InsertRightIcon,
-  TableIcon,
-  TrashIcon
-} from "outline-icons";
 import { t } from "../i18n";
 import getColumnIndex from "../queries/getColumnIndex";
 import getRowIndex from "../queries/getRowIndex";
 import isNodeActive from "../queries/isNodeActive";
+import {
+  AlignTextCenter,
+  AlignTextLeft,
+  AlignTextRight,
+  Delete,
+  DoubleDown,
+  DoubleLeft,
+  DoubleRight,
+  DoubleUp,
+  InsertTable
+} from "@icon-park/react";
 
 export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -199,7 +200,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
         {
           name: this.name,
           title: t("表格"),
-          icon: TableIcon,
+          icon: InsertTable,
           keywords: "table",
           attrs: { rowsCount: 3, colsCount: 3 }
         }
@@ -222,7 +223,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "deleteTable",
               title: t("删除表格"),
-              icon: TrashIcon,
+              icon: Delete,
               active: () => false
             }
           ]
@@ -237,7 +238,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "setColumnAttr",
               title: t("左对齐"),
-              icon: AlignLeftIcon,
+              icon: AlignTextLeft,
               attrs: {
                 index,
                 alignment: "left"
@@ -251,7 +252,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "setColumnAttr",
               title: t("居中对齐"),
-              icon: AlignCenterIcon,
+              icon: AlignTextCenter,
               attrs: {
                 index,
                 alignment: "center"
@@ -265,7 +266,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "setColumnAttr",
               title: t("右对齐"),
-              icon: AlignRightIcon,
+              icon: AlignTextRight,
               attrs: {
                 index,
                 alignment: "right"
@@ -282,13 +283,13 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "addColumnBefore",
               title: t("在左边插入列"),
-              icon: InsertLeftIcon,
+              icon: DoubleLeft,
               active: () => false
             },
             {
               name: "addColumnAfter",
               title: t("在右边插入列"),
-              icon: InsertRightIcon,
+              icon: DoubleRight,
               active: () => false
             },
             {
@@ -297,7 +298,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "deleteColumn",
               title: t("删除列"),
-              icon: TrashIcon,
+              icon: Delete,
               active: () => false
             }
           ]
@@ -312,7 +313,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "addRowAfter",
               title: t("在上方插入行"),
-              icon: InsertAboveIcon,
+              icon: DoubleUp,
               attrs: { index: index - 1 },
               active: () => false,
               visible: index !== 0
@@ -320,7 +321,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "addRowAfter",
               title: t("在下方插入行"),
-              icon: InsertBelowIcon,
+              icon: DoubleDown,
               attrs: { index },
               active: () => false
             },
@@ -330,7 +331,7 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
             {
               name: "deleteRow",
               title: t("删除行"),
-              icon: TrashIcon,
+              icon: Delete,
               active: () => false
             }
           ]

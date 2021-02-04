@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { EditorView } from "prosemirror-view";
 import { withTheme } from "styled-components";
 import ToolbarButton from "./ToolbarButton";
@@ -6,9 +6,9 @@ import ToolbarSeparator from "./ToolbarSeparator";
 import theme from "../theme";
 import { Attrs, ToolbarItem } from "../lib/Extension";
 import capitalize from "lodash/capitalize";
+import Tooltip from "./Tooltip";
 
 type Props = {
-  tooltip: typeof React.Component | React.FC<any>;
   commands: Record<string, any>;
   view: EditorView;
   theme: typeof theme;
@@ -40,10 +40,8 @@ class Menu extends React.Component<Props> {
   render() {
     const { view, items } = this.props;
     const { state } = view;
-    const Tooltip = this.props.tooltip;
-
     return (
-      <div>
+      <>
         {items.map((item, index) => {
           if (item.name === "separator" && item.visible !== false) {
             return <ToolbarSeparator key={index} />;
@@ -60,16 +58,13 @@ class Menu extends React.Component<Props> {
               onClick={this.handleClick(item)}
               active={isActive}
             >
-              <Tooltip
-                tooltip={`${item.title}\n${item.shortcut}`}
-                placement="top"
-              >
-                <Icon color={this.props.theme.toolbarItem} />
+              <Tooltip tooltip={item.title} shortcut={item.shortcut}>
+                <Icon fill={this.props.theme.toolbarItem} size={"100%"} />
               </Tooltip>
             </ToolbarButton>
           );
         })}
-      </div>
+      </>
     );
   }
 }

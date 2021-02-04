@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Ref } from "react";
+import React, { Ref } from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";

@@ -1,12 +1,13 @@
+import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { BulletedListIcon } from "outline-icons";
 import { t } from "../i18n";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
+import { List } from "@icon-park/react";
 
 export default class BulletList extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -50,7 +51,7 @@ export default class BulletList extends Node<EmptyAttrs, EmptyAttrs> {
         {
           name: this.name,
           title: t("无序列表"),
-          icon: BulletedListIcon,
+          icon: List,
           shortcut: `${ctrl} ${shift} 8`,
           keywords: "bulletlist list"
         }

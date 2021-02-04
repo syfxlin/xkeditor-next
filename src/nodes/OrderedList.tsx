@@ -1,12 +1,13 @@
+import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { t } from "../i18n";
-import { OrderedListIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
+import { OrderedList as OrderedListIcon } from "@icon-park/react";
 
 type OrderedListAttrs = {
   order: number;

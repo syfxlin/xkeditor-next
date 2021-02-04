@@ -1,12 +1,13 @@
+import React from "react";
 import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
 import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec } from "prosemirror-model";
 import { EmptyAttrs, ToolbarItems } from "../lib/Extension";
 import { t } from "../i18n";
-import { BoldIcon } from "outline-icons";
 import isMarkActive from "../queries/isMarkActive";
 import { ctrl } from "../menus/block";
+import { TextBold } from "@icon-park/react";
 
 export default class Bold extends Mark<EmptyAttrs, EmptyAttrs> {
   get name(): string {
@@ -51,7 +52,7 @@ export default class Bold extends Mark<EmptyAttrs, EmptyAttrs> {
     return { mark: this.name };
   }
 
-  toolbarItems({ schema }: MarkArgs): ToolbarItems {
+  toolbarItems({ type }: MarkArgs): ToolbarItems {
     return {
       default: {
         1: [
@@ -59,8 +60,9 @@ export default class Bold extends Mark<EmptyAttrs, EmptyAttrs> {
             name: this.name,
             title: t("粗体"),
             shortcut: `${ctrl} B`,
-            icon: BoldIcon,
-            active: isMarkActive(schema.marks.strong)
+            icon: TextBold,
+            active: isMarkActive(type),
+            priority: 1
           }
         ]
       }

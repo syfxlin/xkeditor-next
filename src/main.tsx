@@ -1,6 +1,5 @@
 /* global window File Promise */
-import * as React from "react";
-import { MouseEvent } from "react";
+import React, { MouseEvent } from "react";
 import { EditorState, Plugin, Selection, Transaction } from "prosemirror-state";
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
@@ -20,10 +19,8 @@ import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
 import styled, { ThemeProvider } from "styled-components";
 import { dark as darkTheme, light as lightTheme } from "./theme";
 import Flex from "./components/Flex";
-import { SearchResult } from "./components/LinkEditor";
 import SelectionToolbar from "./components/SelectionToolbar";
 import BlockMenu from "./components/BlockMenu";
-import Tooltip from "./components/Tooltip";
 import Extension, { MenuItem, ToolbarItem, ToolbarMode } from "./lib/Extension";
 import ExtensionManager from "./lib/ExtensionManager";
 import ComponentView from "./lib/ComponentView";
@@ -81,6 +78,9 @@ import Mermaid from "./nodes/Mermaid";
 // Init
 import "./init";
 import "./styles/global.less";
+import "@icon-park/react/styles/index.css";
+import "tippy.js/dist/tippy.css";
+import "tippy.js/animations/shift-away.css";
 import { Toaster } from "react-hot-toast";
 import { UploadResponse } from "./commands/uploadFiles";
 import { t } from "./i18n";
@@ -114,13 +114,11 @@ export type Props = WithTranslation & {
   onUploadStart?: () => void;
   onUploadStop?: () => void;
   onCreateLink?: (title: string) => Promise<string>;
-  onSearchLink?: (term: string) => Promise<SearchResult[]>;
   onClickLink: (href: string, event: MouseEvent) => void;
   onHoverLink?: (event: MouseEvent) => boolean;
   onClickHashtag?: (tag: string, event: MouseEvent) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   embeds: EmbedDescriptor[];
-  tooltip: typeof React.Component | React.FC<any>;
   className?: string;
   style?: Record<string, string>;
 };
@@ -155,8 +153,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       window.open(href, "_blank");
     },
     embeds: [],
-    extensions: [],
-    tooltip: Tooltip
+    extensions: []
   };
 
   state = {
@@ -627,7 +624,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       readOnly,
       readOnlyWriteCheckboxes,
       style,
-      tooltip,
       className,
       onKeyDown
     } = this.props;
@@ -654,10 +650,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   view={this.view}
                   commands={this.commands}
                   isTemplate={this.props.template === true}
-                  onSearchLink={this.props.onSearchLink}
-                  onClickLink={this.props.onClickLink}
-                  onCreateLink={this.props.onCreateLink}
-                  tooltip={tooltip}
                   items={this.toolbarItems}
                   modes={this.toolbarModes}
                 />

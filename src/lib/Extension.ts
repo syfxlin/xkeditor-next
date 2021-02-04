@@ -4,11 +4,12 @@ import { EditorState, Plugin, Transaction } from "prosemirror-state";
 import { Editor } from "../main";
 import { MarkType, NodeType, Schema } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
-import * as React from "react";
+import React from "react";
 import { UploadResponse } from "../commands/uploadFiles";
 import { BlockComponentProps } from "../components/BlockMenu";
 import { ToolbarComponentProps } from "../components/SelectionToolbar";
 import { editor } from "monaco-editor";
+import { IIconProps } from "@icon-park/react/lib/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type EmptyAttrs = {};
@@ -38,7 +39,7 @@ export type MenuItem = {
   command?: ApplyCommand;
   priority?: number;
   title?: string;
-  icon?: typeof React.Component | React.FC<any>;
+  icon?: typeof React.Component | React.FC<IIconProps>;
   shortcut?: string;
   keywords?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
@@ -70,7 +71,7 @@ export type ToolbarItem = {
   priority?: number;
   command?: ApplyCommand;
   title?: string;
-  icon?: typeof React.Component | React.FC<any>;
+  icon?: typeof React.Component | React.FC<IIconProps>;
   shortcut?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
   visible?: boolean;

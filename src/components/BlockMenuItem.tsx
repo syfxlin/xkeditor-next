@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Component, FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
 import styled, { withTheme } from "styled-components";
 import theme from "../theme";
@@ -9,12 +8,12 @@ type Props = {
   disabled?: boolean;
   onClick: () => void;
   theme: typeof theme;
-  icon: typeof Component | FC<any>;
+  icon: typeof React.Component | React.FC<any>;
   title: string;
   shortcut?: string;
 };
 
-const BlockMenuItem: FC<Props> = ({
+const BlockMenuItem: React.FC<Props> = ({
   selected,
   disabled,
   onClick,

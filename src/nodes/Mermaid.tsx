@@ -19,8 +19,8 @@ import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
 import { useDebounce } from "react-use";
 import { t } from "../i18n";
-import { HomeIcon } from "outline-icons";
 import toggleBlockType from "../commands/toggleBlockType";
+import { ChartGraph } from "@icon-park/react";
 
 type MermaidAttrs = {
   isEdit: boolean;
@@ -138,7 +138,7 @@ export default class Mermaid extends ReactNode<
         {
           name: this.name,
           title: t("Mermaid 图"),
-          icon: HomeIcon,
+          icon: ChartGraph,
           keywords: "mermaid graph"
         }
       ]

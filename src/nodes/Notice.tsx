@@ -1,7 +1,6 @@
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleWrap from "../commands/toggleWrap";
-import { InfoIcon, StarredIcon, WarningIcon } from "outline-icons";
-import * as React from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
@@ -11,6 +10,7 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
+import { Caution, Info, TipsOne } from "@icon-park/react";
 
 type NoticeAttrs = {
   style: string;
@@ -69,11 +69,11 @@ export default class Notice extends Node<EmptyAttrs, NoticeAttrs> {
         let component;
 
         if (node.attrs.style === "tip") {
-          component = <StarredIcon color="currentColor" />;
+          component = <TipsOne />;
         } else if (node.attrs.style === "warning") {
-          component = <WarningIcon color="currentColor" />;
+          component = <Caution />;
         } else {
-          component = <InfoIcon color="currentColor" />;
+          component = <Info />;
         }
 
         const icon = document.createElement("div");
@@ -144,21 +144,21 @@ export default class Notice extends Node<EmptyAttrs, NoticeAttrs> {
         {
           name: this.name,
           title: t("提示框（信息）"),
-          icon: InfoIcon,
+          icon: Info,
           keywords: "notice card information",
           attrs: { style: "info" }
         },
         {
           name: this.name,
           title: t("提示框（警告）"),
-          icon: WarningIcon,
+          icon: Caution,
           keywords: "notice card error warning",
           attrs: { style: "warning" }
         },
         {
           name: this.name,
           title: t("提示框（提醒）"),
-          icon: StarredIcon,
+          icon: TipsOne,
           keywords: "notice card suggestion tip",
           attrs: { style: "tip" }
         }

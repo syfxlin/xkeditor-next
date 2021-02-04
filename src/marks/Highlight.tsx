@@ -1,10 +1,15 @@
+import React from "react";
 import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
 import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import markPlugin from "../lib/markdown/mark";
-import { EmptyAttrs } from "../lib/Extension";
+import { EmptyAttrs, ToolbarItems } from "../lib/Extension";
+import { t } from "../i18n";
+import { ctrl } from "../menus/block";
+import isMarkActive from "../queries/isMarkActive";
+import { HighLight } from "@icon-park/react";
 
 export default class Highlight extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -43,5 +48,22 @@ export default class Highlight extends Mark<EmptyAttrs, EmptyAttrs> {
 
   markdownPlugin(): PluginSimple {
     return markPlugin({ delim: "==", mark: this.name });
+  }
+
+  toolbarItems({ type }: MarkArgs): ToolbarItems {
+    return {
+      default: {
+        1: [
+          {
+            name: this.name,
+            title: t("高亮"),
+            shortcut: `${ctrl} H`,
+            icon: HighLight,
+            active: isMarkActive(type),
+            priority: 4
+          }
+        ]
+      }
+    };
   }
 }

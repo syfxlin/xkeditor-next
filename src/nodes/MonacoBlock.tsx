@@ -16,9 +16,9 @@ import { applyContent, mergeSpec, nodeKeys } from "../utils/editor";
 import { setBlockType } from "prosemirror-commands";
 import { toast } from "react-hot-toast";
 import { t } from "../i18n";
-import { CodeIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems, MonacoAttrs } from "../lib/Extension";
+import { Code } from "@icon-park/react";
 
 type MonacoBlockAttrs = {
   language: string;
@@ -281,7 +281,7 @@ export default class MonacoBlock extends ReactNode<
         {
           name: this.name,
           title: t("代码块"),
-          icon: CodeIcon,
+          icon: Code,
           shortcut: `${ctrl} ${shift}\\`,
           keywords: "code monaco script"
         }

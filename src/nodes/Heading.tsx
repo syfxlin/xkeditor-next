@@ -1,3 +1,4 @@
+import React from "react";
 import { Plugin } from "prosemirror-state";
 import copy from "copy-to-clipboard";
 import { Decoration, DecorationSet } from "prosemirror-view";
@@ -9,11 +10,19 @@ import backspaceToParagraph from "../commands/backspaceToParagraph";
 import toggleBlockType from "../commands/toggleBlockType";
 import headingToSlug from "../lib/headingToSlug";
 import Node, { NodeArgs } from "./Node";
-import { Command, Dispatcher, MenuItems } from "../lib/Extension";
+import { Command, Dispatcher, MenuItems, ToolbarItems } from "../lib/Extension";
 import { toast } from "react-hot-toast";
 import { t } from "../i18n";
-import { Heading1Icon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
+import isNodeActive from "../queries/isNodeActive";
+import {
+  H1,
+  H2,
+  H3,
+  LevelFiveTitle,
+  LevelFourTitle,
+  LevelSixTitle
+} from "@icon-park/react";
 
 type HeadingOptions = {
   levels: number[];
@@ -23,6 +32,15 @@ type HeadingOptions = {
 type HeadingAttrs = {
   level: number;
 };
+
+const HeadingIcons = [
+  H1,
+  H2,
+  H3,
+  LevelFourTitle,
+  LevelFiveTitle,
+  LevelSixTitle
+];
 
 export default class Heading extends Node<HeadingOptions, HeadingAttrs> {
   className = "heading-name";
@@ -197,15 +215,31 @@ export default class Heading extends Node<HeadingOptions, HeadingAttrs> {
 
   menuItems(): MenuItems {
     return {
-      1: this.options.levels.map((level: number) => ({
+      1: this.options.levels.map(level => ({
         name: this.name,
         title: t(`标题 ${level}`),
-        icon: Heading1Icon,
+        icon: HeadingIcons[level - 1],
         keywords: `heading${level} title${level}`,
         shortcut: `${ctrl} ${shift} ${level}`,
         attrs: { level },
         priority: level
       }))
+    };
+  }
+
+  toolbarItems({ type }: NodeArgs): ToolbarItems {
+    return {
+      default: {
+        3: this.options.levels.map(level => ({
+          name: this.name,
+          title: t(`标题 ${level}`),
+          shortcut: `${ctrl} ${shift} ${level}`,
+          icon: HeadingIcons[level - 1],
+          active: isNodeActive(type, { level }),
+          attrs: { level },
+          priority: level
+        }))
+      }
     };
   }
 }

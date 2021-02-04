@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Component, createRef } from "react";
+import React, { Component, createRef } from "react";
 import capitalize from "lodash/capitalize";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";

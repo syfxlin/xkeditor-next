@@ -1,3 +1,4 @@
+import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
 import Node, { NodeArgs } from "./Node";
@@ -6,9 +7,9 @@ import { PluginSimple } from "markdown-it";
 import checkboxPlugin from "../lib/markdown/checkboxes";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { t } from "../i18n";
-import { TodoListIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
+import { ListCheckbox } from "@icon-park/react";
 
 export default class CheckboxList extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -60,7 +61,7 @@ export default class CheckboxList extends Node<EmptyAttrs, EmptyAttrs> {
         {
           name: this.name,
           title: t("Todo 列表"),
-          icon: TodoListIcon,
+          icon: ListCheckbox,
           keywords: "checklist task todolist",
           shortcut: `${ctrl} ${shift} 7`
         }

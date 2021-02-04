@@ -1,12 +1,13 @@
+import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
 import toggleWrap from "../commands/toggleWrap";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
-import { BlockQuoteIcon } from "outline-icons";
 import { t } from "../i18n";
 import { mod } from "../menus/block";
+import { Quote } from "@icon-park/react";
 
 export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -51,7 +52,7 @@ export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
         {
           name: this.name,
           title: t("引用"),
-          icon: BlockQuoteIcon,
+          icon: Quote,
           shortcut: `${mod} ]`,
           keywords: "blockquote quote"
         }

@@ -8,6 +8,9 @@ import Token from "markdown-it/lib/token";
 import isMarkActive from "../queries/isMarkActive";
 import markInputRule from "../lib/markInputRule";
 import LinkInputComponent from "../components/LinkInputComponent";
+import { t } from "../i18n";
+import { ctrl } from "../menus/block";
+import { LinkTwo } from "@icon-park/react";
 
 function isPlainURL(
   link: ProseMirrorMark,
@@ -197,6 +200,19 @@ export default class Link extends Mark<any, LinkAttrs> {
 
   toolbarItems({ type }: MarkArgs): ToolbarItems {
     return {
+      default: {
+        2: [
+          {
+            name: this.name,
+            title: t("链接"),
+            shortcut: `${ctrl} K`,
+            icon: LinkTwo,
+            active: isMarkActive(type),
+            attrs: { href: "" },
+            priority: 1
+          }
+        ]
+      },
       modes: [
         {
           name: "link_editor",

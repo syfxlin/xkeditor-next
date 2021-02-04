@@ -1,10 +1,8 @@
-import * as React from "react";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { Portal } from "react-portal";
 import { some } from "lodash";
 import { EditorView } from "prosemirror-view";
 import FloatingToolbar from "./FloatingToolbar";
-import { SearchResult } from "./LinkEditor";
 import Menu from "./Menu";
 import isNodeActive from "../queries/isNodeActive";
 import { NodeSelection } from "prosemirror-state";
@@ -43,12 +41,8 @@ export type ToolbarComponentProps = {
 } & WithTranslation;
 
 type Props = {
-  tooltip: typeof React.Component | React.FC<any>;
   isTemplate: boolean;
   commands: Record<string, ApplyCommand>;
-  onSearchLink?: (term: string) => Promise<SearchResult[]>;
-  onClickLink: (href: string, event: React.MouseEvent) => void;
-  onCreateLink?: (title: string) => Promise<string>;
   view: EditorView;
   items: ToolbarItem[];
   modes: ToolbarMode[];

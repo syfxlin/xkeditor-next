@@ -1,11 +1,12 @@
+import React from "react";
 import { InputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { Command, Dispatcher, EmptyAttrs, MenuItems } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { HorizontalRuleIcon } from "outline-icons";
 import { mod } from "../menus/block";
 import { t } from "../i18n";
+import { DividingLine } from "@icon-park/react";
 
 export default class HorizontalRule extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -69,7 +70,7 @@ export default class HorizontalRule extends Node<EmptyAttrs, EmptyAttrs> {
         {
           name: this.name,
           title: t("分割线"),
-          icon: HorizontalRuleIcon,
+          icon: DividingLine,
           shortcut: `${mod} _`,
           keywords: "horizontal rule break line"
         }

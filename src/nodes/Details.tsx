@@ -11,8 +11,7 @@ import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
-// @ts-ignore
-import { HomeIcon } from "outline-icons";
+import { ViewGridDetail } from "@icon-park/react";
 
 type DetailsAttrs = {
   open: boolean;
@@ -129,7 +128,7 @@ export default class Details extends ReactNode<EmptyAttrs, DetailsAttrs> {
         {
           name: this.name,
           title: t("描述"),
-          icon: HomeIcon,
+          icon: ViewGridDetail,
           keywords: "details summary"
         }
       ]

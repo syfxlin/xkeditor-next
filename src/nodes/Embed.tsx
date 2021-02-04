@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
@@ -7,12 +7,13 @@ import { NodeArgs } from "./Node";
 import { ApplyCommand, Attrs, Command, EmptyAttrs } from "../lib/Extension";
 import { ComponentProps } from "../lib/ComponentView";
 import { EditorView } from "prosemirror-view";
+import { IIconProps } from "@icon-park/react/lib/runtime";
 
 export type EmbedDescriptor = {
   title: string;
   matcher: (value: string) => Attrs | null;
   component: typeof React.Component | React.FC<ComponentProps>;
-  icon?: typeof React.Component | React.FC<any>;
+  icon?: typeof React.Component | React.FC<IIconProps>;
   shortcut?: string;
   keywords?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);

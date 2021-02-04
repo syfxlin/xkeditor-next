@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import debounce from "lodash/debounce";
 import ReactDOM from "react-dom";
 import Editor from "./main";
@@ -173,20 +173,6 @@ class Example extends React.Component {
                   reject("500 error");
                 }
               }, 1500);
-            });
-          }}
-          onSearchLink={async term => {
-            console.log("Searched link: ", term);
-
-            // Delay to simulate time taken for remote API request to complete
-            return new Promise(resolve => {
-              setTimeout(() => {
-                resolve(
-                  docSearchResults.filter(result =>
-                    result.title.toLowerCase().includes(term.toLowerCase())
-                  )
-                );
-              }, Math.random() * 500);
             });
           }}
           upload={fs => {

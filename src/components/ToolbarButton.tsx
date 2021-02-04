@@ -4,7 +4,7 @@ type Props = { active?: boolean; disabled?: boolean };
 
 export default styled.button<Props>`
   display: inline-block;
-  flex: 0;
+  flex: 1;
   width: 24px;
   height: 24px;
   cursor: pointer;

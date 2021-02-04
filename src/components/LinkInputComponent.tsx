@@ -5,9 +5,9 @@ import Flex from "./Flex";
 import Input from "./Input";
 import ToolbarButton from "./ToolbarButton";
 import Tooltip from "./Tooltip";
-import { OpenIcon, TrashIcon } from "outline-icons";
 import { useTranslation } from "react-i18next";
 import getMarkRange from "../queries/getMarkRange";
+import { Delete, Share } from "@icon-park/react";
 
 const LinkInputComponent: React.FC<ToolbarComponentProps> = ({
   view,
@@ -62,12 +62,12 @@ const LinkInputComponent: React.FC<ToolbarComponentProps> = ({
       />
       <ToolbarButton onClick={handleOpenLink} disabled={!value}>
         <Tooltip tooltip={t("打开链接")}>
-          <OpenIcon color={theme.toolbarItem} />
+          <Share theme="outline" size="24" fill={theme.toolbarItem} />
         </Tooltip>
       </ToolbarButton>
       <ToolbarButton onClick={handleRemoveLink}>
         <Tooltip tooltip={t("删除链接")}>
-          <TrashIcon color={theme.toolbarItem} />
+          <Delete theme="outline" size="24" fill={theme.toolbarItem} />
         </Tooltip>
       </ToolbarButton>
     </Wrapper>

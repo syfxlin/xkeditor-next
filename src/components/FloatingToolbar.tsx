@@ -219,6 +219,8 @@ const Wrapper = styled.div<{
   box-sizing: border-box;
   pointer-events: none;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
 
   &::before {
     content: "";
