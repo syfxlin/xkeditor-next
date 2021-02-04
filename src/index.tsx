@@ -1,8 +1,8 @@
 import React from "react";
 import debounce from "lodash/debounce";
-import ReactDOM from "react-dom";
 import Editor from "./main";
 import { ComponentProps } from "./lib/ComponentView";
+import ReactDOM from "react-dom";
 
 const element = document.getElementById("root");
 const savedText = localStorage.getItem("saved");
@@ -120,115 +120,101 @@ class Example extends React.Component {
         <br />
         <br />
         <Editor
-          id="example"
-          readOnly={this.state.readOnly}
-          readOnlyWriteCheckboxes
           value={this.state.value}
-          template={this.state.template}
-          defaultValue={defaultValue}
-          scrollTo={window.location.hash}
-          handleDOMEvents={{
-            focus: () => {
-              console.log("FOCUS");
-              return false;
-            },
-            blur: () => {
-              console.log("BLUR");
-              return false;
-            },
-            paste: () => {
-              console.log("PASTE");
-              return false;
-            },
-            touchstart: () => {
-              console.log("TOUCH START");
-              return false;
-            }
-          }}
-          onSave={options => console.log("Save triggered", options)}
-          onCancel={() => console.log("Cancel triggered")}
           onChange={this.handleChange}
-          onClickLink={(href, event) =>
-            console.log("Clicked link: ", href, event)
-          }
-          onHoverLink={event => {
-            console.log(
-              "Hovered link: ",
-              (event.target as HTMLAnchorElement).href
-            );
-            return false;
-          }}
-          onClickHashtag={(tag, event) =>
-            console.log("Clicked hashtag: ", tag, event)
-          }
-          onCreateLink={title => {
-            // Delay to simulate time taken for remote API request to complete
-            return new Promise((resolve, reject) => {
-              setTimeout(() => {
-                if (title !== "error") {
-                  return resolve(
-                    `/doc/${encodeURIComponent(title.toLowerCase())}`
-                  );
-                } else {
-                  reject("500 error");
-                }
-              }, 1500);
-            });
-          }}
-          upload={fs => {
-            console.log("File upload triggered: ", fs);
-
-            // Delay to simulate time taken to upload
-            return new Promise(resolve => {
-              setTimeout(
-                () =>
-                  resolve({
-                    error: false,
-                    message: "OK",
-                    code: 200,
-                    data: [
-                      {
-                        extname: "png",
-                        filename: "123",
-                        key: "123",
-                        md5: "123",
-                        size: 123,
-                        url: "https://picsum.photos/600/600"
-                      }
-                    ]
-                  }),
-                1500
-              );
-            });
-          }}
-          embeds={[
-            {
-              title: "YouTube",
-              keywords: "youtube video tube google",
-              icon: () => (
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg"
-                  width={24}
-                  height={24}
-                />
-              ),
-              matcher: url => {
-                const match = url.match(
-                  /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
-                );
-                if (match) {
-                  return {
-                    href: url,
-                    matches: match
-                  };
-                }
-                return null;
-              },
-              component: YoutubeEmbed
-            }
-          ]}
+          readOnly={this.state.readOnly}
           dark={this.state.dark}
-          autoFocus
+          config={{
+            id: "example",
+            defaultValue,
+            autoFocus: true,
+            scrollTo: window.location.hash,
+            embeds: [
+              {
+                title: "YouTube",
+                keywords: "youtube video tube google",
+                icon: () => (
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg"
+                    width={24}
+                    height={24}
+                  />
+                ),
+                matcher: url => {
+                  const match = url.match(
+                    /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
+                  );
+                  if (match) {
+                    return {
+                      href: url,
+                      matches: match
+                    };
+                  }
+                  return null;
+                },
+                component: YoutubeEmbed
+              }
+            ]
+          }}
+          action={{
+            handleDOMEvents: {
+              focus: () => {
+                console.log("FOCUS");
+                return false;
+              },
+              blur: () => {
+                console.log("BLUR");
+                return false;
+              },
+              paste: () => {
+                console.log("PASTE");
+                return false;
+              },
+              touchstart: () => {
+                console.log("TOUCH START");
+                return false;
+              }
+            },
+            save: options => console.log("Save triggered", options),
+            cancel: () => console.log("Cancel triggered"),
+            onClickLink: (href, event) =>
+              console.log("Clicked link: ", href, event),
+            onHoverLink: event => {
+              console.log(
+                "Hovered link: ",
+                (event.target as HTMLAnchorElement).href
+              );
+              return false;
+            },
+            onClickHashtag: (tag, event) =>
+              console.log("Clicked hashtag: ", tag, event),
+            upload: fs => {
+              console.log("File upload triggered: ", fs);
+
+              // Delay to simulate time taken to upload
+              return new Promise(resolve => {
+                setTimeout(
+                  () =>
+                    resolve({
+                      error: false,
+                      message: "OK",
+                      code: 200,
+                      data: [
+                        {
+                          extname: "png",
+                          filename: "123",
+                          key: "123",
+                          md5: "123",
+                          size: 123,
+                          url: "https://picsum.photos/600/600"
+                        }
+                      ]
+                    }),
+                  1500
+                );
+              });
+            }
+          }}
         />
       </div>
     );

@@ -72,7 +72,8 @@ export default class ComponentView implements NodeView {
 
   renderElement() {
     const { dark } = this.editor.props;
-    const theme = this.editor.props.theme || (dark ? darkTheme : lightTheme);
+    const theme =
+      this.editor.props.config?.theme || (dark ? darkTheme : lightTheme);
 
     const contentRef = React.createRef<any>();
 

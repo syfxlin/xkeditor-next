@@ -13,7 +13,10 @@ import { NodeArgs } from "./Node";
 import { Command, MenuItems, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
+import uploadFiles, {
+  UploadFilesOptions,
+  UploadResponse
+} from "../commands/uploadFiles";
 import { t } from "../i18n";
 import isNodeActive from "../queries/isNodeActive";
 import {
@@ -139,6 +142,10 @@ const getLayoutAndTitle = (tokenTitle: string | null) => {
   }
 };
 
+type ImageOptions = {
+  upload: (files: File[]) => Promise<UploadResponse>;
+};
+
 type ImageAttrs = {
   src: null | string;
   alt: null | string;
@@ -146,8 +153,7 @@ type ImageAttrs = {
   title: null | string;
 };
 
-// TODO: update
-export default class Image extends ReactNode<any, ImageAttrs> {
+export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
   get name() {
     return "image";
   }

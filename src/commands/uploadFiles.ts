@@ -19,8 +19,6 @@ export type UploadResponse = {
 };
 
 export type UploadFilesOptions = {
-  onStart?: () => void;
-  onStop?: () => void;
   upload?: (files: File[]) => Promise<UploadResponse>;
   files: File[];
   view: EditorView;
@@ -32,8 +30,6 @@ export type UploadFilesOptions = {
 };
 
 const uploadFiles = ({
-  onStart,
-  onStop,
   upload,
   files,
   view,
@@ -49,9 +45,6 @@ const uploadFiles = ({
   }
   if (event) {
     event.preventDefault();
-  }
-  if (onStart) {
-    onStart();
   }
   const { schema } = view.state;
   const id = {};
@@ -88,11 +81,6 @@ const uploadFiles = ({
         view.dispatch(tr);
       }
       toast.error(t("抱歉，上传时发生错误") as string);
-    })
-    .finally(() => {
-      if (onStop) {
-        onStop();
-      }
     });
 };
 

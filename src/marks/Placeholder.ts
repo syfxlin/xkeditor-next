@@ -34,10 +34,6 @@ export default class Placeholder extends Mark<EmptyAttrs, EmptyAttrs> {
       new Plugin({
         props: {
           handleTextInput: (view, from, to, text) => {
-            if (this.editor.props.template) {
-              return false;
-            }
-
             const { state, dispatch } = view;
             const $from = state.doc.resolve(from);
 
@@ -64,9 +60,6 @@ export default class Placeholder extends Mark<EmptyAttrs, EmptyAttrs> {
           },
           handleKeyDown: (view, event: KeyboardEvent) => {
             if (!view.props.editable || !view.props.editable(view.state)) {
-              return false;
-            }
-            if (this.editor.props.template) {
               return false;
             }
             if (
@@ -126,9 +119,6 @@ export default class Placeholder extends Mark<EmptyAttrs, EmptyAttrs> {
           },
           handleClick: (view, pos, event: MouseEvent) => {
             if (!view.props.editable || !view.props.editable(view.state)) {
-              return false;
-            }
-            if (this.editor.props.template) {
               return false;
             }
 

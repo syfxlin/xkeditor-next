@@ -41,13 +41,18 @@ function isPlainURL(
   return !link.isInSet(next.marks);
 }
 
+type LinkOptions = {
+  onClickLink: (href: string, event: MouseEvent) => void;
+  onClickHashtag: (href: string, event: MouseEvent) => void;
+  onHoverLink: (event: MouseEvent) => boolean;
+};
+
 type LinkAttrs = {
   href: string;
   title?: string;
 };
 
-// TODO: update
-export default class Link extends Mark<any, LinkAttrs> {
+export default class Link extends Mark<LinkOptions, LinkAttrs> {
   get name() {
     return "link";
   }
@@ -106,7 +111,7 @@ export default class Link extends Mark<any, LinkAttrs> {
       "Mod-k": (state, dispatch) => {
         if (state.selection.empty) {
           // TODO: update
-          this.options.onKeyboardShortcut();
+          // this.options.onKeyboardShortcut();
           return true;
         }
 
@@ -218,7 +223,7 @@ export default class Link extends Mark<any, LinkAttrs> {
           name: "link_editor",
           priority: 3,
           active: view => isMarkActive(type)(view.state),
-          component: LinkInputComponent
+          component: LinkInputComponent(this.options.onClickLink)
         }
       ]
     };

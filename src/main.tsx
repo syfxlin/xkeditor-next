@@ -1,5 +1,5 @@
 /* global window File Promise */
-import React, { MouseEvent } from "react";
+import React from "react";
 import { EditorState, Plugin, Selection, Transaction } from "prosemirror-state";
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
@@ -25,7 +25,6 @@ import Extension, { MenuItem, ToolbarItem, ToolbarMode } from "./lib/Extension";
 import ExtensionManager from "./lib/ExtensionManager";
 import ComponentView from "./lib/ComponentView";
 import headingToSlug from "./lib/headingToSlug";
-import { WithTranslation, withTranslation } from "react-i18next";
 
 // nodes
 import ReactNode from "./nodes/ReactNode";
@@ -90,37 +89,36 @@ export { default as Extension } from "./lib/Extension";
 
 export const theme = lightTheme;
 
-export type Props = WithTranslation & {
-  id?: string;
+export type Props = {
   value?: string;
-  defaultValue: string;
-  placeholder: string;
-  extensions: Extension[];
-  autoFocus?: boolean;
+  onChange: (value: string) => void;
   readOnly?: boolean;
-  readOnlyWriteCheckboxes?: boolean;
   dark?: boolean;
-  theme?: typeof theme;
-  template?: boolean;
-  headingsOffset?: number;
-  scrollTo?: string;
-  handleDOMEvents?: {
-    [name: string]: (view: EditorView, event: Event) => boolean;
+  config?: {
+    id?: string;
+    defaultValue?: string;
+    placeholder?: string;
+    extensions?: Extension[];
+    autoFocus?: boolean;
+    // TODO: update
+    theme?: any;
+    scrollTo?: string;
+    embeds?: EmbedDescriptor[];
+    className?: string;
+    style?: Record<string, string>;
   };
-  upload?: (files: File[]) => Promise<UploadResponse>;
-  onSave?: ({ done }: { done: boolean }) => void;
-  onCancel?: () => void;
-  onChange: (value: () => string) => void;
-  onUploadStart?: () => void;
-  onUploadStop?: () => void;
-  onCreateLink?: (title: string) => Promise<string>;
-  onClickLink: (href: string, event: MouseEvent) => void;
-  onHoverLink?: (event: MouseEvent) => boolean;
-  onClickHashtag?: (tag: string, event: MouseEvent) => void;
-  onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-  embeds: EmbedDescriptor[];
-  className?: string;
-  style?: Record<string, string>;
+  action?: {
+    handleDOMEvents?: {
+      [name: string]: (view: EditorView, event: Event) => boolean;
+    };
+    upload?: (files: File[]) => Promise<UploadResponse>;
+    save?: ({ done }: { done: boolean }) => void;
+    cancel?: () => void;
+    onKeydown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
+    onClickLink?: (href: string, event: MouseEvent) => void;
+    onClickHashtag?: (href: string, event: MouseEvent) => void;
+    onHoverLink?: (event: MouseEvent) => boolean;
+  };
 };
 
 type State = {
@@ -143,12 +141,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   static defaultProps = {
     defaultValue: "",
     placeholder: t("写点有趣的内容..."),
-    onImageUploadStart: () => {
-      // no default behavior
-    },
-    onImageUploadStop: () => {
-      // no default behavior
-    },
     onClickLink: (href: string) => {
       window.open(href, "_blank");
     },
@@ -198,13 +190,14 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   componentDidMount() {
     this.init();
 
-    if (this.props.scrollTo) {
-      this.scrollToAnchor(this.props.scrollTo);
+    const scrollTo = this.props.config?.scrollTo;
+    if (scrollTo) {
+      this.scrollToAnchor(scrollTo);
     }
 
     if (this.props.readOnly) return;
 
-    if (this.props.autoFocus) {
+    if (this.props.config?.autoFocus) {
       this.focusAtEnd();
     }
   }
@@ -224,13 +217,18 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       });
     }
 
-    if (this.props.scrollTo && this.props.scrollTo !== prevProps.scrollTo) {
-      this.scrollToAnchor(this.props.scrollTo);
+    const scrollTo = this.props.config?.scrollTo;
+    if (scrollTo && scrollTo !== prevProps.config?.scrollTo) {
+      this.scrollToAnchor(scrollTo);
     }
 
     // Focus at the end of the document if switching from readOnly and autoFocus
     // is set to true
-    if (prevProps.readOnly && !this.props.readOnly && this.props.autoFocus) {
+    if (
+      prevProps.readOnly &&
+      !this.props.readOnly &&
+      this.props.config?.autoFocus
+    ) {
       this.focusAtEnd();
     }
   }
@@ -269,14 +267,10 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new Embed(),
         new ListItem(),
         new Notice(),
-        new Heading({
-          offset: this.props.headingsOffset
-        }),
+        new Heading(),
         new HorizontalRule(),
         new Image({
-          upload: this.props.upload,
-          onUploadStart: this.props.onUploadStart,
-          onUploadStop: this.props.onUploadStop
+          upload: this.props.action?.upload
         }),
         new Table(),
         new TableCell({
@@ -296,9 +290,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new Link({
           // TODO: update
           // onKeyboardShortcut: this.handleOpenLinkMenu,
-          onClickLink: this.props.onClickLink,
-          onClickHashtag: this.props.onClickHashtag,
-          onHoverLink: this.props.onHoverLink
+          onClickLink: this.props.action?.onClickLink,
+          onClickHashtag: this.props.action?.onClickHashtag,
+          onHoverLink: this.props.action?.onHoverLink
         }),
         new Strikethrough(),
         new OrderedList(),
@@ -307,16 +301,16 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new TrailingNode(),
         new MarkdownPaste(),
         new Keys({
-          onSave: this.handleSave,
-          onSaveAndExit: this.handleSaveAndExit,
-          onCancel: this.props.onCancel
+          save: this.handleSave,
+          saveAndExit: this.handleSaveAndExit,
+          cancel: this.props.action?.cancel
         }),
         new BlockMenuTrigger({
-          onOpen: this.handleOpenBlockMenu,
-          onClose: this.handleCloseBlockMenu
+          open: this.handleOpenBlockMenu,
+          close: this.handleCloseBlockMenu
         }),
         new Placeholder({
-          placeholder: this.props.placeholder
+          placeholder: this.props.config?.placeholder
         }),
         //
         new Sup(),
@@ -328,7 +322,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new Mermaid(),
         new Emoji(),
         //
-        ...this.props.extensions
+        ...(this.props.config?.extensions || [])
       ],
       this
     );
@@ -438,7 +432,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   }
 
   createState(value?: string) {
-    const doc = this.createDocument(value || this.props.defaultValue);
+    const doc = this.createDocument(
+      value || this.props.config?.defaultValue || ""
+    );
 
     return EditorState.create({
       schema: this.schema,
@@ -479,25 +475,11 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       state: this.createState(),
       editable: () => !this.props.readOnly,
       nodeViews: this.nodeViews,
-      handleDOMEvents: this.props.handleDOMEvents,
+      handleDOMEvents: this.props.action?.handleDOMEvents,
       dispatchTransaction: transaction => {
-        const { state, transactions } = this.view.state.applyTransaction(
-          transaction
-        );
+        const { state } = this.view.state.applyTransaction(transaction);
 
         this.view.updateState(state);
-
-        // If any of the transactions being dispatched resulted in the doc
-        // changing then call our own change handler to let the outside world
-        // know
-        if (
-          transactions.some(tr => tr.docChanged) &&
-          (!this.props.readOnly ||
-            (this.props.readOnlyWriteCheckboxes &&
-              transactions.some(isEditingCheckbox)))
-        ) {
-          this.handleChange();
-        }
 
         // Because Prosemirror and React are not linked we must tell React that
         // a render is needed whenever the Prosemirror state changes.
@@ -529,22 +511,20 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   handleChange = () => {
     if (!this.props.onChange) return;
 
-    this.props.onChange(() => {
-      return this.value();
-    });
+    this.props.onChange(this.value());
   };
 
   handleSave = () => {
-    const { onSave } = this.props;
-    if (onSave) {
-      onSave({ done: false });
+    const save = this.props.action?.save;
+    if (save) {
+      save({ done: false });
     }
   };
 
   handleSaveAndExit = () => {
-    const { onSave } = this.props;
-    if (onSave) {
-      onSave({ done: true });
+    const save = this.props.action?.save;
+    if (save) {
+      save({ done: true });
     }
   };
 
@@ -616,23 +596,18 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   };
 
   theme = () => {
-    return this.props.theme || (this.props.dark ? darkTheme : lightTheme);
+    return (
+      this.props.config?.theme || (this.props.dark ? darkTheme : lightTheme)
+    );
   };
 
   render = () => {
-    const {
-      readOnly,
-      readOnlyWriteCheckboxes,
-      style,
-      className,
-      onKeyDown
-    } = this.props;
-
+    const { readOnly } = this.props;
     return (
       <Flex
-        onKeyDown={onKeyDown}
-        style={style}
-        className={className}
+        onKeyDown={this.props.action?.onKeydown}
+        style={this.props.config?.style}
+        className={this.props.config?.className}
         align="flex-start"
         justify="center"
         column
@@ -641,7 +616,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
           <React.Fragment>
             <StyledEditor
               readOnly={readOnly}
-              readOnlyWriteCheckboxes={readOnlyWriteCheckboxes}
               ref={ref => (this.element = ref)}
             />
             {!readOnly && this.view && (
@@ -649,7 +623,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                 <SelectionToolbar
                   view={this.view}
                   commands={this.commands}
-                  isTemplate={this.props.template === true}
                   items={this.toolbarItems}
                   modes={this.toolbarModes}
                 />
@@ -659,10 +632,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                   isActive={this.state.blockMenuOpen}
                   search={this.state.blockMenuSearch}
                   onClose={this.handleCloseBlockMenu}
-                  upload={this.props.upload}
-                  onUploadStart={this.props.onUploadStart}
-                  onUploadStop={this.props.onUploadStop}
-                  embeds={this.props.embeds}
+                  upload={this.props.action?.upload}
+                  embeds={this.props.config?.embeds}
                   items={this.menuItems}
                 />
               </React.Fragment>
@@ -675,12 +646,11 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   };
 }
 
-export default withTranslation()(RichMarkdownEditor);
+export default RichMarkdownEditor;
 export type Editor = RichMarkdownEditor;
 
 const StyledEditor = styled("div")<{
   readOnly?: boolean;
-  readOnlyWriteCheckboxes?: boolean;
 }>`
   color: ${props => props.theme.text};
   background: ${props => props.theme.background};
@@ -1040,10 +1010,8 @@ const StyledEditor = styled("div")<{
   }
 
   ul.checkbox_list li input {
-    pointer-events: ${props =>
-      props.readOnly && !props.readOnlyWriteCheckboxes ? "none" : "initial"};
-    opacity: ${props =>
-      props.readOnly && !props.readOnlyWriteCheckboxes ? 0.75 : 1};
+    pointer-events: ${props => props.readOnly && "none"};
+    opacity: ${props => props.readOnly && 0.75};
     margin: 0 0.5em 0 0;
     width: 14px;
     height: 14px;

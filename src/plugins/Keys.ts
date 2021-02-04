@@ -1,9 +1,15 @@
 import { AllSelection, Plugin, Selection } from "prosemirror-state";
-import Extension from "../lib/Extension";
+import Extension, { EmptyAttrs } from "../lib/Extension";
 
 const isMac = window.navigator.platform === "MacIntel";
 
-export default class Keys extends Extension {
+type KeysOptions = {
+  save: () => void;
+  saveAndExit: () => void;
+  cancel: () => void;
+};
+
+export default class Keys extends Extension<KeysOptions, EmptyAttrs> {
   get name() {
     return "keys";
   }
@@ -37,19 +43,19 @@ export default class Keys extends Extension {
 
             if (event.key === "s") {
               event.preventDefault();
-              this.options.onSave();
+              this.options.save();
               return true;
             }
 
             if (event.key === "Enter") {
               event.preventDefault();
-              this.options.onSaveAndExit();
+              this.options.saveAndExit();
               return true;
             }
 
             if (event.key === "Escape") {
               event.preventDefault();
-              this.options.onCancel();
+              this.options.cancel();
               return true;
             }
 

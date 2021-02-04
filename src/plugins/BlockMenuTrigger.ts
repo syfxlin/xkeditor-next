@@ -3,7 +3,7 @@ import { EditorState, Plugin } from "prosemirror-state";
 import { isInTable } from "prosemirror-tables";
 import { findParentNode } from "prosemirror-utils";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
-import Extension from "../lib/Extension";
+import Extension, { EmptyAttrs } from "../lib/Extension";
 import { t } from "../i18n";
 
 const MAX_MATCH = 500;
@@ -46,7 +46,15 @@ function run(
   return true;
 }
 
-export default class BlockMenuTrigger extends Extension {
+type BlockMenuTriggerOptions = {
+  open: (search: string) => void;
+  close: () => void;
+};
+
+export default class BlockMenuTrigger extends Extension<
+  BlockMenuTriggerOptions,
+  EmptyAttrs
+> {
   get name() {
     return "blockmenu";
   }
@@ -56,7 +64,7 @@ export default class BlockMenuTrigger extends Extension {
       new Plugin({
         props: {
           handleClick: () => {
-            this.options.onClose();
+            this.options.close();
             return false;
           },
           handleKeyDown: (view, event) => {
@@ -70,9 +78,9 @@ export default class BlockMenuTrigger extends Extension {
                 const { pos } = view.state.selection.$from;
                 return run(view, pos, pos, OPEN_REGEX, (state, match) => {
                   if (match) {
-                    this.options.onOpen(match[1]);
+                    this.options.open(match[1]);
                   } else {
-                    this.options.onClose();
+                    this.options.close();
                   }
                   return null;
                 });
@@ -120,7 +128,7 @@ export default class BlockMenuTrigger extends Extension {
                     icon.className = "block-menu-trigger";
                     icon.innerText = "+";
                     icon.addEventListener("click", () => {
-                      this.options.onOpen("");
+                      this.options.open("");
                     });
                     return icon;
                   })
@@ -171,7 +179,7 @@ export default class BlockMenuTrigger extends Extension {
           state.selection.$from.parent.type.name === "paragraph" &&
           !isInTable(state)
         ) {
-          this.options.onOpen(match[1]);
+          this.options.open(match[1]);
         }
         return null;
       }),
@@ -181,7 +189,7 @@ export default class BlockMenuTrigger extends Extension {
       // /word<space>
       new InputRule(CLOSE_REGEX, (state, match) => {
         if (match) {
-          this.options.onClose();
+          this.options.open("");
         }
         return null;
       })

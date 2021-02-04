@@ -46,7 +46,7 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
           tag: "iframe",
           getAttrs: node => {
             const dom = node as HTMLIFrameElement;
-            const { embeds } = this.editor.props;
+            const embeds = this.editor.props.config?.embeds;
             const href = dom.getAttribute("src") || "";
 
             if (embeds) {

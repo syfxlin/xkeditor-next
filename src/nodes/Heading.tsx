@@ -26,7 +26,6 @@ import {
 
 type HeadingOptions = {
   levels: number[];
-  offset?: number;
 };
 
 type HeadingAttrs = {
@@ -79,7 +78,7 @@ export default class Heading extends Node<HeadingOptions, HeadingAttrs> {
         button.addEventListener("click", this.handleCopyLink());
 
         return [
-          `h${node.attrs.level + (this.options.offset || 0)}`,
+          `h${node.attrs.level}`,
           button,
           ["span", { class: "heading-content" }, 0]
         ];

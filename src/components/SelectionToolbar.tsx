@@ -41,7 +41,6 @@ export type ToolbarComponentProps = {
 } & WithTranslation;
 
 type Props = {
-  isTemplate: boolean;
   commands: Record<string, ApplyCommand>;
   view: EditorView;
   items: ToolbarItem[];

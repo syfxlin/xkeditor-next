@@ -21,8 +21,6 @@ export type BlockComponentProps = {
   close: () => void;
   view: EditorView;
   upload?: (files: File[]) => Promise<UploadResponse>;
-  onUploadStart?: () => void;
-  onUploadStop?: () => void;
 } & WithTranslation;
 
 type Props = {
@@ -32,15 +30,13 @@ type Props = {
   // 内容和指令
   items: MenuItem[];
   commands: Record<string, ApplyCommand>;
-  embeds: EmbedDescriptor[];
+  embeds?: EmbedDescriptor[];
   // 编辑器
   view: EditorView;
   // 搜索
   search: string;
   // 图片上传
   upload?: (files: File[]) => Promise<UploadResponse>;
-  onUploadStart?: () => void;
-  onUploadStop?: () => void;
 } & WithTranslation;
 
 type State = {
@@ -232,7 +228,7 @@ class BlockMenu extends Component<Props, State> {
     if (!insertItem.upload) return;
     if (!insertItem.name) return;
     const files = getDataTransferFiles(event);
-    const { view, upload, onUploadStart, onUploadStop } = this.props;
+    const { view, upload } = this.props;
     const { state, dispatch } = view;
     const parent = findParentNode(node => !!node)(state.selection);
 
@@ -246,8 +242,6 @@ class BlockMenu extends Component<Props, State> {
       );
 
       uploadFiles({
-        onStart: onUploadStart,
-        onStop: onUploadStop,
         view,
         pos: parent.pos,
         files,
@@ -380,7 +374,7 @@ class BlockMenu extends Component<Props, State> {
     const items = [...this.props.items];
     const embedItems: MenuItem[] = [];
 
-    for (const embed of embeds) {
+    for (const embed of embeds || []) {
       if (embed.title && embed.icon) {
         embedItems.push({
           ...embed,
@@ -439,16 +433,7 @@ class BlockMenu extends Component<Props, State> {
   }
 
   render() {
-    const {
-      t,
-      i18n,
-      tReady,
-      isActive,
-      upload,
-      view,
-      onUploadStart,
-      onUploadStop
-    } = this.props;
+    const { t, i18n, tReady, isActive, upload, view } = this.props;
     const items = this.filtered;
     const { insertItem, mode, ...positioning } = this.state;
 
@@ -509,8 +494,6 @@ class BlockMenu extends Component<Props, State> {
               close={this.close}
               view={view}
               upload={upload}
-              onUploadStart={onUploadStart}
-              onUploadStop={onUploadStop}
               t={t}
               i18n={i18n}
               tReady={tReady}
