@@ -6,9 +6,9 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { BulletedListIcon } from "outline-icons";
 import { t } from "../i18n";
 import { ctrl, shift } from "../menus/block";
-import { MenuItems } from "../lib/Extension";
+import { EmptyAttrs, MenuItems } from "../lib/Extension";
 
-export default class BulletList extends Node {
+export default class BulletList extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "bullet_list";
   }

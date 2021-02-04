@@ -22,7 +22,13 @@ import {
   moveRow
 } from "prosemirror-utils";
 import { Plugin, TextSelection } from "prosemirror-state";
-import { Command, Dispatcher, MenuItems, ToolbarItems } from "../lib/Extension";
+import {
+  Command,
+  Dispatcher,
+  EmptyAttrs,
+  MenuItems,
+  ToolbarItems
+} from "../lib/Extension";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
@@ -43,7 +49,7 @@ import getColumnIndex from "../queries/getColumnIndex";
 import getRowIndex from "../queries/getRowIndex";
 import isNodeActive from "../queries/isNodeActive";
 
-export default class Table extends Node {
+export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "table";
   }

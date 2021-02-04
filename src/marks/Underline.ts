@@ -4,8 +4,9 @@ import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import underlinesPlugin from "../lib/markdown/underlines";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Underline extends Mark {
+export default class Underline extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "underline";
   }

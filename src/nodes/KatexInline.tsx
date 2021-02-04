@@ -12,8 +12,9 @@ import { NodeArgs } from "./Node";
 import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { applyContent } from "../utils/editor";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class KatexInline extends ReactNode {
+export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "katex_inline";
   }

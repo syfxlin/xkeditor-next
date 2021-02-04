@@ -2,6 +2,7 @@ import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
 import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
 import { MarkSpec, Node } from "prosemirror-model";
+import { EmptyAttrs } from "../lib/Extension";
 
 function backticksFor(node: Node, side: -1 | 1) {
   const ticks = /`+/g;
@@ -24,7 +25,7 @@ function backticksFor(node: Node, side: -1 | 1) {
   return result;
 }
 
-export default class Code extends Mark {
+export default class Code extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "code_inline";
   }

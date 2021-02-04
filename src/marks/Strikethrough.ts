@@ -2,8 +2,9 @@ import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
 import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec } from "prosemirror-model";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Strikethrough extends Mark {
+export default class Strikethrough extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "strikethrough";
   }

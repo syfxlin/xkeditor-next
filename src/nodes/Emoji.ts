@@ -7,11 +7,12 @@ import Node, { NodeArgs } from "./Node";
 import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { EmptyAttrs } from "../lib/Extension";
 
 const emoji = new EmojiConvertor();
 emoji.replace_mode = "unified";
 
-export default class Emoji extends Node {
+export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "emoji";
   }

@@ -2,8 +2,9 @@ import { Plugin, TextSelection } from "prosemirror-state";
 import getMarkRange from "../queries/getMarkRange";
 import Mark from "./Mark";
 import { MarkSpec } from "prosemirror-model";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Placeholder extends Mark {
+export default class Placeholder extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "placeholder";
   }

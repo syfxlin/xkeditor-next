@@ -1,15 +1,13 @@
 import React from "react";
 import { toggleMark } from "prosemirror-commands";
 import { Plugin } from "prosemirror-state";
-import { InputRule } from "prosemirror-inputrules";
 import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
 import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
 import { Attrs, Dispatcher, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import isMarkActive from "../queries/isMarkActive";
 import LinkEditor from "../components/LinkEditor";
-
-const LINK_INPUT_REGEX = /\[(.+)]\((\S+)\)/;
+import markInputRule from "../lib/markInputRule";
 
 function isPlainURL(
   link: ProseMirrorMark,
@@ -40,7 +38,13 @@ function isPlainURL(
   return !link.isInSet(next.marks);
 }
 
-export default class Link extends Mark {
+type LinkAttrs = {
+  href: string;
+  title?: string;
+};
+
+// TODO: update
+export default class Link extends Mark<any, LinkAttrs> {
   get name() {
     return "link";
   }
@@ -50,6 +54,9 @@ export default class Link extends Mark {
       attrs: {
         href: {
           default: ""
+        },
+        title: {
+          default: null
         }
       },
       inclusive: false,
@@ -57,7 +64,8 @@ export default class Link extends Mark {
         {
           tag: "a[href]",
           getAttrs: node => ({
-            href: (node as HTMLAnchorElement).getAttribute("href")
+            href: (node as HTMLAnchorElement).getAttribute("href"),
+            title: (node as HTMLAnchorElement).getAttribute("title")
           })
         }
       ],
@@ -74,25 +82,20 @@ export default class Link extends Mark {
 
   inputRules({ type }: MarkArgs) {
     return [
-      new InputRule(LINK_INPUT_REGEX, (state, match, start, end) => {
-        const [okay, alt, href] = match;
-        const { tr } = state;
-
-        if (okay) {
-          tr.replaceWith(start, end, this.editor.schema.text(alt)).addMark(
-            start,
-            start + alt.length,
-            type.create({ href })
-          );
-        }
-
-        return tr;
+      markInputRule(/\[([^\]]+)]\(([^)]+)\)$/, type, 1, match => {
+        const split = match[2].split(' "');
+        return {
+          href: split[0],
+          title:
+            split.length > 1 ? split[1].substring(0, split[1].length - 1) : null
+        };
       })
     ];
   }
 
   commands({ type }: MarkArgs) {
-    return ({ href }: Attrs = { href: "" }) => toggleMark(type, { href });
+    return ({ href, title }: Attrs = { href: "" }) =>
+      toggleMark(type, { href, title });
   }
 
   keys({ type }: MarkArgs): Record<string, Dispatcher> {

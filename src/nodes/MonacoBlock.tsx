@@ -18,9 +18,17 @@ import { toast } from "react-hot-toast";
 import { t } from "../i18n";
 import { CodeIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
-import { MenuItems } from "../lib/Extension";
+import { EmptyAttrs, MenuItems, MonacoAttrs } from "../lib/Extension";
 
-export default class MonacoBlock extends ReactNode {
+type MonacoBlockAttrs = {
+  language: string;
+  isEdit: boolean;
+};
+
+export default class MonacoBlock extends ReactNode<
+  EmptyAttrs,
+  MonacoAttrs<MonacoBlockAttrs>
+> {
   get name() {
     return "code_block";
   }

@@ -52,7 +52,7 @@ export default abstract class Node<
   commands({
     type,
     schema
-  }: NodeArgs): Record<string, Command<A>> | Command<A> {
+  }: NodeArgs): Record<string, Command<Partial<A>>> | Command<Partial<A>> {
     return attrs => toggleBlockType(type, schema.nodes.paragraph, attrs);
   }
 

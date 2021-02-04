@@ -6,9 +6,13 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { t } from "../i18n";
 import { OrderedListIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
-import { MenuItems } from "../lib/Extension";
+import { EmptyAttrs, MenuItems } from "../lib/Extension";
 
-export default class OrderedList extends Node {
+type OrderedListAttrs = {
+  order: number;
+};
+
+export default class OrderedList extends Node<EmptyAttrs, OrderedListAttrs> {
   get name() {
     return "ordered_list";
   }

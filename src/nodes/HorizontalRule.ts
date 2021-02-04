@@ -1,13 +1,13 @@
 import { InputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { Command, Dispatcher, MenuItems } from "../lib/Extension";
+import { Command, Dispatcher, EmptyAttrs, MenuItems } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { HorizontalRuleIcon } from "outline-icons";
 import { mod } from "../menus/block";
 import { t } from "../i18n";
 
-export default class HorizontalRule extends Node {
+export default class HorizontalRule extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "hr";
   }

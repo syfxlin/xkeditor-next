@@ -8,9 +8,14 @@ import * as React from "react";
 import { UploadResponse } from "../commands/uploadFiles";
 import { BlockComponentProps } from "../components/BlockMenu";
 import { ToolbarComponentProps } from "../components/SelectionToolbar";
+import { editor } from "monaco-editor";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type EmptyAttrs = {};
+
+export type MonacoAttrs<A extends Attrs = Attrs> = A & {
+  monacoRef: null | editor.IStandaloneCodeEditor;
+};
 
 export type Attrs = Record<string, any>;
 
@@ -85,11 +90,11 @@ export default abstract class Extension<
   // @ts-ignore
   editor: Editor;
 
-  constructor(options: O = {} as O) {
+  constructor(options: Partial<O> = {}) {
     this.options = {
       ...this.defaultOptions,
       ...options
-    };
+    } as O;
   }
 
   bindEditor(editor: Editor): void {
@@ -116,13 +121,15 @@ export default abstract class Extension<
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  commands(options: ExtensionArgs): Record<string, Command<A>> | Command<A> {
+  commands(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options: ExtensionArgs
+  ): Record<string, Command<Partial<A>>> | Command<Partial<A>> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return attrs => () => false;
   }
 
-  get defaultOptions(): O {
-    return {} as O;
+  get defaultOptions(): Partial<O> {
+    return {};
   }
 }

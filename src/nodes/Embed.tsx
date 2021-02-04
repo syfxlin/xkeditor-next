@@ -4,7 +4,7 @@ import ReactNode from "./ReactNode";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { NodeArgs } from "./Node";
-import { ApplyCommand, Attrs, Command } from "../lib/Extension";
+import { ApplyCommand, Attrs, Command, EmptyAttrs } from "../lib/Extension";
 import { ComponentProps } from "../lib/ComponentView";
 import { EditorView } from "prosemirror-view";
 
@@ -19,7 +19,13 @@ export type EmbedDescriptor = {
   command?: ApplyCommand;
 };
 
-export default class Embed extends ReactNode {
+type EmbedAttrs = {
+  href: null | string;
+  component: null | typeof React.Component | React.FC<ComponentProps>;
+  matches: Record<string, string>;
+};
+
+export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
   get name() {
     return "embed";
   }

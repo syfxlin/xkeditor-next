@@ -5,8 +5,10 @@ import Node from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class TableHeadCell extends Node {
+// TODO: update
+export default class TableHeadCell extends Node<any, EmptyAttrs> {
   get name() {
     return "th";
   }

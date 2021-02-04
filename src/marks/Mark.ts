@@ -65,7 +65,9 @@ export default abstract class Mark<
     return undefined;
   }
 
-  commands({ type }: MarkArgs): Record<string, Command<A>> | Command<A> {
+  commands({
+    type
+  }: MarkArgs): Record<string, Command<Partial<A>>> | Command<Partial<A>> {
     return attrs => toggleMark(type, attrs);
   }
 

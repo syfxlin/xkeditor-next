@@ -8,9 +8,9 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { t } from "../i18n";
 import { TodoListIcon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
-import { MenuItems } from "../lib/Extension";
+import { EmptyAttrs, MenuItems } from "../lib/Extension";
 
-export default class CheckboxList extends Node {
+export default class CheckboxList extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "checkbox_list";
   }

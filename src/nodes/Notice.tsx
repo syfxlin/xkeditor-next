@@ -6,13 +6,17 @@ import ReactDOM from "react-dom";
 import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
-import { Command, MenuItems } from "../lib/Extension";
+import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 
-export default class Notice extends Node {
+type NoticeAttrs = {
+  style: string;
+};
+
+export default class Notice extends Node<EmptyAttrs, NoticeAttrs> {
   get styleOptions() {
     return Object.entries({
       info: t("信息"),

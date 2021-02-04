@@ -15,7 +15,16 @@ import { t } from "../i18n";
 import { Heading1Icon } from "outline-icons";
 import { ctrl, shift } from "../menus/block";
 
-export default class Heading extends Node {
+type HeadingOptions = {
+  levels: number[];
+  offset?: number;
+};
+
+type HeadingAttrs = {
+  level: number;
+};
+
+export default class Heading extends Node<HeadingOptions, HeadingAttrs> {
   className = "heading-name";
 
   get name() {

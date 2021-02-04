@@ -7,14 +7,19 @@ import React, { useCallback } from "react";
 import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { Command, MenuItems } from "../lib/Extension";
+import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 // @ts-ignore
 import { HomeIcon } from "outline-icons";
 
-export default class Details extends ReactNode {
+type DetailsAttrs = {
+  open: boolean;
+  summary: null | string;
+};
+
+export default class Details extends ReactNode<EmptyAttrs, DetailsAttrs> {
   get name() {
     return "details";
   }

@@ -1,16 +1,13 @@
 import * as React from "react";
-import { Component, MouseEvent } from "react";
+import { MouseEvent } from "react";
 import { Portal } from "react-portal";
 import { some } from "lodash";
 import { EditorView } from "prosemirror-view";
 import FloatingToolbar from "./FloatingToolbar";
 import { SearchResult } from "./LinkEditor";
 import Menu from "./Menu";
-import isMarkActive from "../queries/isMarkActive";
 import getMarkRange from "../queries/getMarkRange";
 import isNodeActive from "../queries/isNodeActive";
-import getColumnIndex from "../queries/getColumnIndex";
-import getRowIndex from "../queries/getRowIndex";
 import { NodeSelection } from "prosemirror-state";
 import { ToolbarItem, ToolbarMode } from "../lib/Extension";
 import { WithTranslation, withTranslation } from "react-i18next";
@@ -75,13 +72,7 @@ class SelectionToolbar extends React.Component<Props> {
       return null;
     }
 
-    const colIndex = getColumnIndex(state.selection);
-    const rowIndex = getRowIndex(state.selection);
-    const isTableSelection = colIndex !== undefined && rowIndex !== undefined;
-    const link = isMarkActive(state.schema.marks.link)(state);
     const range = getMarkRange(selection.$from, state.schema.marks.link);
-    const isImageSelection =
-      selection.node && selection.node.type.name === "image";
 
     let items: ToolbarItem[] = this.props.items;
     let Component:

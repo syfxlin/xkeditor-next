@@ -1,7 +1,8 @@
 import Node from "./Node";
 import { NodeSpec } from "prosemirror-model";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class TableRow extends Node {
+export default class TableRow extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "tr";
   }

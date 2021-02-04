@@ -140,7 +140,15 @@ const getLayoutAndTitle = (tokenTitle: string | null) => {
   }
 };
 
-export default class Image extends ReactNode {
+type ImageAttrs = {
+  src: null | string;
+  alt: null | string;
+  layoutClass: null | string;
+  title: null | string;
+};
+
+// TODO: update
+export default class Image extends ReactNode<any, ImageAttrs> {
   get name() {
     return "image";
   }

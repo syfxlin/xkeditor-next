@@ -2,13 +2,13 @@ import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
 import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec } from "prosemirror-model";
-import { ToolbarItems } from "../lib/Extension";
+import { EmptyAttrs, ToolbarItems } from "../lib/Extension";
 import { t } from "../i18n";
 import { BoldIcon } from "outline-icons";
 import isMarkActive from "../queries/isMarkActive";
 import { ctrl } from "../menus/block";
 
-export default class Bold extends Mark {
+export default class Bold extends Mark<EmptyAttrs, EmptyAttrs> {
   get name(): string {
     return "strong";
   }

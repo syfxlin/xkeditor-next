@@ -4,8 +4,9 @@ import markInputRule from "../lib/markInputRule";
 import { toggleMark } from "prosemirror-commands";
 import { PluginSimple } from "markdown-it";
 import markPlugin from "../lib/markdown/mark";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Sub extends Mark {
+export default class Sub extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "sub";
   }

@@ -7,8 +7,13 @@ import Node, { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class CheckboxItem extends Node {
+type CheckboxItemAttrs = {
+  checked: boolean;
+};
+
+export default class CheckboxItem extends Node<EmptyAttrs, CheckboxItemAttrs> {
   get name() {
     return "checkbox_item";
   }

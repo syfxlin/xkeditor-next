@@ -10,8 +10,9 @@ import katexPlugin from "@iktakahiro/markdown-it-katex";
 import { render } from "katex";
 import "katex/dist/katex.min.css";
 import "../styles/math.less";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Katex extends Node {
+export default class Katex extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "katex";
   }

@@ -4,8 +4,9 @@ import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import markPlugin from "../lib/markdown/mark";
+import { EmptyAttrs } from "../lib/Extension";
 
-export default class Highlight extends Mark {
+export default class Highlight extends Mark<EmptyAttrs, EmptyAttrs> {
   get name() {
     return "mark";
   }

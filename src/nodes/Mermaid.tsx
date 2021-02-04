@@ -1,7 +1,13 @@
 import { NodeArgs } from "./Node";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { mergeSpec, nodeKeys } from "../utils/editor";
-import { Command, Dispatcher, MenuItems } from "../lib/Extension";
+import {
+  Command,
+  Dispatcher,
+  EmptyAttrs,
+  MenuItems,
+  MonacoAttrs
+} from "../lib/Extension";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
@@ -16,7 +22,14 @@ import { t } from "../i18n";
 import { HomeIcon } from "outline-icons";
 import toggleBlockType from "../commands/toggleBlockType";
 
-export default class Mermaid extends ReactNode {
+type MermaidAttrs = {
+  isEdit: boolean;
+};
+
+export default class Mermaid extends ReactNode<
+  EmptyAttrs,
+  MonacoAttrs<MermaidAttrs>
+> {
   get name() {
     return "mermaid";
   }
