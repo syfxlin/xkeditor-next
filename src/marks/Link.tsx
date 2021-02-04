@@ -6,8 +6,8 @@ import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
 import { Attrs, Dispatcher, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import isMarkActive from "../queries/isMarkActive";
-import LinkEditor from "../components/LinkEditor";
 import markInputRule from "../lib/markInputRule";
+import LinkInputComponent from "../components/LinkInputComponent";
 
 function isPlainURL(
   link: ProseMirrorMark,
@@ -202,20 +202,7 @@ export default class Link extends Mark<any, LinkAttrs> {
           name: "link_editor",
           priority: 3,
           active: view => isMarkActive(type)(view.state),
-          component: ({ range, view, onClickLink }) => {
-            if (!range) {
-              return null;
-            }
-            return (
-              <LinkEditor
-                mark={range.mark}
-                from={range.from}
-                to={range.to}
-                view={view}
-                onClickLink={onClickLink}
-              />
-            );
-          }
+          component: LinkInputComponent
         }
       ]
     };
