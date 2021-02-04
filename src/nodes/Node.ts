@@ -16,7 +16,6 @@ import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple, PluginWithOptions, PluginWithParams } from "markdown-it";
 import toggleBlockType from "../commands/toggleBlockType";
 import { TokenConfig } from "prosemirror-markdown";
-import { MarkArgs } from "../marks/Mark";
 
 export type NodeArgs = { type: NodeType; schema: Schema };
 
@@ -71,7 +70,7 @@ export default abstract class Node<
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  toolbarItems(options: MarkArgs): ToolbarItems {
+  toolbarItems(options: NodeArgs): ToolbarItems {
     return {};
   }
 }

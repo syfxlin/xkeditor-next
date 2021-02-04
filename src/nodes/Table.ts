@@ -39,7 +39,6 @@ import {
   TrashIcon
 } from "outline-icons";
 import { t } from "../i18n";
-import { MarkArgs } from "../marks/Mark";
 import getColumnIndex from "../queries/getColumnIndex";
 import getRowIndex from "../queries/getRowIndex";
 import isNodeActive from "../queries/isNodeActive";
@@ -202,7 +201,7 @@ export default class Table extends Node {
     };
   }
 
-  toolbarItems({ schema }: MarkArgs): ToolbarItems {
+  toolbarItems({ schema }: NodeArgs): ToolbarItems {
     return {
       modes: [
         {
@@ -226,18 +225,16 @@ export default class Table extends Node {
           name: "tableCol",
           priority: 1,
           active: view => {
-            return getColumnIndex(view.state.selection) !== undefined;
+            return getColumnIndex(view.state.selection);
           },
-          items: [
+          items: index => [
             {
               name: "setColumnAttr",
               title: t("左对齐"),
               icon: AlignLeftIcon,
-              attrs: view => {
-                return {
-                  index: getColumnIndex(view.state.selection),
-                  alignment: "left"
-                };
+              attrs: {
+                index,
+                alignment: "left"
               },
               active: isNodeActive(schema.nodes.th, {
                 colspan: 1,
@@ -249,11 +246,9 @@ export default class Table extends Node {
               name: "setColumnAttr",
               title: t("居中对齐"),
               icon: AlignCenterIcon,
-              attrs: view => {
-                return {
-                  index: getColumnIndex(view.state.selection),
-                  alignment: "center"
-                };
+              attrs: {
+                index,
+                alignment: "center"
               },
               active: isNodeActive(schema.nodes.th, {
                 colspan: 1,
@@ -265,11 +260,9 @@ export default class Table extends Node {
               name: "setColumnAttr",
               title: t("右对齐"),
               icon: AlignRightIcon,
-              attrs: view => {
-                return {
-                  index: getColumnIndex(view.state.selection),
-                  alignment: "right"
-                };
+              attrs: {
+                index,
+                alignment: "right"
               },
               active: isNodeActive(schema.nodes.th, {
                 colspan: 1,
@@ -307,21 +300,22 @@ export default class Table extends Node {
           name: "tableRow",
           priority: 2,
           active: view => {
-            return getRowIndex(view.state.selection) !== undefined;
+            return getRowIndex(view.state.selection);
           },
-          items: [
+          items: index => [
             {
               name: "addRowAfter",
               title: t("在上方插入行"),
               icon: InsertAboveIcon,
-              attrs: view => ({ index: getRowIndex(view.state.selection) - 1 }),
-              active: () => false
+              attrs: { index: index - 1 },
+              active: () => false,
+              visible: index !== 0
             },
             {
               name: "addRowAfter",
               title: t("在下方插入行"),
               icon: InsertBelowIcon,
-              attrs: view => ({ index: getRowIndex(view.state.selection) }),
+              attrs: { index },
               active: () => false
             },
             {

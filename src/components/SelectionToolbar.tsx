@@ -17,6 +17,7 @@ import { WithTranslation, withTranslation } from "react-i18next";
 import { Mark } from "prosemirror-model";
 
 export type ToolbarComponentProps = {
+  values: any;
   range:
     | {
         mark: Mark;
@@ -87,10 +88,15 @@ class SelectionToolbar extends React.Component<Props> {
       | React.FC<ToolbarComponentProps>
       | typeof React.Component
       | null = null;
+    let values: any = undefined;
     for (const mode of this.props.modes) {
-      if (mode.active(view)) {
+      values = mode.active(view);
+      if (values !== false && values !== undefined && values !== null) {
         if (mode.items) {
-          items = mode.items;
+          items =
+            typeof mode.items === "function"
+              ? mode.items(values, view)
+              : mode.items;
         } else if (mode.component) {
           Component = mode.component;
         }
@@ -106,7 +112,7 @@ class SelectionToolbar extends React.Component<Props> {
       <Portal>
         <FloatingToolbar view={view} active={isActive(this.props)}>
           {Component ? (
-            <Component {...rest} range={range} />
+            <Component {...rest} range={range} values={values} />
           ) : (
             <Menu {...rest} items={items} />
           )}

@@ -55,8 +55,8 @@ export type ToolbarItems = {
 export type ToolbarMode = {
   name: string;
   priority: number;
-  active: (view: EditorView) => boolean;
-  items?: ToolbarItem[];
+  active: (view: EditorView) => false | null | undefined | any;
+  items?: ToolbarItem[] | ((values: any, view: EditorView) => ToolbarItem[]);
   component?: React.FC<ToolbarComponentProps> | typeof React.Component | null;
 };
 

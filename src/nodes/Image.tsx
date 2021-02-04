@@ -11,12 +11,19 @@ import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
-import { Command, MenuItems } from "../lib/Extension";
+import { Command, MenuItems, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import uploadFiles, { UploadFilesOptions } from "../commands/uploadFiles";
 import { t } from "../i18n";
-import { ImageIcon } from "outline-icons";
+import {
+  AlignImageCenterIcon,
+  AlignImageLeftIcon,
+  AlignImageRightIcon,
+  ImageIcon,
+  TrashIcon
+} from "outline-icons";
+import isNodeActive from "../queries/isNodeActive";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, class]
@@ -423,6 +430,59 @@ export default class Image extends ReactNode {
             placeholder: imagePlaceholder,
             accept: "image/*"
           }
+        }
+      ]
+    };
+  }
+
+  toolbarItems({ type }: NodeArgs): ToolbarItems {
+    const isLeftAligned = isNodeActive(type, {
+      layoutClass: "left-50"
+    });
+    const isRightAligned = isNodeActive(type, {
+      layoutClass: "right-50"
+    });
+    return {
+      modes: [
+        {
+          name: "image",
+          priority: 4,
+          active: view => {
+            const { selection }: { selection: any } = view.state;
+            return selection.node && selection.node.type.name === "image";
+          },
+          items: [
+            {
+              name: "alignLeft",
+              title: t("左对齐"),
+              icon: AlignImageLeftIcon,
+              active: isLeftAligned
+            },
+            {
+              name: "alignCenter",
+              title: t("居中对齐"),
+              icon: AlignImageCenterIcon,
+              active: state =>
+                isNodeActive(type)(state) &&
+                !isLeftAligned(state) &&
+                !isRightAligned(state)
+            },
+            {
+              name: "alignRight",
+              title: t("右对齐"),
+              icon: AlignImageRightIcon,
+              active: isRightAligned
+            },
+            {
+              name: "separator"
+            },
+            {
+              name: "deleteImage",
+              title: t("删除图片"),
+              icon: TrashIcon,
+              active: () => false
+            }
+          ]
         }
       ]
     };
