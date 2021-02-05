@@ -186,12 +186,7 @@ export default class MonacoBlock extends ReactNode<
       );
 
       return (
-        <div
-          className={"code-block"}
-          contentEditable={false}
-          // TODO: Fix height
-          style={{ height: 300 }}
-        >
+        <div className={"code-block"} contentEditable={false}>
           {node.attrs.isEdit ? (
             <section>
               <MonacoEditor
@@ -200,6 +195,7 @@ export default class MonacoBlock extends ReactNode<
                 language={node.attrs.language}
                 onChange={handleChange}
                 onMount={handleMount}
+                height={400}
               />
               <div className={"toolbar"}>
                 <button onClick={handleEdit}>View</button>
@@ -217,17 +213,10 @@ export default class MonacoBlock extends ReactNode<
             </section>
           ) : (
             <section>
-              <pre className={"line-numbers"}>
-                <span aria-hidden="true" className="line-numbers-rows">
-                  {node.textContent.split("\n").map((value, index) => (
-                    <span key={index} />
-                  ))}
-                </span>
-                <PrismHighlight
-                  language={node.attrs.language}
-                  code={node.textContent}
-                />
-              </pre>
+              <PrismHighlight
+                language={node.attrs.language}
+                code={node.textContent}
+              />
               <div className={"toolbar"}>
                 <button onClick={handleEdit}>Edit</button>
                 <button onClick={handleCopyToClipboard}>Copy</button>

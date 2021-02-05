@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { NodeSelection, Plugin, TextSelection } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
 import { setTextSelection } from "prosemirror-utils";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 // @ts-ignore
 import ImageZoom from "react-medium-image-zoom";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
@@ -297,7 +297,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
               }}
               defaultStyles={{
                 overlay: {
-                  backgroundColor: theme.background
+                  backgroundColor: theme.background[2]
                 }
               }}
               shouldRespectMaxDimension
@@ -512,7 +512,7 @@ const Caption = styled.p`
   display: block;
   font-size: 13px;
   font-style: italic;
-  color: ${props => props.theme.textSecondary};
+  color: ${props => props.theme.text[1]};
   padding: 2px 0;
   line-height: 16px;
   text-align: center;
@@ -524,7 +524,7 @@ const Caption = styled.p`
   cursor: text;
 
   &:empty:before {
-    color: ${props => props.theme.placeholder};
+    color: ${props => props.theme.text[1]};
     content: ${() => `"${t("图片描述")}"`};
     pointer-events: none;
   }

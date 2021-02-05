@@ -1,9 +1,8 @@
 import React from "react";
 import { EditorView } from "prosemirror-view";
-import { withTheme } from "styled-components";
+import { Theme, withTheme } from "@emotion/react";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarSeparator from "./ToolbarSeparator";
-import theme from "../theme";
 import { Attrs, ToolbarItem } from "../lib/Extension";
 import capitalize from "lodash/capitalize";
 import Tooltip from "./Tooltip";
@@ -11,7 +10,7 @@ import Tooltip from "./Tooltip";
 type Props = {
   commands: Record<string, any>;
   view: EditorView;
-  theme: typeof theme;
+  theme: Theme;
   items: ToolbarItem[];
 };
 
@@ -59,7 +58,7 @@ class Menu extends React.Component<Props> {
               active={isActive}
             >
               <Tooltip tooltip={item.title} shortcut={item.shortcut}>
-                <Icon fill={this.props.theme.toolbarItem} size={"100%"} />
+                <Icon fill={this.props.theme.reverse.text[2]} size={"100%"} />
               </Tooltip>
             </ToolbarButton>
           );

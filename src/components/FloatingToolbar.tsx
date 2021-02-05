@@ -11,7 +11,7 @@ import React, {
 } from "react";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { NodeSelection } from "prosemirror-state";
 
 type Props = {
@@ -204,11 +204,11 @@ const Wrapper = styled.div<{
   offset: number;
 }>`
   will-change: opacity, transform;
-  padding: 8px 16px;
+  padding: 8px 10px;
   position: absolute;
   z-index: ${props => props.theme.zIndex + 100};
   opacity: 0;
-  background-color: ${props => props.theme.toolbarBackground};
+  background-color: ${props => props.theme.reverse.background[2]};
   border-radius: 4px;
   transform: scale(0.95);
   transition: opacity 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275),
@@ -228,7 +228,7 @@ const Wrapper = styled.div<{
     width: 24px;
     height: 24px;
     transform: translateX(-50%) rotate(45deg);
-    background: ${props => props.theme.toolbarBackground};
+    background: ${props => props.theme.reverse.background[2]};
     border-radius: 3px;
     z-index: -1;
     position: absolute;

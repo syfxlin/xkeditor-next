@@ -3,7 +3,7 @@ import capitalize from "lodash/capitalize";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
 import { findParentNode } from "prosemirror-utils";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import BlockMenuItem from "./BlockMenuItem";
 import VisuallyHidden from "./VisuallyHidden";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
@@ -530,7 +530,7 @@ const ListItem = styled.li`
 const Empty = styled.div`
   display: flex;
   align-items: center;
-  color: ${props => props.theme.textSecondary};
+  color: ${props => props.theme.text[1]};
   font-weight: 500;
   font-size: 14px;
   height: 36px;
@@ -544,7 +544,7 @@ export const Wrapper = styled.div<{
   left?: number;
   isAbove: boolean;
 }>`
-  color: ${props => props.theme.text};
+  color: ${props => props.theme.text[2]};
   font-family: ${props => props.theme.fontFamily};
   position: absolute;
   z-index: ${props => {
@@ -553,10 +553,11 @@ export const Wrapper = styled.div<{
   ${props => props.top !== undefined && `top: ${props.top}px`};
   ${props => props.bottom !== undefined && `bottom: ${props.bottom}px`};
   left: ${props => props.left}px;
-  background-color: ${props => props.theme.blockToolbarBackground};
+  background-color: ${props => props.theme.background[1]};
   border-radius: 4px;
-  box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px, rgba(0, 0, 0, 0.08) 0 4px 8px,
-    rgba(0, 0, 0, 0.08) 0 2px 4px;
+  box-shadow: ${props => props.theme.shadow} 0 0 0 1px,
+    ${props => props.theme.shadow} 0 4px 8px,
+    ${props => props.theme.shadow} 0 2px 4px;
   opacity: 0;
   transform: scale(0.95);
   transition: opacity 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275),
@@ -578,7 +579,7 @@ export const Wrapper = styled.div<{
   hr {
     border: 0;
     height: 0;
-    border-top: 1px solid ${props => props.theme.blockToolbarDivider};
+    border-top: 1px solid ${props => props.theme.divider};
   }
 
   ${({ active, isAbove }) =>

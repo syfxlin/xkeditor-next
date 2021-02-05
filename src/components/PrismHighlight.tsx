@@ -1,8 +1,10 @@
 import React, { useMemo } from "react";
 import refractor from "refractor";
 import { RefractorNode } from "refractor/core";
-import "../styles/prism-okaidia.less";
+import "../styles/prism-light.less";
+import "../styles/prism-dark.less";
 import "../styles/prism-line-numbers.less";
+import { useTheme } from "@emotion/react";
 
 type Props = {
   language?: string;
@@ -25,13 +27,26 @@ const parseNodes = (nodes: RefractorNode[]): React.ReactNode[] => {
   });
 };
 
-const PrismHighlight: React.FC<Props> = props => {
+const PrismHighlight: React.FC<Props> = ({ code, language }) => {
+  const theme = useTheme();
   const nodes = useMemo(
-    () =>
-      parseNodes(refractor.highlight(props.code, props.language || "markup")),
-    [props.code, props.language]
+    () => parseNodes(refractor.highlight(code, language || "markup")),
+    [code, language]
   );
-  return <code>{nodes}</code>;
+  return (
+    <div className={`prism-${theme.mode}`}>
+      <pre className={`line-numbers language-${language || "markup"}`}>
+        <code className={`language-${language || "markup"}`}>
+          <span aria-hidden="true" className="line-numbers-rows">
+            {code.split("\n").map((value, index) => (
+              <span key={index} />
+            ))}
+          </span>
+          {nodes}
+        </code>
+      </pre>
+    </div>
+  );
 };
 
 export default PrismHighlight;

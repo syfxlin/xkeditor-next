@@ -1,6 +1,6 @@
 import { ToolbarComponentProps } from "./SelectionToolbar";
-import React, { ChangeEvent, useContext, useState } from "react";
-import styled, { ThemeContext } from "styled-components";
+import React, { ChangeEvent, useState } from "react";
+import styled from "@emotion/styled";
 import Flex from "./Flex";
 import Input from "./Input";
 import ToolbarButton from "./ToolbarButton";
@@ -8,6 +8,7 @@ import Tooltip from "./Tooltip";
 import { useTranslation } from "react-i18next";
 import getMarkRange from "../queries/getMarkRange";
 import { Delete, Share } from "@icon-park/react";
+import { useTheme } from "@emotion/react";
 
 const Wrapper = styled(Flex)`
   margin-left: -8px;
@@ -29,7 +30,7 @@ export default function linkInputComponent(
       return null;
     }
     const { mark } = range;
-    const theme = useContext(ThemeContext);
+    const theme = useTheme();
     const { t } = useTranslation();
     const [value, setValue] = useState(mark ? mark.attrs.href : "");
 
@@ -71,12 +72,12 @@ export default function linkInputComponent(
         />
         <ToolbarButton onClick={handleOpenLink} disabled={!value}>
           <Tooltip tooltip={t("打开链接")}>
-            <Share theme="outline" size="24" fill={theme.toolbarItem} />
+            <Share theme="outline" size="100%" fill={theme.reverse.text[2]} />
           </Tooltip>
         </ToolbarButton>
         <ToolbarButton onClick={handleRemoveLink}>
           <Tooltip tooltip={t("删除链接")}>
-            <Delete theme="outline" size="24" fill={theme.toolbarItem} />
+            <Delete theme="outline" size="100%" fill={theme.reverse.text[2]} />
           </Tooltip>
         </ToolbarButton>
       </Wrapper>

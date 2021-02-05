@@ -65,7 +65,6 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
       toDOM() {
         return [
           "div",
-          { class: "scrollable-wrapper" },
           [
             "div",
             { class: "scrollable" },

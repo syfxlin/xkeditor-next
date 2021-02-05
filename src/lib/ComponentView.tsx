@@ -1,8 +1,7 @@
 import React, { Ref } from "react";
 import ReactDOM from "react-dom";
-import { ThemeProvider } from "styled-components";
+import { Theme, ThemeProvider } from "@emotion/react";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
-import { dark as darkTheme, light as lightTheme } from "../theme";
 import { Editor } from "../main";
 import { Node as ProseMirrorNode } from "prosemirror-model";
 import Node from "../nodes/Node";
@@ -13,7 +12,7 @@ export type ComponentProps = {
   editor: Editor;
   node: ProseMirrorNode;
   view: EditorView;
-  theme: typeof lightTheme;
+  theme: Theme;
   isSelected: boolean;
   isEditable: boolean;
   getPos: () => number;
@@ -71,9 +70,7 @@ export default class ComponentView implements NodeView {
   }
 
   renderElement() {
-    const { dark } = this.editor.props;
-    const theme =
-      this.editor.props.config?.theme || (dark ? darkTheme : lightTheme);
+    const theme = this.editor.theme();
 
     const contentRef = React.createRef<any>();
 

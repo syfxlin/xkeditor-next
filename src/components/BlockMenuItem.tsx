@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
-import styled, { withTheme } from "styled-components";
-import theme from "../theme";
+import styled from "@emotion/styled";
+import { Theme, withTheme } from "@emotion/react";
 
 type Props = {
   selected: boolean;
   disabled?: boolean;
   onClick: () => void;
-  theme: typeof theme;
+  theme: Theme;
   icon: typeof React.Component | React.FC<any>;
   title: string;
   shortcut?: string;
@@ -47,7 +47,7 @@ const BlockMenuItem: React.FC<Props> = ({
       onClick={disabled ? undefined : onClick}
       ref={ref}
     >
-      <Icon color={selected ? theme.black : undefined} />
+      <Icon />
       &nbsp;&nbsp;{title}
       <Shortcut>{shortcut}</Shortcut>
     </MenuItem>
@@ -69,24 +69,24 @@ const MenuItem = styled.button<{
   border: none;
   opacity: ${props => (props.disabled ? ".5" : "1")};
   color: ${props =>
-    props.selected ? props.theme.black : props.theme.blockToolbarText};
+    props.selected ? props.theme.selected.text : props.theme.text[2]};
   background: ${props =>
-    props.selected ? props.theme.blockToolbarTrigger : "none"};
+    props.selected ? props.theme.selected.background : "none"};
   padding: 0 16px;
   outline: none;
 
   &:hover,
   &:active {
-    color: ${props => props.theme.black};
+    color: ${props => props.theme.text[2]};
     background: ${props =>
       props.selected
-        ? props.theme.blockToolbarTrigger
-        : props.theme.blockToolbarHoverBackground};
+        ? props.theme.selected.background
+        : props.theme.hover.background};
   }
 `;
 
 const Shortcut = styled.span`
-  color: ${props => props.theme.textSecondary};
+  color: ${props => props.theme.text[1]};
   flex-grow: 1;
   text-align: right;
 `;

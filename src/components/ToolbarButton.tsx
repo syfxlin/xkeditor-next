@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 type Props = { active?: boolean; disabled?: boolean };
 
@@ -16,7 +16,7 @@ export default styled.button<Props>`
   opacity: 0.7;
   outline: none;
 
-  &:first-child {
+  &:first-of-type {
     margin-left: 0;
   }
 

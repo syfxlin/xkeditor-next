@@ -189,7 +189,7 @@ export default class BlockMenuTrigger extends Extension<
       // /word<space>
       new InputRule(CLOSE_REGEX, (state, match) => {
         if (match) {
-          this.options.open("");
+          this.options.close();
         }
         return null;
       })
