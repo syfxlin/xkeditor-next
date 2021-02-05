@@ -4,7 +4,6 @@ import { RefractorNode } from "refractor/core";
 import "../styles/prism-light.less";
 import "../styles/prism-dark.less";
 import "../styles/prism-line-numbers.less";
-import { useTheme } from "@emotion/react";
 
 type Props = {
   language?: string;
@@ -28,13 +27,12 @@ const parseNodes = (nodes: RefractorNode[]): React.ReactNode[] => {
 };
 
 const PrismHighlight: React.FC<Props> = ({ code, language }) => {
-  const theme = useTheme();
   const nodes = useMemo(
     () => parseNodes(refractor.highlight(code, language || "markup")),
     [code, language]
   );
   return (
-    <div className={`prism-${theme.mode}`}>
+    <div className={"prism"}>
       <pre className={`line-numbers language-${language || "markup"}`}>
         <code className={`language-${language || "markup"}`}>
           <span aria-hidden="true" className="line-numbers-rows">

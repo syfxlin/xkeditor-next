@@ -395,7 +395,7 @@ const StyledEditor = styled("div")<{
         visibility: hidden;
       }
 
-      &:first-of-type {
+      &.code-editor {
         position: relative;
         min-height: 300px;
 

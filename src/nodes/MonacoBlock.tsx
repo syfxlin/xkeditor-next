@@ -188,7 +188,7 @@ export default class MonacoBlock extends ReactNode<
       return (
         <div className={"code-block"} contentEditable={false}>
           {node.attrs.isEdit ? (
-            <section>
+            <section className={"code-editor"}>
               <MonacoEditor
                 value={node.textContent}
                 theme={"vs-dark"}
@@ -211,7 +211,7 @@ export default class MonacoBlock extends ReactNode<
               </div>
             </section>
           ) : (
-            <section>
+            <section className={"code-preview"}>
               <PrismHighlight
                 language={node.attrs.language}
                 code={node.textContent}

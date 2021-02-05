@@ -134,12 +134,11 @@ type NodeViewCreator = (
   decorations: Decoration[]
 ) => NodeView;
 
-export type EditorContextType = Partial<
-  Props &
-    State & {
-      editor: RichMarkdownEditor;
-    }
->;
+export type EditorContextType = Partial<{
+  props: Props;
+  state: State;
+  editor: RichMarkdownEditor;
+}>;
 
 export const EditorContext = React.createContext<EditorContextType>({});
 
@@ -623,13 +622,15 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     const { readOnly } = this.props;
     return (
       <EditorContext.Provider
-        value={{ ...this.props, ...this.state, editor: this }}
+        value={{ props: this.props, state: this.state, editor: this }}
       >
         <ThemeProvider theme={this.theme()}>
           <Flex
             onKeyDown={this.props.action?.onKeydown}
             style={this.props.config?.style}
-            className={this.props.config?.className}
+            className={`${this.props.dark ? "dark" : "light"} ${
+              this.props.config?.className
+            }`}
             align="flex-start"
             justify="center"
             column
