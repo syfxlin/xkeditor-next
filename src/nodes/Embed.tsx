@@ -77,7 +77,11 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
   component(): React.FC<ComponentProps> {
     return props => {
       const Component = props.node.attrs.component;
-      return <Component {...props} />;
+      return (
+        <div className={"embed"}>
+          <Component {...props} />
+        </div>
+      );
     };
   }
 

@@ -11,13 +11,13 @@ import {
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import MonacoNode from "../components/MonacoNode";
 import mermaid from "mermaid";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
-import { useDebounce } from "react-use";
+import { usePromise } from "react-use";
 import { t } from "../i18n";
 import toggleBlockType from "../commands/toggleBlockType";
 import { ChartGraph } from "@icon-park/react";
@@ -64,31 +64,38 @@ export default class Mermaid extends ReactNode<
   component(): React.FC<ComponentProps> {
     return props => {
       const ref = useRef<HTMLDivElement>(null);
-      useDebounce(
-        () => {
-          try {
-            if (ref.current) {
-              mermaid.render(
-                this.name,
-                props.node.textContent,
-                svgCode => {
-                  if (ref.current) {
-                    ref.current.innerHTML = svgCode;
-                  }
-                },
-                // @ts-ignore
-                ref.current
-              );
-            }
-          } catch (e) {
-            console.log(e);
-          }
-        },
-        700,
-        [props.node.textContent]
-      );
+      const mounted = usePromise();
+      useEffect(() => {
+        if (props.node.attrs.isEdit) {
+          return;
+        }
+        (async () => {
+          await mounted(
+            new Promise<void>(resolve => {
+              try {
+                if (ref.current) {
+                  mermaid.render(
+                    this.name,
+                    props.node.textContent,
+                    svgCode => {
+                      if (ref.current) {
+                        ref.current.innerHTML = svgCode;
+                      }
+                    },
+                    // @ts-ignore
+                    ref.current
+                  );
+                }
+              } catch (e) {
+                console.log(e);
+              }
+              resolve();
+            })
+          );
+        })();
+      }, [props.node.attrs.isEdit, ref.current]);
       return (
-        <MonacoNode {...props} height={300} language={"mermaid"}>
+        <MonacoNode {...props} language={"mermaid"}>
           <div ref={ref} style={{ height: "100%" }} />
         </MonacoNode>
       );

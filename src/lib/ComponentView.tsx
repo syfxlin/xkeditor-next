@@ -97,10 +97,13 @@ export default class ComponentView implements NodeView {
         if (contentRef.current && this.contentDOM) {
           contentRef.current.append(this.contentDOM);
         } else if (this.contentDOM) {
-          const textarea = document.createElement("textarea");
-          textarea.hidden = true;
-          textarea.append(this.contentDOM);
-          this.dom?.append(textarea);
+          if (this.dom?.lastElementChild?.className !== "content-ref") {
+            const textarea = document.createElement("textarea");
+            textarea.hidden = true;
+            textarea.className = "content-ref";
+            textarea.append(this.contentDOM);
+            this.dom?.append(textarea);
+          }
         }
       }
     );

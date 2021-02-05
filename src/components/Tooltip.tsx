@@ -62,8 +62,7 @@ const Shortcut = styled.kbd`
   top: -2px;
   display: inline-block;
   padding: 2px 4px;
-  font: 10px "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier,
-    monospace;
+  font: 10px ${props => props.theme.fontFamily};
   line-height: 10px;
   color: ${props => props.theme.text[2]};
   vertical-align: middle;

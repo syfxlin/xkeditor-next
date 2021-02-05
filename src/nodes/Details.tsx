@@ -72,7 +72,7 @@ export default class Details extends ReactNode<EmptyAttrs, DetailsAttrs> {
         });
       }, [node, updateAttrs]);
       return (
-        <details open={node.attrs.open} onToggle={handleToggle}>
+        <details open={node.attrs.open} onDoubleClick={handleToggle}>
           {node.attrs.summary && <summary>{node.attrs.summary}</summary>}
           <div ref={contentRef} />
         </details>

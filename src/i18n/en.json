@@ -59,5 +59,6 @@
   "图片描述": "Write a caption",
   "描述": "Details",
   "Mermaid 图": "Mermaid graph",
-  "粘贴 {{title}} 链接...": "Paste a {{title}} link…"
+  "粘贴 {{title}} 链接...": "Paste a {{title}} link…",
+  "复制": "Copy"
 }

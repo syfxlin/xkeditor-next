@@ -114,7 +114,7 @@ const MonacoNode: React.FC<Props> = props => {
       contentEditable={false}
       style={{ width, height }}
     >
-      <section className={node.attrs.isEdit ? "" : "hidden"}>
+      <section hidden={!node.attrs.isEdit}>
         <MonacoEditor
           value={node.textContent}
           theme={"vs-dark"}
@@ -127,7 +127,7 @@ const MonacoNode: React.FC<Props> = props => {
           {props.editToolbar}
         </div>
       </section>
-      <section className={!node.attrs.isEdit ? "" : "hidden"}>
+      <section hidden={node.attrs.isEdit}>
         {props.children}
         <div className={"toolbar"}>
           <button onClick={handleEdit}>{t("编辑")}</button>

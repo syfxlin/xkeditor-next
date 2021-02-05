@@ -195,10 +195,9 @@ export default class MonacoBlock extends ReactNode<
                 language={node.attrs.language}
                 onChange={handleChange}
                 onMount={handleMount}
-                height={400}
               />
               <div className={"toolbar"}>
-                <button onClick={handleEdit}>View</button>
+                <button onClick={handleEdit}>{t("预览")}</button>
                 <select
                   value={node.attrs.language}
                   onChange={handleLanguageChange}
@@ -218,8 +217,8 @@ export default class MonacoBlock extends ReactNode<
                 code={node.textContent}
               />
               <div className={"toolbar"}>
-                <button onClick={handleEdit}>Edit</button>
-                <button onClick={handleCopyToClipboard}>Copy</button>
+                <button onClick={handleEdit}>{t("编辑")}</button>
+                <button onClick={handleCopyToClipboard}>{t("复制")}</button>
               </div>
             </section>
           )}
