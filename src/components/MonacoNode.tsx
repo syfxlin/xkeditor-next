@@ -6,6 +6,10 @@ import { Selection } from "prosemirror-state";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useTranslation } from "react-i18next";
 
+export type MonacoNodeAttrs = {
+  mode: "edit" | "preview" | "both";
+};
+
 type Props = ComponentProps & {
   editToolbar?: React.ReactNode;
   viewToolbar?: React.ReactNode;
@@ -44,9 +48,19 @@ const MonacoNode: React.FC<Props> = props => {
   );
   const handleEdit = useCallback(() => {
     updateAttrs({
-      isEdit: !node.attrs.isEdit
+      mode: "edit"
     });
-  }, [updateAttrs, node]);
+  }, [updateAttrs]);
+  const handlePreview = useCallback(() => {
+    updateAttrs({
+      mode: "preview"
+    });
+  }, [updateAttrs]);
+  const handleBoth = useCallback(() => {
+    updateAttrs({
+      mode: "both"
+    });
+  }, [updateAttrs]);
   const handleMount = useCallback((editor: editor.IStandaloneCodeEditor) => {
     updateAttrs({
       monacoRef: editor
@@ -114,7 +128,7 @@ const MonacoNode: React.FC<Props> = props => {
       contentEditable={false}
       style={{ width, height }}
     >
-      <section hidden={!node.attrs.isEdit} className={"code-editor"}>
+      <section hidden={node.attrs.mode === "preview"} className={"code-editor"}>
         <MonacoEditor
           value={node.textContent}
           theme={"vs-dark"}
@@ -123,14 +137,16 @@ const MonacoNode: React.FC<Props> = props => {
           onMount={handleMount}
         />
         <div className={"toolbar"}>
-          <button onClick={handleEdit}>{t("预览")}</button>
+          <button onClick={handlePreview}>{t("预览")}</button>
+          <button onClick={handleBoth}>{t("预览 & 编辑")}</button>
           {props.editToolbar}
         </div>
       </section>
-      <section hidden={node.attrs.isEdit} className={"code-preview"}>
+      <section hidden={node.attrs.mode === "edit"} className={"code-preview"}>
         {props.children}
         <div className={"toolbar"}>
           <button onClick={handleEdit}>{t("编辑")}</button>
+          <button onClick={handleBoth}>{t("预览 & 编辑")}</button>
           {props.viewToolbar}
         </div>
       </section>

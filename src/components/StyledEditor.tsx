@@ -221,7 +221,7 @@ const StyledEditor = styled("div")<{
 
   // Paragraph
   p {
-    margin: 0 0 0.5em 0;
+    margin: 2px 0 0.5em 0;
   }
 
   // Hr
@@ -654,7 +654,7 @@ const StyledEditor = styled("div")<{
     }
 
     p:last-of-type {
-      margin-bottom: 0;
+      margin-bottom: 2px;
     }
   }
 

@@ -24,7 +24,7 @@ export default class Sub extends Mark<EmptyAttrs, EmptyAttrs> {
   }
 
   inputRules({ type }: MarkArgs) {
-    return [markInputRule(/(?:~)([^~]+)(?:~)$/, type)];
+    return [markInputRule(/(?:-)([^-]+)(?:-)$/, type)];
   }
 
   keys({ type }: MarkArgs) {
@@ -35,8 +35,8 @@ export default class Sub extends Mark<EmptyAttrs, EmptyAttrs> {
 
   toMarkdown() {
     return {
-      open: "~",
-      close: "~",
+      open: "-",
+      close: "-",
       mixable: true,
       expelEnclosingWhitespace: true
     };
@@ -47,7 +47,7 @@ export default class Sub extends Mark<EmptyAttrs, EmptyAttrs> {
   }
 
   markdownPlugin(): PluginSimple {
-    return markPlugin({ delim: "~", mark: this.name });
+    return markPlugin({ delim: "-", mark: this.name });
   }
 
   toolbarItems({ type }: MarkArgs): ToolbarItems {

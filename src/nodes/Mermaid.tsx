@@ -12,7 +12,7 @@ import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import React, { useEffect, useRef } from "react";
-import MonacoNode from "../components/MonacoNode";
+import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
 import mermaid from "mermaid";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
@@ -21,10 +21,9 @@ import { usePromise } from "react-use";
 import { t } from "../i18n";
 import toggleBlockType from "../commands/toggleBlockType";
 import { ChartGraph } from "@icon-park/react";
+import debounce from "lodash/debounce";
 
-type MermaidAttrs = {
-  isEdit: boolean;
-};
+type MermaidAttrs = MonacoNodeAttrs;
 
 export default class Mermaid extends ReactNode<
   EmptyAttrs,
@@ -37,8 +36,8 @@ export default class Mermaid extends ReactNode<
   get schema(): NodeSpec {
     return mergeSpec({
       attrs: {
-        isEdit: {
-          default: false
+        mode: {
+          default: "preview"
         }
       },
       parseDOM: [
@@ -62,38 +61,38 @@ export default class Mermaid extends ReactNode<
   }
 
   component(): React.FC<ComponentProps> {
+    const render = debounce(async (mounted, element, content) => {
+      await mounted(
+        new Promise<void>(resolve => {
+          try {
+            if (element) {
+              mermaid.render(
+                this.name,
+                content,
+                svgCode => {
+                  if (element) {
+                    element.innerHTML = svgCode;
+                  }
+                },
+                element
+              );
+            }
+          } catch (e) {
+            console.log(e);
+          }
+          resolve();
+        })
+      );
+    }, 700);
     return props => {
       const ref = useRef<HTMLDivElement>(null);
       const mounted = usePromise();
       useEffect(() => {
-        if (props.node.attrs.isEdit) {
+        if (props.node.attrs.mode === "edit") {
           return;
         }
-        (async () => {
-          await mounted(
-            new Promise<void>(resolve => {
-              try {
-                if (ref.current) {
-                  mermaid.render(
-                    this.name,
-                    props.node.textContent,
-                    svgCode => {
-                      if (ref.current) {
-                        ref.current.innerHTML = svgCode;
-                      }
-                    },
-                    // @ts-ignore
-                    ref.current
-                  );
-                }
-              } catch (e) {
-                console.log(e);
-              }
-              resolve();
-            })
-          );
-        })();
-      }, [props.node.attrs.isEdit, ref.current]);
+        render(mounted, ref.current, props.node.textContent);
+      }, [props.node.attrs.mode, props.node.textContent, ref.current]);
       return (
         <MonacoNode {...props} language={"mermaid"}>
           <div ref={ref} style={{ height: "100%" }} />
@@ -107,12 +106,12 @@ export default class Mermaid extends ReactNode<
   }
 
   inputRules({ type }: NodeArgs): InputRule[] {
-    return [textblockTypeInputRule(/^:::\s?mermaid$/, type, { isEdit: true })];
+    return [textblockTypeInputRule(/^:::\s?mermaid$/, type, { mode: "edit" })];
   }
 
   commands({ type, schema }: NodeArgs): Record<string, Command> | Command {
     return () =>
-      toggleBlockType(type, schema.nodes.paragraph, { isEdit: true });
+      toggleBlockType(type, schema.nodes.paragraph, { mode: "edit" });
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
