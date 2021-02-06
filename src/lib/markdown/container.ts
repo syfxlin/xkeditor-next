@@ -2,6 +2,7 @@ import MarkdownIt from "markdown-it";
 import StateBlock from "markdown-it/lib/rules_block/state_block";
 import Token from "markdown-it/lib/token";
 import { unescapeAll } from "markdown-it/lib/common/utils";
+import StateInline from "markdown-it/lib/rules_inline/state_inline";
 
 function pushAttr(
   attrs: Record<string, string | string[]>,
@@ -107,6 +108,51 @@ export function blockPlugin({
 
         state.lineMax = oldMax;
       }
+    } else {
+      token = state.push("text", "", 0);
+      token.content = unescapeAll(content);
+    }
+    token = state.push(name + "_close", tag, -1);
+  };
+}
+
+export function inlinePlugin({
+  md,
+  name,
+  tag = "div",
+  parseInline = true,
+  trim = false
+}: {
+  md: MarkdownIt;
+  name: string;
+  tag?: string;
+  parseInline?: boolean;
+  trim?: boolean;
+}) {
+  // @ts-ignore
+  md.inlineDirectives[name] = (
+    state: StateInline,
+    content: string,
+    dests: ["link" | "string", string][] | undefined,
+    attrs: Record<string, string | string[]> | undefined,
+    contentStart: number,
+    contentEnd: number,
+    directiveStart: number,
+    directiveEnd: number
+  ) => {
+    content = content || "";
+    if (trim) {
+      content = content.trim();
+    }
+    let token = state.push(name + "_open", tag, 1);
+    token.map = [directiveStart, directiveEnd];
+    putAttrs(token, attrs, dests);
+    if (parseInline) {
+      const oldMax = state.posMax;
+      state.pos = contentStart;
+      state.posMax = contentEnd;
+      state.md.inline.tokenize(state);
+      state.posMax = oldMax;
     } else {
       token = state.push("text", "", 0);
       token.content = unescapeAll(content);

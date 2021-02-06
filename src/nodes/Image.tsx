@@ -35,7 +35,7 @@ import {
  * ![](image.jpg "class") -> [, "", "image.jpg", "small"]
  * ![Lorem](image.jpg "class") -> [, "Lorem", "image.jpg", "small"]
  */
-const IMAGE_INPUT_REGEX = /!\[(?<alt>.*?)]\((?<filename>.*?)(?=\“|\))\“?(?<layoutclass>[^\”]+)?\”?\)/;
+const IMAGE_INPUT_REGEX = /!\[(?<alt>.*?)]\((?<filename>.*?)(?=[")])"?(?<layoutclass>[^"]+)?"?\)/;
 
 export const imagePlaceholder = (root: HTMLElement, meta: any) => {
   root.className = "image placeholder";
@@ -179,6 +179,17 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
       selectable: true,
       draggable: true,
       parseDOM: [
+        {
+          tag: "img",
+          getAttrs: node => {
+            const img = node as HTMLElement;
+            return {
+              src: img.getAttribute("src"),
+              alt: img.getAttribute("alt"),
+              title: img.getAttribute("title")
+            };
+          }
+        },
         {
           tag: "div[class~=image]",
           getAttrs: node => {

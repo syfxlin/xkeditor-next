@@ -21,6 +21,7 @@ import { ComponentProps } from "../lib/ComponentView";
 import React, { useEffect, useState } from "react";
 import plantumlEncoder from "plantuml-encoder";
 import debounce from "lodash/debounce";
+import styled from "styled-components";
 
 type PlantUmlAttrs = MonacoNodeAttrs;
 
@@ -73,10 +74,12 @@ export default class PlantUml extends ReactNode<
       }, [props.node.textContent, props.node.attrs.mode]);
       return (
         <MonacoNode {...props} language={"mermaid"}>
-          <img
-            src={`http://www.plantuml.com/plantuml/svg/${encode}`}
-            alt={props.node.textContent}
-          />
+          <PlantUmlWrapper>
+            <img
+              src={`http://www.plantuml.com/plantuml/svg/${encode}`}
+              alt={props.node.textContent}
+            />
+          </PlantUmlWrapper>
         </MonacoNode>
       );
     };
@@ -132,3 +135,8 @@ export default class PlantUml extends ReactNode<
     };
   }
 }
+
+const PlantUmlWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;

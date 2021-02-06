@@ -1,13 +1,14 @@
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
-import { PluginSimple } from "markdown-it";
-import markPlugin from "../lib/markdown/mark";
 import { EmojiConvertor } from "emoji-js";
 import Node, { NodeArgs } from "./Node";
 import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { EmptyAttrs } from "../lib/Extension";
+import { PluginSimple } from "markdown-it";
+import emojiPlugin from "markdown-it-emoji";
+import emojis from "markdown-it-emoji/lib/data/full.json";
 
 const emoji = new EmojiConvertor();
 emoji.replace_mode = "unified";
@@ -27,7 +28,8 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
       toDOM: node => [
         "span",
         { "data-type": this.name },
-        emoji.replace_colons(`:${node.textContent}:`)
+        (emojis as { [key: string]: string })[node.textContent] ||
+          node.textContent
       ]
     };
   }
@@ -37,16 +39,14 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write(":");
     state.text(node.textContent);
-    state.write(":");
   }
 
   parseMarkdown(): TokenConfig {
-    return { block: this.name };
+    return { block: this.name, noCloseToken: true };
   }
 
   markdownPlugin(): PluginSimple {
-    return markPlugin({ delim: ":", mark: this.name });
+    return emojiPlugin as PluginSimple;
   }
 }

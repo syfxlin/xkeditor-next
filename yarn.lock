@@ -2211,6 +2211,13 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.168.tgz#fe24632e79b7ade3f132891afff86caa5e5ce008"
   integrity sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
 
+"@types/markdown-it-emoji@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it-emoji/-/markdown-it-emoji-2.0.0.tgz#acc49b6e4ec1bc7eecbe26b894ccd25cb7db916d"
+  integrity sha512-X27jmmknSFzeKxqXQePwL1FfjFeIYNd0VT3lbZi7/Z+kHmYGBkFuOd/8O7LUqriIWfVXIt5EYAMg8idSn6MhHw==
+  dependencies:
+    "@types/markdown-it" "*"
+
 "@types/markdown-it@*":
   version "12.0.1"
   resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.0.1.tgz#8391e19fea4796ff863edda55800c7e669beb358"
@@ -8778,6 +8785,11 @@ markdown-it-directive@^1.0.1:
   integrity sha512-iqKDPvqkmnAIeS7kYMf/qtlZcy7M+GDx1I7Aj3jVPzDyEhtDgHZKntwTeydwKrm4jZ173oob5G1yzmwXNrUi5Q==
   dependencies:
     markdown-it "^10.0.0"
+
+markdown-it-emoji@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-emoji/-/markdown-it-emoji-2.0.0.tgz#3164ad4c009efd946e98274f7562ad611089a231"
+  integrity sha512-39j7/9vP/CPCKbEI44oV8yoPJTpvfeReTn/COgRhSpNrjWF3PfP/JUxxB0hxV6ynOY8KH8Y8aX9NMDdo6z+6YQ==
 
 markdown-it@^10.0.0:
   version "10.0.0"

@@ -85,6 +85,8 @@ import { t } from "./i18n";
 import StyledEditor from "./components/StyledEditor";
 import PlantUml from "./nodes/PlantUml";
 import MindMap from "./nodes/MindMap";
+import Audio from "./nodes/Audio";
+import Video from "./nodes/Video";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -330,6 +332,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new Emoji(),
         new PlantUml(),
         new MindMap(),
+        new Audio(),
+        new Video(),
         //
         ...(this.props.config?.extensions || [])
       ],
