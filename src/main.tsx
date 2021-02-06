@@ -83,6 +83,8 @@ import { Toaster } from "react-hot-toast";
 import { UploadResponse } from "./commands/uploadFiles";
 import { t } from "./i18n";
 import StyledEditor from "./components/StyledEditor";
+import PlantUml from "./nodes/PlantUml";
+import MindMap from "./nodes/MindMap";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -326,6 +328,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new KatexInline(),
         new Mermaid(),
         new Emoji(),
+        new PlantUml(),
+        new MindMap(),
         //
         ...(this.props.config?.extensions || [])
       ],

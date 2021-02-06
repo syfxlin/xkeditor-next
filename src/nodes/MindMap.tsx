@@ -1,6 +1,5 @@
+import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
 import { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { mergeSpec, nodeKeys } from "../utils/editor";
 import {
   Command,
   Dispatcher,
@@ -8,29 +7,34 @@ import {
   MenuItems,
   MonacoAttrs
 } from "../lib/Extension";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { mergeSpec, nodeKeys } from "../utils/editor";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
-import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ComponentView";
-import React, { useEffect, useRef } from "react";
-import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
-import mermaid from "mermaid";
+import toggleBlockType from "../commands/toggleBlockType";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
-import { usePromise } from "react-use";
 import { t } from "../i18n";
-import toggleBlockType from "../commands/toggleBlockType";
 import { ChartGraph } from "@icon-park/react";
+import ReactNode from "./ReactNode";
+import { ComponentProps } from "../lib/ComponentView";
+import React, { useEffect, useRef } from "react";
+import { Transformer } from "markmap-lib";
 import debounce from "lodash/debounce";
+import { usePromise } from "react-use";
+import { Markmap } from "markmap-view";
+import styled from "styled-components";
 
-type MermaidAttrs = MonacoNodeAttrs;
+const transformer = new Transformer([]);
 
-export default class Mermaid extends ReactNode<
+type MindMapAttrs = MonacoNodeAttrs;
+
+export default class MindMap extends ReactNode<
   EmptyAttrs,
-  MonacoAttrs<MermaidAttrs>
+  MonacoAttrs<MindMapAttrs>
 > {
   get name() {
-    return "mermaid";
+    return "mindmap";
   }
 
   get schema(): NodeSpec {
@@ -60,32 +64,25 @@ export default class Mermaid extends ReactNode<
     });
   }
 
-  component(): React.FC<ComponentProps> {
-    const render = debounce(async (mounted, element, content: string) => {
-      await mounted(
-        new Promise<void>(resolve => {
-          try {
-            if (element) {
-              mermaid.render(
-                this.name,
-                content,
-                svgCode => {
-                  if (element) {
-                    element.innerHTML = svgCode;
-                  }
-                },
-                element
-              );
-            }
-          } catch (e) {
-            console.log(e);
-          }
-          resolve();
-        })
-      );
-    }, 700);
+  component(): React.FC<ComponentProps> | typeof React.Component {
+    const render = debounce(
+      async (mounted, element: SVGSVGElement | null, content: string) => {
+        if (!element) {
+          return;
+        }
+        await mounted(
+          new Promise<void>(resolve => {
+            const { root } = transformer.transform(content);
+            element.innerHTML = "";
+            Markmap.create(element, undefined, root);
+            resolve();
+          })
+        );
+      },
+      700
+    );
     return props => {
-      const ref = useRef<HTMLDivElement>(null);
+      const ref = useRef<SVGSVGElement>(null);
       const mounted = usePromise();
       useEffect(() => {
         if (props.node.attrs.mode === "edit") {
@@ -94,8 +91,8 @@ export default class Mermaid extends ReactNode<
         render(mounted, ref.current, props.node.textContent);
       }, [props.node.attrs.mode, props.node.textContent, ref.current]);
       return (
-        <MonacoNode {...props} language={"mermaid"}>
-          <div ref={ref} style={{ height: "100%" }} />
+        <MonacoNode {...props} language={"markdown"}>
+          <MindMapWrapper ref={ref} />
         </MonacoNode>
       );
     };
@@ -106,7 +103,7 @@ export default class Mermaid extends ReactNode<
   }
 
   inputRules({ type }: NodeArgs): InputRule[] {
-    return [textblockTypeInputRule(/^:::\s?mermaid$/, type, { mode: "edit" })];
+    return [textblockTypeInputRule(/^:::\s?mindmap$/, type, { mode: "edit" })];
   }
 
   commands({ type, schema }: NodeArgs): Record<string, Command> | Command {
@@ -115,7 +112,7 @@ export default class Mermaid extends ReactNode<
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("\n:::mermaid\n");
+    state.write("\n:::mindmap\n");
     state.renderContent(node);
     state.ensureNewLine();
     state.write(":::");
@@ -143,11 +140,16 @@ export default class Mermaid extends ReactNode<
       3: [
         {
           name: this.name,
-          title: t("Mermaid 图"),
+          title: t("MindMap 图"),
           icon: ChartGraph,
-          keywords: "mermaid graph"
+          keywords: "mindmap uml"
         }
       ]
     };
   }
 }
+
+const MindMapWrapper = styled.svg`
+  width: 100%;
+  min-height: 300px;
+`;

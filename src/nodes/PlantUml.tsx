@@ -1,6 +1,5 @@
+import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
 import { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { mergeSpec, nodeKeys } from "../utils/editor";
 import {
   Command,
   Dispatcher,
@@ -8,29 +7,29 @@ import {
   MenuItems,
   MonacoAttrs
 } from "../lib/Extension";
+import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { mergeSpec, nodeKeys } from "../utils/editor";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
-import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ComponentView";
-import React, { useEffect, useRef } from "react";
-import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
-import mermaid from "mermaid";
+import toggleBlockType from "../commands/toggleBlockType";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
-import { usePromise } from "react-use";
 import { t } from "../i18n";
-import toggleBlockType from "../commands/toggleBlockType";
 import { ChartGraph } from "@icon-park/react";
+import ReactNode from "./ReactNode";
+import { ComponentProps } from "../lib/ComponentView";
+import React, { useEffect, useState } from "react";
+import plantumlEncoder from "plantuml-encoder";
 import debounce from "lodash/debounce";
 
-type MermaidAttrs = MonacoNodeAttrs;
+type PlantUmlAttrs = MonacoNodeAttrs;
 
-export default class Mermaid extends ReactNode<
+export default class PlantUml extends ReactNode<
   EmptyAttrs,
-  MonacoAttrs<MermaidAttrs>
+  MonacoAttrs<PlantUmlAttrs>
 > {
   get name() {
-    return "mermaid";
+    return "plantuml";
   }
 
   get schema(): NodeSpec {
@@ -60,42 +59,24 @@ export default class Mermaid extends ReactNode<
     });
   }
 
-  component(): React.FC<ComponentProps> {
-    const render = debounce(async (mounted, element, content: string) => {
-      await mounted(
-        new Promise<void>(resolve => {
-          try {
-            if (element) {
-              mermaid.render(
-                this.name,
-                content,
-                svgCode => {
-                  if (element) {
-                    element.innerHTML = svgCode;
-                  }
-                },
-                element
-              );
-            }
-          } catch (e) {
-            console.log(e);
-          }
-          resolve();
-        })
-      );
-    }, 700);
+  component(): React.FC<ComponentProps> | typeof React.Component {
+    const render = debounce(
+      (content: string, setEncode: (encode: string) => void) => {
+        setEncode(plantumlEncoder.encode(content));
+      },
+      700
+    );
     return props => {
-      const ref = useRef<HTMLDivElement>(null);
-      const mounted = usePromise();
+      const [encode, setEncode] = useState("");
       useEffect(() => {
-        if (props.node.attrs.mode === "edit") {
-          return;
-        }
-        render(mounted, ref.current, props.node.textContent);
-      }, [props.node.attrs.mode, props.node.textContent, ref.current]);
+        render(props.node.textContent, setEncode);
+      }, [props.node.textContent, props.node.attrs.mode]);
       return (
         <MonacoNode {...props} language={"mermaid"}>
-          <div ref={ref} style={{ height: "100%" }} />
+          <img
+            src={`http://www.plantuml.com/plantuml/svg/${encode}`}
+            alt={props.node.textContent}
+          />
         </MonacoNode>
       );
     };
@@ -106,7 +87,7 @@ export default class Mermaid extends ReactNode<
   }
 
   inputRules({ type }: NodeArgs): InputRule[] {
-    return [textblockTypeInputRule(/^:::\s?mermaid$/, type, { mode: "edit" })];
+    return [textblockTypeInputRule(/^:::\s?plantuml$/, type, { mode: "edit" })];
   }
 
   commands({ type, schema }: NodeArgs): Record<string, Command> | Command {
@@ -115,7 +96,7 @@ export default class Mermaid extends ReactNode<
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("\n:::mermaid\n");
+    state.write("\n:::plantuml\n");
     state.renderContent(node);
     state.ensureNewLine();
     state.write(":::");
@@ -143,9 +124,9 @@ export default class Mermaid extends ReactNode<
       3: [
         {
           name: this.name,
-          title: t("Mermaid 图"),
+          title: t("PlantUml 图"),
           icon: ChartGraph,
-          keywords: "mermaid graph"
+          keywords: "plantuml uml"
         }
       ]
     };
