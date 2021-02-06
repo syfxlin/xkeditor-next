@@ -18,8 +18,6 @@ const base = {
 
 const lightOrigin = {
   ...base,
-  // Check
-  mode: "light",
   // Text
   text: ["rgba(0, 0, 0, 0.2)", "rgba(0, 0, 0, 0.5)", "rgba(0, 0, 0, 0.9)"],
   // Background
@@ -56,8 +54,6 @@ const lightOrigin = {
 
 const darkOrigin = {
   ...base,
-  // Check
-  mode: "dark",
   // Text
   text: [
     "rgba(204, 204, 204, 0.2)",
@@ -105,3 +101,5 @@ export const dark = {
   ...darkOrigin,
   reverse: lightOrigin
 };
+
+export type Theme = typeof light;

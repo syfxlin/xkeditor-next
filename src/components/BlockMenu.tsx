@@ -3,7 +3,7 @@ import capitalize from "lodash/capitalize";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
 import { findParentNode } from "prosemirror-utils";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 import BlockMenuItem from "./BlockMenuItem";
 import VisuallyHidden from "./VisuallyHidden";
 import getDataTransferFiles from "../lib/getDataTransferFiles";

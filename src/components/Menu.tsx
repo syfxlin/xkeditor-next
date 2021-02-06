@@ -1,11 +1,12 @@
 import React from "react";
 import { EditorView } from "prosemirror-view";
-import { Theme, withTheme } from "@emotion/react";
+import { withTheme } from "styled-components";
 import ToolbarButton from "./ToolbarButton";
 import ToolbarSeparator from "./ToolbarSeparator";
 import { Attrs, ToolbarItem } from "../lib/Extension";
 import capitalize from "lodash/capitalize";
 import Tooltip from "./Tooltip";
+import { Theme } from "../theme";
 
 type Props = {
   commands: Record<string, any>;

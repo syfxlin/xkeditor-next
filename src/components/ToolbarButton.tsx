@@ -1,4 +1,4 @@
-import styled from "@emotion/styled";
+import styled from "styled-components";
 
 type Props = { active?: boolean; disabled?: boolean };
 

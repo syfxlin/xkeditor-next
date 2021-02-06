@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { NodeSelection, Plugin, TextSelection } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
 import { setTextSelection } from "prosemirror-utils";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 // @ts-ignore
 import ImageZoom from "react-medium-image-zoom";
 import getDataTransferFiles from "../lib/getDataTransferFiles";

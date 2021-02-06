@@ -1,6 +1,6 @@
 import React from "react";
 import Tippy from "@tippyjs/react";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 import "tippy.js/dist/tippy.css";
 import "tippy.js/animations/shift-away.css";
 

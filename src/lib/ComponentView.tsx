@@ -1,11 +1,12 @@
 import React, { Ref } from "react";
 import ReactDOM from "react-dom";
-import { Theme, ThemeProvider } from "@emotion/react";
+import { ThemeProvider } from "styled-components";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
 import { Editor } from "../main";
 import { Node as ProseMirrorNode } from "prosemirror-model";
 import Node from "../nodes/Node";
 import { Attrs } from "./Extension";
+import { Theme } from "../theme";
 
 export type HTMLElementRef<T extends HTMLElement = any> = Ref<T>;
 export type ComponentProps = {

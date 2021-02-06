@@ -16,8 +16,8 @@ import { InputRule, inputRules } from "prosemirror-inputrules";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap } from "prosemirror-commands";
 import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
-import { Theme, ThemeProvider } from "@emotion/react";
-import { dark as darkTheme, light as lightTheme } from "./theme";
+import { ThemeProvider } from "styled-components";
+import { dark as darkTheme, light as lightTheme, Theme } from "./theme";
 import Flex from "./components/Flex";
 import SelectionToolbar from "./components/SelectionToolbar";
 import BlockMenu from "./components/BlockMenu";
@@ -447,7 +447,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       plugins: [
         ...this.plugins,
         ...this.keymaps,
-        dropCursor({ color: this.theme().cursor }),
+        dropCursor({ color: this.theme().primary }),
         gapCursor(),
         inputRules({
           rules: this.inputRules

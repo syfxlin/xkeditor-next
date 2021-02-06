@@ -1,4 +1,4 @@
-import styled from "@emotion/styled";
+import styled from "styled-components";
 
 const StyledEditor = styled("div")<{
   readOnly?: boolean;
@@ -119,123 +119,6 @@ const StyledEditor = styled("div")<{
     display: block;
   }
 
-  // Blockquote
-  blockquote {
-    margin: 0.5em 0;
-    padding-left: 1em;
-    font-style: italic;
-    overflow: hidden;
-    position: relative;
-
-    &:before {
-      content: "";
-      display: inline-block;
-      width: 3px;
-      border-radius: 1px;
-      position: absolute;
-      margin-left: -16px;
-      top: 0;
-      bottom: 0;
-      background: ${props => props.theme.primary};
-    }
-
-    p:last-of-type {
-      margin-bottom: 0;
-    }
-  }
-
-  // List
-  li {
-    position: relative;
-  }
-
-  ul,
-  ol {
-    margin: 0.5em 0.1em;
-    padding: 0 0 0 1.2em;
-
-    ul,
-    ol {
-      margin: 0;
-    }
-  }
-
-  ol ol {
-    list-style: lower-alpha;
-  }
-
-  ol ol ol {
-    list-style: lower-roman;
-  }
-
-  ul.checkbox_list {
-    list-style: none;
-    padding-left: 0;
-  }
-
-  ul.checkbox_list li {
-    display: flex;
-  }
-
-  ul.checkbox_list li.checked > div > p {
-    color: ${props => props.theme.text[1]};
-    text-decoration: line-through;
-  }
-
-  ul.checkbox_list li input {
-    pointer-events: ${props => props.readOnly && "none"};
-    opacity: ${props => props.readOnly && 0.75};
-    margin: 0 0.5em 0 0;
-    width: 16px;
-    height: 16px;
-    appearance: none;
-    position: relative;
-    border: 1px solid ${props => props.theme.text[1]};
-    top: 2px;
-    border-radius: 4px;
-
-    &:checked {
-      background: ${props => props.theme.primary};
-      border-color: transparent;
-
-      &:before {
-        line-height: 1;
-        position: absolute;
-        top: -1px;
-        left: -1px;
-        width: 16px;
-        height: 16px;
-        content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" style="fill:rgb(255,255,255);"><path d="M10 15.586L6.707 12.293 5.293 13.707 10 18.414 19.707 8.707 18.293 7.293z"></path></svg>');
-      }
-    }
-  }
-
-  li p:first-of-type {
-    margin: 0;
-    word-break: break-word;
-  }
-
-  // Details
-  details {
-    background: ${props => props.theme.background[1]};
-    border-radius: 8px;
-    padding: 10px 0 10px 1em;
-
-    summary {
-      outline: none;
-    }
-  }
-
-  // Paragraph
-  p {
-    margin: 0 0 0.5em 0;
-  }
-
-  // Embed
-  .embed {
-    margin: 0.5em 0;
-  }
-
   // Heading
   h1,
   h2,
@@ -336,158 +219,16 @@ const StyledEditor = styled("div")<{
     }
   }
 
+  // Paragraph
+  p {
+    margin: 0 0 0.5em 0;
+  }
+
   // Hr
   hr {
     height: 0;
     border: 0;
     border-top: 2px solid ${props => props.theme.divider};
-  }
-
-  // Image
-  .image {
-    text-align: center;
-    max-width: 100%;
-    clear: both;
-
-    img {
-      pointer-events: ${props => (props.readOnly ? "initial" : "none")};
-      display: inline-block;
-      max-width: 100%;
-      max-height: 75vh;
-    }
-  }
-
-  .image.placeholder {
-    position: relative;
-    background: ${props => props.theme.background[2]};
-
-    img {
-      opacity: 0.5;
-    }
-  }
-
-  .image-right-50 {
-    float: right;
-    width: 50%;
-    margin-left: 2em;
-    margin-bottom: 1em;
-    clear: initial;
-  }
-
-  .image-left-50 {
-    float: left;
-    width: 50%;
-    margin-right: 2em;
-    margin-bottom: 1em;
-    clear: initial;
-  }
-
-  // CodeBlock & MonacoEditor
-  .code-block,
-  .notice-block {
-    position: relative;
-    margin: 0.5em 0;
-
-    > section {
-      width: 100%;
-
-      &.hidden {
-        visibility: hidden;
-      }
-
-      &.code-editor {
-        position: relative;
-        min-height: 300px;
-
-        > section {
-          position: absolute !important;
-        }
-      }
-    }
-
-    .toolbar {
-      position: absolute;
-      z-index: 1;
-      top: 4px;
-      right: 4px;
-
-      select,
-      button {
-        background: ${props => props.theme.reverse.background[2]};
-        color: ${props => props.theme.reverse.text[2]};
-        border-width: 1px;
-        font-size: 13px;
-        display: none;
-        border-radius: 4px;
-        padding: 2px;
-        margin: 0 2px;
-      }
-
-      button {
-        padding: 2px 4px;
-      }
-
-      select:focus,
-      select:active {
-        display: inline;
-      }
-    }
-
-    &:hover .toolbar {
-      select {
-        display: inline;
-      }
-
-      button {
-        display: inline;
-      }
-    }
-  }
-
-  // Notice
-  .notice-block {
-    display: flex;
-    align-items: center;
-    background: ${props => props.theme.noticeInfoBackground};
-    color: ${props => props.theme.noticeInfoText};
-    border-radius: 4px;
-    padding: 8px 16px;
-    margin: 8px 0;
-
-    a {
-      color: ${props => props.theme.noticeInfoText};
-    }
-
-    a:not(.heading-name) {
-      text-decoration: underline;
-    }
-  }
-
-  .notice-block .icon {
-    width: 24px;
-    height: 24px;
-    align-self: flex-start;
-    margin-right: 4px;
-    position: relative;
-    top: 1px;
-  }
-
-  .notice-block.tip {
-    background: ${props => props.theme.noticeTipBackground};
-    color: ${props => props.theme.noticeTipText};
-
-    a {
-      color: ${props => props.theme.noticeTipText};
-    }
-  }
-
-  .notice-block.warning {
-    background: ${props => props.theme.noticeWarningBackground};
-    color: ${props => props.theme.noticeWarningText};
-
-    a {
-      color: ${props => props.theme.noticeWarningText};
-    }
   }
 
   // Table
@@ -732,6 +473,265 @@ const StyledEditor = styled("div")<{
       padding: 0;
       border: 0;
     }
+  }
+
+  // Image
+  .image {
+    text-align: center;
+    max-width: 100%;
+    clear: both;
+
+    img {
+      pointer-events: ${props => (props.readOnly ? "initial" : "none")};
+      display: inline-block;
+      max-width: 100%;
+      max-height: 75vh;
+    }
+  }
+
+  .image.placeholder {
+    position: relative;
+    background: ${props => props.theme.background[2]};
+
+    img {
+      opacity: 0.5;
+    }
+  }
+
+  .image-right-50 {
+    float: right;
+    width: 50%;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    clear: initial;
+  }
+
+  .image-left-50 {
+    float: left;
+    width: 50%;
+    margin-right: 2em;
+    margin-bottom: 1em;
+    clear: initial;
+  }
+
+  // Details
+  details {
+    background: ${props => props.theme.background[1]};
+    border-radius: 8px;
+    padding: 10px 0 10px 1em;
+
+    summary {
+      outline: none;
+    }
+  }
+
+  // CodeBlock & MonacoEditor
+  .code-block,
+  .notice-block {
+    position: relative;
+    margin: 0.5em 0;
+
+    > section {
+      width: 100%;
+
+      &.hidden {
+        visibility: hidden;
+      }
+
+      &.code-editor {
+        position: relative;
+        min-height: 300px;
+
+        > section {
+          position: absolute !important;
+        }
+      }
+    }
+
+    .toolbar {
+      position: absolute;
+      z-index: 1;
+      top: 4px;
+      right: 4px;
+
+      select,
+      button {
+        background: ${props => props.theme.reverse.background[2]};
+        color: ${props => props.theme.reverse.text[2]};
+        border-width: 1px;
+        font-size: 13px;
+        display: none;
+        border-radius: 4px;
+        padding: 2px;
+        margin: 0 2px;
+      }
+
+      button {
+        padding: 2px 4px;
+      }
+
+      select:focus,
+      select:active {
+        display: inline;
+      }
+    }
+
+    &:hover .toolbar {
+      select {
+        display: inline;
+      }
+
+      button {
+        display: inline;
+      }
+    }
+  }
+
+  // Notice
+  .notice-block {
+    display: flex;
+    align-items: center;
+    background: ${props => props.theme.noticeInfoBackground};
+    color: ${props => props.theme.noticeInfoText};
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin: 8px 0;
+
+    a {
+      color: ${props => props.theme.noticeInfoText};
+    }
+
+    a:not(.heading-name) {
+      text-decoration: underline;
+    }
+  }
+
+  .notice-block .icon {
+    width: 24px;
+    height: 24px;
+    align-self: flex-start;
+    margin-right: 4px;
+    position: relative;
+    top: 1px;
+  }
+
+  .notice-block.tip {
+    background: ${props => props.theme.noticeTipBackground};
+    color: ${props => props.theme.noticeTipText};
+
+    a {
+      color: ${props => props.theme.noticeTipText};
+    }
+  }
+
+  .notice-block.warning {
+    background: ${props => props.theme.noticeWarningBackground};
+    color: ${props => props.theme.noticeWarningText};
+
+    a {
+      color: ${props => props.theme.noticeWarningText};
+    }
+  }
+
+  // Blockquote
+  blockquote {
+    margin: 0.5em 0;
+    padding-left: 1em;
+    font-style: italic;
+    overflow: hidden;
+    position: relative;
+
+    &:before {
+      content: "";
+      display: inline-block;
+      width: 3px;
+      border-radius: 1px;
+      position: absolute;
+      margin-left: -16px;
+      top: 0;
+      bottom: 0;
+      background: ${props => props.theme.primary};
+    }
+
+    p:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  // List
+  li {
+    position: relative;
+  }
+
+  ul,
+  ol {
+    margin: 0.5em 0.1em;
+    padding: 0 0 0 1.2em;
+
+    ul,
+    ol {
+      margin: 0;
+    }
+  }
+
+  ol ol {
+    list-style: lower-alpha;
+  }
+
+  ol ol ol {
+    list-style: lower-roman;
+  }
+
+  ul.checkbox_list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  ul.checkbox_list li {
+    display: flex;
+  }
+
+  ul.checkbox_list li.checked > div > p {
+    color: ${props => props.theme.text[1]};
+    text-decoration: line-through;
+  }
+
+  ul.checkbox_list li input {
+    pointer-events: ${props => props.readOnly && "none"};
+    opacity: ${props => props.readOnly && 0.75};
+    margin: 0 0.5em 0 0;
+    width: 16px;
+    height: 16px;
+    appearance: none;
+    position: relative;
+    border: 1px solid ${props => props.theme.text[1]};
+    top: 2px;
+    border-radius: 4px;
+
+    &:checked {
+      background: ${props => props.theme.primary};
+      border-color: transparent;
+
+      &:before {
+        line-height: 1;
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        width: 16px;
+        height: 16px;
+        content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" style="fill:rgb(255,255,255);"><path d="M10 15.586L6.707 12.293 5.293 13.707 10 18.414 19.707 8.707 18.293 7.293z"></path></svg>');
+      }
+    }
+  }
+
+  li p:first-of-type {
+    margin: 0;
+    word-break: break-word;
+  }
+
+  // Embed
+  .embed {
+    margin: 0.5em 0;
   }
 
   // Media

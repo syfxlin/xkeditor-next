@@ -1,5 +1,8 @@
-const { addLessLoader, override } = require("customize-cra");
+const { addLessLoader, override, addBabelPlugin } = require("customize-cra");
 
 module.exports = {
-  webpack: override(addLessLoader())
+  webpack: override(
+    addLessLoader(),
+    addBabelPlugin("babel-plugin-styled-components")
+  )
 };

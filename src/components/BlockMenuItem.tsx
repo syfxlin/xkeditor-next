@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
-import styled from "@emotion/styled";
-import { Theme, withTheme } from "@emotion/react";
+import styled, { withTheme } from "styled-components";
+import { Theme } from "../theme";
 
 type Props = {
   selected: boolean;

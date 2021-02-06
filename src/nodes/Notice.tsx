@@ -13,7 +13,7 @@ import { Caution, Info, TipsOne } from "@icon-park/react";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import { useTranslation } from "react-i18next";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 
 type NoticeAttrs = {
   style: "info" | "warning" | "tip";

@@ -11,7 +11,7 @@ import React, {
 } from "react";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 import { NodeSelection } from "prosemirror-state";
 
 type Props = {

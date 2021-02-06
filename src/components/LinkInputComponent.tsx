@@ -1,6 +1,6 @@
 import { ToolbarComponentProps } from "./SelectionToolbar";
 import React, { ChangeEvent, useState } from "react";
-import styled from "@emotion/styled";
+import styled, { useTheme } from "styled-components";
 import Flex from "./Flex";
 import Input from "./Input";
 import ToolbarButton from "./ToolbarButton";
@@ -8,7 +8,7 @@ import Tooltip from "./Tooltip";
 import { useTranslation } from "react-i18next";
 import getMarkRange from "../queries/getMarkRange";
 import { Delete, Share } from "@icon-park/react";
-import { useTheme } from "@emotion/react";
+import { Theme } from "../theme";
 
 const Wrapper = styled(Flex)`
   margin-left: -8px;
@@ -30,7 +30,7 @@ export default function linkInputComponent(
       return null;
     }
     const { mark } = range;
-    const theme = useTheme();
+    const theme = useTheme() as Theme;
     const { t } = useTranslation();
     const [value, setValue] = useState(mark ? mark.attrs.href : "");
 

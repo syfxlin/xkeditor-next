@@ -1,5 +1,5 @@
 import { BlockComponentProps } from "./BlockMenu";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 import Input from "./Input";
 import React, { InputHTMLAttributes, useCallback } from "react";
 import { toast } from "react-hot-toast";
