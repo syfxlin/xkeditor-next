@@ -4,6 +4,18 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Node, NodeSpec } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
 
+export function selectionDir(
+  view: EditorView,
+  pos: number,
+  size: number,
+  dir: -1 | 1
+) {
+  const targetPos = pos + (dir < 0 ? 0 : size);
+  const selection = Selection.near(view.state.doc.resolve(targetPos), dir);
+  view.dispatch(view.state.tr.setSelection(selection).scrollIntoView());
+  view.focus();
+}
+
 export function computeChange(oldVal: string, newVal: string) {
   if (oldVal == newVal) {
     return null;

@@ -11,8 +11,14 @@ import { PluginSimple } from "markdown-it";
 import { NodeArgs } from "./Node";
 import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import { applyContent } from "../utils/editor";
+import { applyContent, selectionDir } from "../utils/editor";
 import { EmptyAttrs } from "../lib/Extension";
+import FloatingToolbar from "../components/FloatingToolbar";
+import Input from "../components/Input";
+import { useTranslation } from "react-i18next";
+import Tooltip from "../components/Tooltip";
+import { Help } from "@icon-park/react";
+import ToolbarButton from "../components/ToolbarButton";
 
 export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -39,9 +45,10 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ node, view, getPos, isSelected }) => {
+    return ({ editor, theme, node, view, getPos, isSelected }) => {
       const tex = useRef<HTMLElement>(null);
       const input = useRef<HTMLInputElement>(null);
+      const { t } = useTranslation();
       useEffect(() => {
         if (tex.current) {
           render(node.textContent, tex.current, {
@@ -49,29 +56,53 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
           });
         }
       }, [node.textContent]);
-
       const handleChange = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
           applyContent({ node, view, getPos }, event.target.value);
         },
         [node, view, getPos]
       );
-
-      useEffect(() => {
-        if (isSelected) {
-          input.current?.focus();
-        }
-      }, [isSelected]);
+      const handleKeyDown = useCallback(
+        (event: React.KeyboardEvent): void => {
+          switch (event.key) {
+            case "Escape":
+            case "Enter": {
+              event.preventDefault();
+              const dir = event.ctrlKey || event.shiftKey ? -1 : 1;
+              selectionDir(view, getPos(), node.nodeSize, dir);
+              return;
+            }
+          }
+        },
+        [view, getPos, node]
+      );
+      const handleOpenLink = (e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault();
+        editor.props.action?.onClickLink?.("https://katex.org/", e.nativeEvent);
+      };
 
       return (
         <>
-          <input
-            value={node.textContent}
-            onChange={handleChange}
-            hidden={!isSelected}
-            ref={input}
-          />
           <span data-type={"katex-inline"} ref={tex} contentEditable={false} />
+          <FloatingToolbar view={view} active={isSelected}>
+            <Input
+              value={node.textContent}
+              placeholder={t("输入科学公式...")}
+              onKeyDown={handleKeyDown}
+              onChange={handleChange}
+              autoFocus={true}
+              ref={input}
+            />
+            <ToolbarButton onClick={handleOpenLink}>
+              <Tooltip tooltip={t("帮助")}>
+                <Help
+                  theme="outline"
+                  size="100%"
+                  fill={theme.reverse.text[2]}
+                />
+              </Tooltip>
+            </ToolbarButton>
+          </FloatingToolbar>
         </>
       );
     };

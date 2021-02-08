@@ -1,6 +1,6 @@
 import { ToolbarComponentProps } from "./SelectionToolbar";
 import React, { ChangeEvent, useState } from "react";
-import styled, { useTheme } from "styled-components";
+import { useTheme } from "styled-components";
 import Flex from "./Flex";
 import Input from "./Input";
 import ToolbarButton from "./ToolbarButton";
@@ -9,12 +9,6 @@ import { useTranslation } from "react-i18next";
 import getMarkRange from "../queries/getMarkRange";
 import { Delete, Share } from "@icon-park/react";
 import { Theme } from "../theme";
-
-const Wrapper = styled(Flex)`
-  margin-left: -8px;
-  margin-right: -8px;
-  min-width: 336px;
-`;
 
 export default function linkInputComponent(
   onClickLink: (href: string, event: MouseEvent) => void
@@ -62,7 +56,7 @@ export default function linkInputComponent(
     };
 
     return (
-      <Wrapper>
+      <Flex>
         <Input
           value={value}
           placeholder={t("搜索或粘贴链接...")}
@@ -80,7 +74,7 @@ export default function linkInputComponent(
             <Delete theme="outline" size="100%" fill={theme.reverse.text[2]} />
           </Tooltip>
         </ToolbarButton>
-      </Wrapper>
+      </Flex>
     );
   };
   return LinkInputComponent;

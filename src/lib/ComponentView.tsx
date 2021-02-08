@@ -136,12 +136,13 @@ export default class ComponentView implements NodeView {
     });
   }
 
-  update(node: ProseMirrorNode) {
+  update(node: ProseMirrorNode, decorations: Decoration[]) {
     if (node.type !== this.node.type) {
       return false;
     }
 
     this.node = node;
+    this.decorations = decorations;
     this.renderElement();
     return true;
   }
@@ -163,6 +164,7 @@ export default class ComponentView implements NodeView {
   selectNode() {
     if (this.view.editable) {
       this.isSelected = true;
+      this.dom?.classList.add("ProseMirror-selectednode");
       this.renderElement();
     }
   }
@@ -170,6 +172,7 @@ export default class ComponentView implements NodeView {
   deselectNode() {
     if (this.view.editable) {
       this.isSelected = false;
+      this.dom?.classList.remove("ProseMirror-selectednode");
       this.renderElement();
     }
   }

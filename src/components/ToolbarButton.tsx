@@ -4,7 +4,7 @@ type Props = { active?: boolean; disabled?: boolean };
 
 export default styled.button<Props>`
   display: inline-block;
-  flex: 1;
+  flex: auto;
   width: 24px;
   height: 24px;
   cursor: pointer;
@@ -16,7 +16,7 @@ export default styled.button<Props>`
   opacity: 0.7;
   outline: none;
 
-  &:first-of-type {
+  &:first-child {
     margin-left: 0;
   }
 

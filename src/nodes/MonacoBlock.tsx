@@ -11,8 +11,12 @@ import PrismHighlight from "../components/PrismHighlight";
 import { languages } from "../utils/languages";
 import copy from "copy-to-clipboard";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { Selection } from "prosemirror-state";
-import { applyContent, mergeSpec, nodeKeys } from "../utils/editor";
+import {
+  applyContent,
+  mergeSpec,
+  nodeKeys,
+  selectionDir
+} from "../utils/editor";
 import { setBlockType } from "prosemirror-commands";
 import { toast } from "react-hot-toast";
 import { t } from "../i18n";
@@ -169,15 +173,7 @@ export default class MonacoBlock extends ReactNode<
               dir = 1;
             }
             if (dir !== null) {
-              const targetPos = getPos() + (dir < 0 ? 0 : node?.nodeSize);
-              const selection = Selection.near(
-                view.state.doc.resolve(targetPos),
-                dir
-              );
-              view.dispatch(
-                view.state.tr.setSelection(selection).scrollIntoView()
-              );
-              view.focus();
+              selectionDir(view, getPos(), node.nodeSize, dir);
               return;
             }
           });

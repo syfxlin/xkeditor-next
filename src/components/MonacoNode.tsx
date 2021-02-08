@@ -1,8 +1,7 @@
-import { applyContent } from "../utils/editor";
+import { applyContent, selectionDir } from "../utils/editor";
 import React, { useCallback, useEffect, useRef } from "react";
 import { ComponentProps } from "../lib/ComponentView";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
-import { Selection } from "prosemirror-state";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useTranslation } from "react-i18next";
 
@@ -109,13 +108,7 @@ const MonacoNode: React.FC<Props> = props => {
         dir = 1;
       }
       if (dir !== null) {
-        const targetPos = getPos() + (dir < 0 ? 0 : node?.nodeSize);
-        const selection = Selection.near(
-          view.state.doc.resolve(targetPos),
-          dir
-        );
-        view.dispatch(view.state.tr.setSelection(selection).scrollIntoView());
-        view.focus();
+        selectionDir(view, getPos(), node.nodeSize, dir);
         return;
       }
     });

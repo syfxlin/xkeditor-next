@@ -162,7 +162,7 @@ const StyledEditor = styled("div")<{
     }
   }
 
-  a:first-of-type {
+  a:first-child {
     h1,
     h2,
     h3,
@@ -724,7 +724,7 @@ const StyledEditor = styled("div")<{
     }
   }
 
-  li p:first-of-type {
+  li p:first-child {
     margin: 0;
     word-break: break-word;
   }
