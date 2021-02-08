@@ -67,22 +67,24 @@ export default class Notice extends ReactNode<EmptyAttrs, NoticeAttrs> {
       warning: <Caution />,
       tip: <TipsOne />
     };
-    return ({ node, updateAttrs, forwardRef }) => {
+    return ({ isEditable, node, updateAttrs, forwardRef }) => {
       const attrs = node.attrs as NoticeAttrs;
       const { t } = useTranslation();
       return (
         <div className={`notice-block ${attrs.style}`}>
           <Icon>{icons[attrs.style]}</Icon>
-          <div contentEditable={false} className={"toolbar"}>
-            <select
-              value={attrs.style}
-              onChange={e => updateAttrs({ style: e.target.value })}
-            >
-              <option value={"info"}>{t("信息")}</option>
-              <option value={"warning"}>{t("警告")}</option>
-              <option value={"tip"}>{t("提示")}</option>
-            </select>
-          </div>
+          {isEditable && (
+            <div contentEditable={false} className={"toolbar"}>
+              <select
+                value={attrs.style}
+                onChange={e => updateAttrs({ style: e.target.value })}
+              >
+                <option value={"info"}>{t("信息")}</option>
+                <option value={"warning"}>{t("警告")}</option>
+                <option value={"tip"}>{t("提示")}</option>
+              </select>
+            </div>
+          )}
           <div ref={forwardRef} />
         </div>
       );

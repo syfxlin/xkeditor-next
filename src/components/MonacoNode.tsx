@@ -26,7 +26,7 @@ const MonacoNode: React.FC<Props> = props => {
     width,
     height,
     language = "javascript",
-    forwardRef
+    isEditable
   } = props;
   const propsRef = useRef({
     node,
@@ -122,7 +122,10 @@ const MonacoNode: React.FC<Props> = props => {
       contentEditable={false}
       style={{ width, height }}
     >
-      <section hidden={node.attrs.mode === "preview"} className={"code-editor"}>
+      <section
+        hidden={!isEditable || node.attrs.mode === "preview"}
+        className={"code-editor"}
+      >
         <MonacoEditor
           value={node.textContent}
           theme={"vs-dark"}
@@ -136,11 +139,18 @@ const MonacoNode: React.FC<Props> = props => {
           {props.editToolbar}
         </div>
       </section>
-      <section hidden={node.attrs.mode === "edit"} className={"code-preview"}>
+      <section
+        hidden={isEditable && node.attrs.mode === "edit"}
+        className={"code-preview"}
+      >
         {props.children}
         <div className={"toolbar"}>
-          <button onClick={handleEdit}>{t("编辑")}</button>
-          <button onClick={handleBoth}>{t("预览 & 编辑")}</button>
+          {isEditable && (
+            <>
+              <button onClick={handleEdit}>{t("编辑")}</button>
+              <button onClick={handleBoth}>{t("预览 & 编辑")}</button>
+            </>
+          )}
           {props.viewToolbar}
         </div>
       </section>

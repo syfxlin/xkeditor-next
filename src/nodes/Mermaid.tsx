@@ -22,6 +22,7 @@ import { t } from "../i18n";
 import toggleBlockType from "../commands/toggleBlockType";
 import { ChartGraph } from "@icon-park/react";
 import debounce from "lodash/debounce";
+import styled from "styled-components";
 
 type MermaidAttrs = MonacoNodeAttrs;
 
@@ -91,11 +92,20 @@ export default class Mermaid extends ReactNode<
         if (props.node.attrs.mode === "edit") {
           return;
         }
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: props.editor.props.dark ? "dark" : "default"
+        });
         render(mounted, ref.current, props.node.textContent);
-      }, [props.node.attrs.mode, props.node.textContent, ref.current]);
+      }, [
+        props.node.attrs.mode,
+        props.node.textContent,
+        ref.current,
+        props.editor.props.dark
+      ]);
       return (
         <MonacoNode {...props} language={"mermaid"}>
-          <div ref={ref} style={{ height: "100%" }} />
+          <MermaidWrapper ref={ref} />
         </MonacoNode>
       );
     };
@@ -151,3 +161,12 @@ export default class Mermaid extends ReactNode<
     };
   }
 }
+
+const MermaidWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  background: ${props => props.theme.background[1]};
+  border-radius: 8px;
+  padding: 10px 0 10px 1em;
+`;

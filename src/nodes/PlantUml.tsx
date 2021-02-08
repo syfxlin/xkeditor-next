@@ -74,7 +74,7 @@ export default class PlantUml extends ReactNode<
       }, [props.node.textContent, props.node.attrs.mode]);
       return (
         <MonacoNode {...props} language={"mermaid"}>
-          <PlantUmlWrapper>
+          <PlantUmlWrapper dark={props.editor.props.dark}>
             <img
               src={`http://www.plantuml.com/plantuml/svg/${encode}`}
               alt={props.node.textContent}
@@ -136,7 +136,11 @@ export default class PlantUml extends ReactNode<
   }
 }
 
-const PlantUmlWrapper = styled.div`
+const PlantUmlWrapper = styled.div<{ dark: boolean | undefined }>`
   display: flex;
   justify-content: center;
+
+  img {
+    filter: ${props => (props.dark ? "invert(1)" : "none")};
+  }
 `;

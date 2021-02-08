@@ -24,7 +24,8 @@ import {
   AlignLeft,
   AlignRight,
   Delete,
-  Pic
+  Pic,
+  Share
 } from "@icon-park/react";
 
 /**
@@ -144,6 +145,7 @@ const getLayoutAndTitle = (tokenTitle: string | null) => {
 
 type ImageOptions = {
   upload: (files: File[]) => Promise<UploadResponse>;
+  onClickLink?: (href: string, event?: MouseEvent) => void;
 };
 
 type ImageAttrs = {
@@ -363,6 +365,11 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
 
   commands({ type }: NodeArgs): Record<string, Command> {
     return {
+      openOriginal: () => state => {
+        this.options.onClickLink?.(
+          (state.selection as NodeSelection).node.attrs.src
+        );
+      },
       deleteImage: () => (state, dispatch) => {
         dispatch?.(state.tr.deleteSelection());
         return true;
@@ -476,6 +483,11 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
             return selection.node && selection.node.type.name === "image";
           },
           items: [
+            {
+              name: "openOriginal",
+              title: t("打开原始图片"),
+              icon: Share
+            },
             {
               name: "alignLeft",
               title: t("左对齐"),

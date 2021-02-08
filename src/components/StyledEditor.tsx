@@ -685,42 +685,46 @@ const StyledEditor = styled("div")<{
   ul.checkbox_list {
     list-style: none;
     padding-left: 0;
-  }
 
-  ul.checkbox_list li {
-    display: flex;
-  }
+    li {
+      display: flex;
 
-  ul.checkbox_list li.checked > div > p {
-    color: ${props => props.theme.text[1]};
-    text-decoration: line-through;
-  }
+      &.checked > div > p {
+        color: ${props => props.theme.text[1]};
+        text-decoration: line-through;
+      }
 
-  ul.checkbox_list li input {
-    pointer-events: ${props => props.readOnly && "none"};
-    opacity: ${props => props.readOnly && 0.75};
-    margin: 0 0.5em 0 0;
-    width: 16px;
-    height: 16px;
-    appearance: none;
-    position: relative;
-    border: 1px solid ${props => props.theme.text[1]};
-    top: 2px;
-    border-radius: 4px;
-
-    &:checked {
-      background: ${props => props.theme.primary};
-      border-color: transparent;
-
-      &:before {
-        line-height: 1;
-        position: absolute;
-        top: -1px;
-        left: -1px;
+      input {
+        pointer-events: ${props => props.readOnly && "none"};
+        opacity: ${props => props.readOnly && 0.75};
+        margin: 0 0.5em 0 0;
         width: 16px;
         height: 16px;
-        content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" style="fill:rgb(255,255,255);"><path d="M10 15.586L6.707 12.293 5.293 13.707 10 18.414 19.707 8.707 18.293 7.293z"></path></svg>');
+        appearance: none;
+        position: relative;
+        border: 1px solid ${props => props.theme.text[1]};
+        top: 5px;
+        border-radius: 4px;
+
+        &:checked {
+          background: ${props => props.theme.primary};
+          border-color: transparent;
+
+          &:before {
+            line-height: 1;
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 16px;
+            height: 16px;
+            content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" style="fill:rgb(255,255,255);"><path d="M10 15.586L6.707 12.293 5.293 13.707 10 18.414 19.707 8.707 18.293 7.293z"></path></svg>');
+          }
+        }
       }
+    }
+
+    p {
+      margin: 2px 0;
     }
   }
 

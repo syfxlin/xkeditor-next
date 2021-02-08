@@ -88,7 +88,7 @@ export default class MonacoBlock extends ReactNode<
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ node, view, getPos, updateAttrs }) => {
+    return ({ isEditable, node, view, getPos, updateAttrs }) => {
       const propsRef = useRef({
         node,
         view,
@@ -183,7 +183,7 @@ export default class MonacoBlock extends ReactNode<
 
       return (
         <div className={"code-block"} contentEditable={false}>
-          {node.attrs.isEdit ? (
+          {isEditable && node.attrs.isEdit ? (
             <section className={"code-editor"}>
               <MonacoEditor
                 value={node.textContent}
@@ -213,7 +213,9 @@ export default class MonacoBlock extends ReactNode<
                 code={node.textContent}
               />
               <div className={"toolbar"}>
-                <button onClick={handleEdit}>{t("编辑")}</button>
+                {isEditable && (
+                  <button onClick={handleEdit}>{t("编辑")}</button>
+                )}
                 <button onClick={handleCopyToClipboard}>{t("复制")}</button>
               </div>
             </section>

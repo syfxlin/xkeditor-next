@@ -88,6 +88,7 @@ import ComponentView from "./lib/ComponentView";
 import PlantUml from "./nodes/PlantUml";
 import MindMap from "./nodes/MindMap";
 import NodeViewContainer from "./lib/NodeViewContainer";
+import Style from "./nodes/Style";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -117,7 +118,7 @@ export type Props = {
     save?: ({ done }: { done: boolean }) => void;
     cancel?: () => void;
     onKeydown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-    onClickLink?: (href: string, event: MouseEvent) => void;
+    onClickLink?: (href: string, event?: MouseEvent) => void;
     onClickHashtag?: (href: string, event: MouseEvent) => void;
     onHoverLink?: (event: MouseEvent) => boolean;
   };
@@ -285,7 +286,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new Heading(),
         new HorizontalRule(),
         new Image({
-          upload: this.props.action?.upload
+          upload: this.props.action?.upload,
+          onClickLink: this.props.action?.onClickLink
         }),
         new Table(),
         new TableCell({
@@ -342,6 +344,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new MindMap(),
         new Audio(),
         new Video(),
+        new Style(),
         //
         ...(this.props.config?.extensions || [])
       ],
