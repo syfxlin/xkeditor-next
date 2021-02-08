@@ -1,6 +1,6 @@
 import { applyContent } from "../utils/editor";
 import React, { useCallback, useEffect, useRef } from "react";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
 import { Selection } from "prosemirror-state";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";

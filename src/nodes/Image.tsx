@@ -8,7 +8,7 @@ import ImageZoom from "react-medium-image-zoom";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
 import { Command, MenuItems, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";

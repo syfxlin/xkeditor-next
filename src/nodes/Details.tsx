@@ -4,7 +4,7 @@ import { wrappingInputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
 import ReactNode from "./ReactNode";
 import React, { useCallback } from "react";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";

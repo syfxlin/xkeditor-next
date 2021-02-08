@@ -1,7 +1,7 @@
 import React from "react";
 import debounce from "lodash/debounce";
 import Editor from "./main";
-import { ComponentProps } from "./lib/ReactNodeView";
+import { ComponentProps } from "./lib/ComponentView";
 import ReactDOM from "react-dom";
 
 const element = document.getElementById("root");

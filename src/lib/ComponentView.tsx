@@ -1,14 +1,15 @@
-import React, { Ref } from "react";
+import React, { ComponentType, RefObject } from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
-import { Editor } from "../main";
+import { Editor, EditorContext, NodeViewCreator } from "../main";
 import { Node as ProseMirrorNode } from "prosemirror-model";
-import Node from "../nodes/Node";
+import Node, { default as EditorNode } from "../nodes/Node";
 import { Attrs } from "./Extension";
 import { Theme } from "../theme";
+import NodeViewContainer from "./NodeViewContainer";
 
-export type HTMLElementRef<T extends HTMLElement = any> = Ref<T>;
+export type ForwardRef<T extends HTMLElement = any> = RefObject<T>;
 export type ComponentProps = {
   editor: Editor;
   node: ProseMirrorNode;
@@ -20,10 +21,28 @@ export type ComponentProps = {
   decorations: Decoration[];
   options: any;
   updateAttrs: (attrs: Attrs) => void;
-  contentRef: HTMLElementRef;
+  forwardRef: ForwardRef;
+};
+
+export type CreateNodeViewProps = {
+  nodeViewContainer: NodeViewContainer;
+  component: ComponentType<ComponentProps>;
+  editor: Editor;
+  extension: EditorNode;
 };
 
 export default class ComponentView implements NodeView {
+  static create(props: CreateNodeViewProps): NodeViewCreator {
+    return (node, view, getPos, decorations) =>
+      new ComponentView({
+        node,
+        view,
+        getPos: getPos as () => number,
+        decorations,
+        ...props
+      });
+  }
+
   component: React.FC<ComponentProps> | typeof React.Component;
   editor: Editor;
   extension: Node;
@@ -33,27 +52,30 @@ export default class ComponentView implements NodeView {
   decorations: Decoration[];
   isSelected = false;
   dom: HTMLElement | null;
-  contentDOM: HTMLElement | null;
+  contentDOM?: HTMLElement | null;
+  nodeViewContainer: NodeViewContainer;
 
   // See https://prosemirror.net/docs/ref/#view.NodeView
-  constructor(
-    component: React.FC<ComponentProps> | typeof React.Component,
-    {
-      editor,
-      extension,
-      node,
-      view,
-      getPos,
-      decorations
-    }: {
-      editor: Editor;
-      extension: Node;
-      node: ProseMirrorNode;
-      view: EditorView;
-      getPos: () => number;
-      decorations: Decoration[];
-    }
-  ) {
+  constructor({
+    nodeViewContainer,
+    component,
+    editor,
+    extension,
+    node,
+    view,
+    getPos,
+    decorations
+  }: {
+    nodeViewContainer: NodeViewContainer;
+    component: React.FC<ComponentProps> | typeof React.Component;
+    editor: Editor;
+    extension: Node;
+    node: ProseMirrorNode;
+    view: EditorView;
+    getPos: () => number;
+    decorations: Decoration[];
+  }) {
+    this.nodeViewContainer = nodeViewContainer;
     this.component = component;
     this.editor = editor;
     this.extension = extension;
@@ -64,41 +86,41 @@ export default class ComponentView implements NodeView {
     this.dom = node.type.spec.inline
       ? document.createElement("span")
       : document.createElement("div");
-    this.contentDOM = node.type.spec.inline
-      ? document.createElement("span")
-      : document.createElement("div");
+    if (!this.node.isLeaf) {
+      this.contentDOM = node.type.spec.inline
+        ? document.createElement("span")
+        : document.createElement("div");
+    }
     this.renderElement();
   }
 
   renderElement() {
-    const theme = this.editor.theme();
-
-    const contentRef = React.createRef<any>();
-
-    const props = {
+    const forwardRef = React.createRef<any>();
+    const props: ComponentProps = {
       editor: this.editor,
       node: this.node,
       view: this.view,
-      theme,
+      theme: this.editor.theme(),
       isSelected: this.isSelected,
       isEditable: this.view.editable,
       getPos: this.getPos,
       decorations: this.decorations,
       options: this.extension.options,
       updateAttrs: this.updateAttrs.bind(this),
-      contentRef
+      forwardRef
     };
-
     ReactDOM.render(
-      <ThemeProvider theme={theme}>
-        <this.component {...props} />
-      </ThemeProvider>,
+      <EditorContext.Provider value={this.editor}>
+        <ThemeProvider theme={props.theme}>
+          <this.component {...props} />
+        </ThemeProvider>
+      </EditorContext.Provider>,
       this.dom,
       () => {
-        if (contentRef.current && this.contentDOM) {
-          contentRef.current.append(this.contentDOM);
-        } else if (this.contentDOM) {
-          if (this.dom?.lastElementChild?.className !== "content-ref") {
+        if (this.contentDOM) {
+          if (forwardRef.current) {
+            forwardRef.current.append(this.contentDOM);
+          } else if (this.dom?.lastElementChild?.className !== "content-ref") {
             const textarea = document.createElement("textarea");
             textarea.hidden = true;
             textarea.className = "content-ref";
@@ -108,6 +130,10 @@ export default class ComponentView implements NodeView {
         }
       }
     );
+    this.nodeViewContainer.register({
+      view: this,
+      container: this.dom as HTMLElement
+    });
   }
 
   update(node: ProseMirrorNode) {
@@ -154,6 +180,7 @@ export default class ComponentView implements NodeView {
 
   destroy() {
     if (this.dom) {
+      this.nodeViewContainer.remove(this.dom);
       ReactDOM.unmountComponentAtNode(this.dom);
     }
     this.dom = null;

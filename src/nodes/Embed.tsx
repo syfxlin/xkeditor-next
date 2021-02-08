@@ -5,7 +5,7 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { NodeArgs } from "./Node";
 import { ApplyCommand, Attrs, Command, EmptyAttrs } from "../lib/Extension";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import { EditorView } from "prosemirror-view";
 import { IIconProps } from "@icon-park/react/lib/runtime";
 

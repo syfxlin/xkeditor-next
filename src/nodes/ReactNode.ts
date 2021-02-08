@@ -1,6 +1,6 @@
 import Node from "./Node";
 import { ComponentType } from "react";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import { Attrs } from "../lib/Extension";
 
 export default abstract class ReactNode<

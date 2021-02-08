@@ -1,5 +1,5 @@
 /* global window File Promise */
-import React from "react";
+import React, { useContext } from "react";
 import { EditorState, Plugin, Selection, Transaction } from "prosemirror-state";
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
@@ -83,9 +83,11 @@ import Notice from "./nodes/Notice";
 import Details from "./nodes/Details";
 import KatexInline from "./nodes/KatexInline";
 import Mermaid from "./nodes/Mermaid";
-import { PortalContainer, RemirrorPortals } from "./lib/portals";
-import ReactNodeView from "./lib/ReactNodeView";
 import MonacoBlock from "./nodes/MonacoBlock";
+import ComponentView from "./lib/ComponentView";
+import PlantUml from "./nodes/PlantUml";
+import MindMap from "./nodes/MindMap";
+import NodeViewContainer from "./lib/NodeViewContainer";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -137,13 +139,10 @@ export type NodeViewCreator = (
   decorations: Decoration[]
 ) => NodeView;
 
-export type EditorContextType = Partial<{
-  props: Props;
-  state: State;
-  editor: RichMarkdownEditor;
-}>;
-
-export const EditorContext = React.createContext<EditorContextType>({});
+export const EditorContext = React.createContext<RichMarkdownEditor | null>(
+  null
+);
+export const useEditorContext = () => useContext(EditorContext);
 
 class RichMarkdownEditor extends React.PureComponent<Props, State> {
   static defaultProps = {
@@ -194,9 +193,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   toolbarItems: ToolbarItem[];
   // @ts-ignore
   toolbarModes: ToolbarMode[];
-
   // @ts-ignore
-  portalContainer: PortalContainer;
+  nodeViewContainer: NodeViewContainer;
 
   componentDidMount() {
     this.init();
@@ -242,10 +240,17 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     ) {
       this.focusAtEnd();
     }
+
+    // 通知 ComponentView 重新渲染
+    this.nodeViewContainer.update();
   }
 
   init() {
-    this.portalContainer = new PortalContainer();
+    this.nodeViewContainer = new NodeViewContainer();
+    this.nodeViewContainer.on(views =>
+      // 当 Update 事件被调用时重新渲染 ComponentView
+      views.forEach(view => view.renderElement())
+    );
     this.extensions = this.createExtensions();
     this.nodes = this.createNodes();
     this.marks = this.createMarks();
@@ -333,8 +338,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new KatexInline(),
         new Mermaid(),
         new Emoji(),
-        // new PlantUml(),
-        // new MindMap(),
+        new PlantUml(),
+        new MindMap(),
         new Audio(),
         new Video(),
         //
@@ -364,11 +369,11 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     return (this.extensions.extensions as ReactNode[])
       .filter((extension: ReactNode) => extension.component)
       .reduce((nodeViews, extension: ReactNode) => {
-        const nodeView: NodeViewCreator = ReactNodeView.create({
+        const nodeView: NodeViewCreator = ComponentView.create({
           editor: this,
           extension,
           component: extension.component(),
-          portalContainer: this.portalContainer
+          nodeViewContainer: this.nodeViewContainer
         }) as any;
         return {
           ...nodeViews,
@@ -627,14 +632,12 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   render = () => {
     const { readOnly } = this.props;
     return (
-      <EditorContext.Provider
-        value={{ props: this.props, state: this.state, editor: this }}
-      >
+      <EditorContext.Provider value={this}>
         <ThemeProvider theme={this.theme()}>
           <Flex
             onKeyDown={this.props.action?.onKeydown}
             style={this.props.config?.style}
-            className={`${this.props.dark ? "dark" : "light"} ${
+            className={`${this.props.dark ? "theme-dark" : "theme-light"} ${
               this.props.config?.className
             }`}
             align="flex-start"
@@ -668,9 +671,6 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
               )}
             </>
             <Toaster />
-            {this.portalContainer && (
-              <RemirrorPortals portalContainer={this.portalContainer} />
-            )}
           </Flex>
         </ThemeProvider>
       </EditorContext.Provider>

@@ -11,7 +11,7 @@ import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 import { Caution, Info, TipsOne } from "@icon-park/react";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 

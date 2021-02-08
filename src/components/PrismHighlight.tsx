@@ -4,6 +4,7 @@ import { RefractorNode } from "refractor/core";
 import "../styles/prism-light.less";
 import "../styles/prism-dark.less";
 import "../styles/prism-line-numbers.less";
+import { useEditorContext } from "../main";
 
 type Props = {
   language?: string;
@@ -31,8 +32,9 @@ const PrismHighlight: React.FC<Props> = ({ code, language }) => {
     () => parseNodes(refractor.highlight(code, language || "markup")),
     [code, language]
   );
+  const editor = useEditorContext();
   return (
-    <div className={"prism"}>
+    <div className={`prism-${editor?.props.dark ? "dark" : "light"}`}>
       <pre className={`line-numbers language-${language || "markup"}`}>
         <code className={`language-${language || "markup"}`}>
           <span aria-hidden="true" className="line-numbers-rows">

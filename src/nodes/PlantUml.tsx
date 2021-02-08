@@ -17,7 +17,7 @@ import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 import { ChartGraph } from "@icon-park/react";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ReactNodeView";
+import { ComponentProps } from "../lib/ComponentView";
 import React, { ComponentType, useEffect, useState } from "react";
 import plantumlEncoder from "plantuml-encoder";
 import debounce from "lodash/debounce";
