@@ -490,7 +490,6 @@ class BlockMenu extends Component<Props, State> {
             <insertItem.component
               item={insertItem}
               insertBlock={this.insertBlock}
-              isActive={isActive}
               close={this.close}
               view={view}
               upload={upload}

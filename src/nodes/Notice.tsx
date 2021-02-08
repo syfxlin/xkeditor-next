@@ -11,7 +11,7 @@ import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 import { Caution, Info, TipsOne } from "@icon-park/react";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ComponentView";
+import { ComponentProps } from "../lib/ReactNodeView";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
@@ -67,7 +67,7 @@ export default class Notice extends ReactNode<EmptyAttrs, NoticeAttrs> {
       warning: <Caution />,
       tip: <TipsOne />
     };
-    return ({ node, updateAttrs, contentRef }) => {
+    return ({ node, updateAttrs, forwardRef }) => {
       const attrs = node.attrs as NoticeAttrs;
       const { t } = useTranslation();
       return (
@@ -83,7 +83,7 @@ export default class Notice extends ReactNode<EmptyAttrs, NoticeAttrs> {
               <option value={"tip"}>{t("提示")}</option>
             </select>
           </div>
-          <div ref={contentRef} />
+          <div ref={forwardRef} />
         </div>
       );
     };

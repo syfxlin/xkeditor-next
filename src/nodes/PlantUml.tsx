@@ -17,8 +17,8 @@ import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 import { ChartGraph } from "@icon-park/react";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ComponentView";
-import React, { useEffect, useState } from "react";
+import { ComponentProps } from "../lib/ReactNodeView";
+import React, { ComponentType, useEffect, useState } from "react";
 import plantumlEncoder from "plantuml-encoder";
 import debounce from "lodash/debounce";
 import styled from "styled-components";
@@ -60,7 +60,7 @@ export default class PlantUml extends ReactNode<
     });
   }
 
-  component(): React.FC<ComponentProps> | typeof React.Component {
+  component(): ComponentType<ComponentProps> {
     const render = debounce(
       (content: string, setEncode: (encode: string) => void) => {
         setEncode(plantumlEncoder.encode(content));

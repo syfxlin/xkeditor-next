@@ -5,7 +5,7 @@ import katexPlugin from "@iktakahiro/markdown-it-katex";
 import { render } from "katex";
 import ReactNode from "./ReactNode";
 import React, { ChangeEvent, useCallback, useEffect, useRef } from "react";
-import { ComponentProps } from "../lib/ComponentView";
+import { ComponentProps } from "../lib/ReactNodeView";
 import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
 import { NodeArgs } from "./Node";
@@ -39,7 +39,7 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ node, view, getPos, isSelected }) => {
+    return ({ forwardRef, node, view, getPos, isSelected }) => {
       const tex = useRef<HTMLElement>(null);
       const input = useRef<HTMLInputElement>(null);
       useEffect(() => {
@@ -72,6 +72,7 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
             ref={input}
           />
           <span data-type={"katex-inline"} ref={tex} contentEditable={false} />
+          <textarea style={{ display: "none" }} ref={forwardRef} />
         </>
       );
     };

@@ -4,7 +4,7 @@ import { wrappingInputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
 import ReactNode from "./ReactNode";
 import React, { useCallback } from "react";
-import { ComponentProps } from "../lib/ComponentView";
+import { ComponentProps } from "../lib/ReactNodeView";
 import { NodeArgs } from "./Node";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
@@ -65,7 +65,7 @@ export default class Details extends ReactNode<EmptyAttrs, DetailsAttrs> {
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ node, contentRef, updateAttrs }) => {
+    return ({ node, forwardRef, updateAttrs }) => {
       const handleToggle = useCallback(() => {
         updateAttrs({
           open: !node.attrs.open
@@ -74,7 +74,7 @@ export default class Details extends ReactNode<EmptyAttrs, DetailsAttrs> {
       return (
         <details open={node.attrs.open} onDoubleClick={handleToggle}>
           {node.attrs.summary && <summary>{node.attrs.summary}</summary>}
-          <div ref={contentRef} />
+          <div ref={forwardRef} />
         </details>
       );
     };

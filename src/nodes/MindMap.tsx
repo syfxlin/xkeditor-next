@@ -17,8 +17,8 @@ import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
 import { ChartGraph } from "@icon-park/react";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ComponentView";
-import React, { useEffect, useRef } from "react";
+import { ComponentProps } from "../lib/ReactNodeView";
+import React, { ComponentType, useEffect, useRef } from "react";
 import { Transformer } from "markmap-lib";
 import debounce from "lodash/debounce";
 import { usePromise } from "react-use";
@@ -64,7 +64,7 @@ export default class MindMap extends ReactNode<
     });
   }
 
-  component(): React.FC<ComponentProps> | typeof React.Component {
+  component(): ComponentType<ComponentProps> {
     const render = debounce(
       async (mounted, element: SVGSVGElement | null, content: string) => {
         if (!element) {

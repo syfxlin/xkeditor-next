@@ -23,7 +23,6 @@ import SelectionToolbar from "./components/SelectionToolbar";
 import BlockMenu from "./components/BlockMenu";
 import Extension, { MenuItem, ToolbarItem, ToolbarMode } from "./lib/Extension";
 import ExtensionManager from "./lib/ExtensionManager";
-import ComponentView from "./lib/ComponentView";
 import headingToSlug from "./lib/headingToSlug";
 
 // nodes
@@ -40,7 +39,6 @@ import Heading from "./nodes/Heading";
 import HorizontalRule from "./nodes/HorizontalRule";
 import Image from "./nodes/Image";
 import ListItem from "./nodes/ListItem";
-import Notice from "./nodes/Notice";
 import OrderedList from "./nodes/OrderedList";
 import Paragraph from "./nodes/Paragraph";
 import Table from "./nodes/Table";
@@ -68,11 +66,7 @@ import TrailingNode from "./plugins/TrailingNode";
 import MarkdownPaste from "./plugins/MarkdownPaste";
 import Sup from "./marks/Sup";
 import Sub from "./marks/Sub";
-import Details from "./nodes/Details";
-import MonacoBlock from "./nodes/MonacoBlock";
 import Katex from "./nodes/Katex";
-import KatexInline from "./nodes/KatexInline";
-import Mermaid from "./nodes/Mermaid";
 import Emoji from "./nodes/Emoji";
 
 // Init
@@ -83,10 +77,15 @@ import { Toaster } from "react-hot-toast";
 import { UploadResponse } from "./commands/uploadFiles";
 import { t } from "./i18n";
 import StyledEditor from "./components/StyledEditor";
-import PlantUml from "./nodes/PlantUml";
-import MindMap from "./nodes/MindMap";
 import Audio from "./nodes/Audio";
 import Video from "./nodes/Video";
+import Notice from "./nodes/Notice";
+import Details from "./nodes/Details";
+import KatexInline from "./nodes/KatexInline";
+import Mermaid from "./nodes/Mermaid";
+import { PortalContainer, RemirrorPortals } from "./lib/portals";
+import ReactNodeView from "./lib/ReactNodeView";
+import MonacoBlock from "./nodes/MonacoBlock";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -131,7 +130,7 @@ type Step = {
   slice: Slice;
 };
 
-type NodeViewCreator = (
+export type NodeViewCreator = (
   node: ProseMirrorNode,
   view: EditorView,
   getPos: (() => number) | boolean,
@@ -196,6 +195,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   // @ts-ignore
   toolbarModes: ToolbarMode[];
 
+  // @ts-ignore
+  portalContainer: PortalContainer;
+
   componentDidMount() {
     this.init();
 
@@ -243,6 +245,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   }
 
   init() {
+    this.portalContainer = new PortalContainer();
     this.extensions = this.createExtensions();
     this.nodes = this.createNodes();
     this.marks = this.createMarks();
@@ -273,9 +276,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         new CheckboxList(),
         new CheckboxItem(),
         new BulletList(),
-        new Embed(),
         new ListItem(),
-        new Notice(),
         new Heading(),
         new HorizontalRule(),
         new Image({
@@ -322,16 +323,18 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
           placeholder: this.props.config?.placeholder
         }),
         //
+        new Embed(),
         new Sup(),
         new Sub(),
         new Details(),
+        new Notice(),
         new MonacoBlock(),
         new Katex(),
         new KatexInline(),
         new Mermaid(),
         new Emoji(),
-        new PlantUml(),
-        new MindMap(),
+        // new PlantUml(),
+        // new MindMap(),
         new Audio(),
         new Video(),
         //
@@ -361,17 +364,12 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     return (this.extensions.extensions as ReactNode[])
       .filter((extension: ReactNode) => extension.component)
       .reduce((nodeViews, extension: ReactNode) => {
-        const nodeView: NodeViewCreator = (node, view, getPos, decorations) => {
-          return new ComponentView(extension.component(), {
-            editor: this,
-            extension,
-            node,
-            view,
-            getPos: getPos as () => number,
-            decorations
-          });
-        };
-
+        const nodeView: NodeViewCreator = ReactNodeView.create({
+          editor: this,
+          extension,
+          component: extension.component(),
+          portalContainer: this.portalContainer
+        }) as any;
         return {
           ...nodeViews,
           [extension.name]: nodeView
@@ -670,6 +668,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
               )}
             </>
             <Toaster />
+            {this.portalContainer && (
+              <RemirrorPortals portalContainer={this.portalContainer} />
+            )}
           </Flex>
         </ThemeProvider>
       </EditorContext.Provider>

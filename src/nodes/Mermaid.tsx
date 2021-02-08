@@ -10,7 +10,7 @@ import {
 } from "../lib/Extension";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import ReactNode from "./ReactNode";
-import { ComponentProps } from "../lib/ComponentView";
+import { ComponentProps } from "../lib/ReactNodeView";
 import React, { useEffect, useRef } from "react";
 import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
 import mermaid from "mermaid";

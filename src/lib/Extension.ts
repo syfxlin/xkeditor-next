@@ -4,7 +4,7 @@ import { EditorState, Plugin, Transaction } from "prosemirror-state";
 import { Editor } from "../main";
 import { MarkType, NodeType, Schema } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
-import React from "react";
+import { ComponentType } from "react";
 import { UploadResponse } from "../commands/uploadFiles";
 import { BlockComponentProps } from "../components/BlockMenu";
 import { ToolbarComponentProps } from "../components/SelectionToolbar";
@@ -39,11 +39,11 @@ export type MenuItem = {
   command?: ApplyCommand;
   priority?: number;
   title?: string;
-  icon?: typeof React.Component | React.FC<IIconProps>;
+  icon?: ComponentType<IIconProps>;
   shortcut?: string;
   keywords?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
-  component?: React.FC<BlockComponentProps> | typeof React.Component;
+  component?: ComponentType<BlockComponentProps>;
   upload?: {
     getAttrs: (res: UploadResponse) => Attrs;
     placeholder?: (root: HTMLElement, meta: any) => void;
@@ -63,7 +63,7 @@ export type ToolbarMode = {
   priority: number;
   active: (view: EditorView) => false | null | undefined | any;
   items?: ToolbarItem[] | ((values: any, view: EditorView) => ToolbarItem[]);
-  component?: React.FC<ToolbarComponentProps> | typeof React.Component | null;
+  component?: ComponentType<ToolbarComponentProps> | null;
 };
 
 export type ToolbarItem = {
@@ -71,7 +71,7 @@ export type ToolbarItem = {
   priority?: number;
   command?: ApplyCommand;
   title?: string;
-  icon?: typeof React.Component | React.FC<IIconProps>;
+  icon?: ComponentType<IIconProps>;
   shortcut?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
   visible?: boolean;

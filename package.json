@@ -19,6 +19,7 @@
     "markmap-view": "^0.2.2",
     "mermaid": "^8.9.0",
     "monaco-editor": "^0.21.3",
+    "nanoevents": "^5.1.10",
     "plantuml-encoder": "^1.4.0",
     "prismjs": "^1.19.0",
     "prosemirror-commands": "^1.1.4",

@@ -1,6 +1,6 @@
 import { applyContent } from "../utils/editor";
 import React, { useCallback, useEffect, useRef } from "react";
-import { ComponentProps } from "../lib/ComponentView";
+import { ComponentProps } from "../lib/ReactNodeView";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
 import { Selection } from "prosemirror-state";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
@@ -26,7 +26,8 @@ const MonacoNode: React.FC<Props> = props => {
     updateAttrs,
     width,
     height,
-    language = "javascript"
+    language = "javascript",
+    forwardRef
   } = props;
   const propsRef = useRef({
     node,

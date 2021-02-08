@@ -1,19 +1,19 @@
-import React from "react";
+import React, { ComponentType } from "react";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { NodeArgs } from "./Node";
 import { ApplyCommand, Attrs, Command, EmptyAttrs } from "../lib/Extension";
-import { ComponentProps } from "../lib/ComponentView";
+import { ComponentProps } from "../lib/ReactNodeView";
 import { EditorView } from "prosemirror-view";
 import { IIconProps } from "@icon-park/react/lib/runtime";
 
 export type EmbedDescriptor = {
   title: string;
   matcher: (value: string) => Attrs | null;
-  component: typeof React.Component | React.FC<ComponentProps>;
-  icon?: typeof React.Component | React.FC<IIconProps>;
+  component: ComponentType<ComponentProps>;
+  icon?: ComponentType<IIconProps>;
   shortcut?: string;
   keywords?: string;
   attrs?: Attrs | ((view: EditorView) => Attrs);
@@ -22,7 +22,7 @@ export type EmbedDescriptor = {
 
 type EmbedAttrs = {
   href: null | string;
-  component: null | typeof React.Component | React.FC<ComponentProps>;
+  component: null | ComponentType<ComponentProps>;
   matches: Record<string, string>;
 };
 

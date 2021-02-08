@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { ComponentType, useCallback } from "react";
 import scrollIntoView from "smooth-scroll-into-view-if-needed";
 import styled, { withTheme } from "styled-components";
 import { Theme } from "../theme";
@@ -8,7 +8,7 @@ type Props = {
   disabled?: boolean;
   onClick: () => void;
   theme: Theme;
-  icon: typeof React.Component | React.FC<any>;
+  icon: ComponentType<any>;
   title: string;
   shortcut?: string;
 };

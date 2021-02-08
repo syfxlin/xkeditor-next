@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { ComponentType, useCallback } from "react";
 import { Portal } from "react-portal";
 import { some } from "lodash";
 import { EditorView } from "prosemirror-view";
@@ -75,10 +75,7 @@ const SelectionToolbar: React.FC<Props> = props => {
     return null;
   }
   let items: ToolbarItem[] = props.items;
-  let Component:
-    | React.FC<ToolbarComponentProps>
-    | typeof React.Component
-    | null = null;
+  let Component: ComponentType<ToolbarComponentProps> | null = null;
   let values: any = undefined;
   for (const mode of props.modes) {
     values = mode.active(view);
