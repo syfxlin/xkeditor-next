@@ -15,7 +15,7 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
-import { ChartGraph } from "@icon-park/react";
+import { MindmapMap } from "@icon-park/react";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import React, { ComponentType, useEffect, useRef } from "react";
@@ -141,7 +141,7 @@ export default class MindMap extends ReactNode<
         {
           name: this.name,
           title: t("MindMap 图"),
-          icon: ChartGraph,
+          icon: MindmapMap,
           keywords: "mindmap uml"
         }
       ]

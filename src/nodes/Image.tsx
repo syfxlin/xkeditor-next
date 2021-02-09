@@ -162,6 +162,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
 
   get schema(): NodeSpec {
     return {
+      toolbar: true,
       inline: true,
       attrs: {
         src: {},

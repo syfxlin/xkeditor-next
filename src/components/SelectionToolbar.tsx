@@ -53,7 +53,7 @@ function isActive(props: Props) {
 
   if (!selection) return false;
   if (selection.empty) return false;
-  if (selection.node && selection.node.type.name === "image") {
+  if (selection.node && selection.node.type.spec.toolbar) {
     return true;
   }
   if (selection.node) return false;
@@ -75,7 +75,7 @@ const SelectionToolbar: React.FC<Props> = props => {
     return null;
   }
   let items: ToolbarItem[] = props.items;
-  let Component: ComponentType<ToolbarComponentProps> | null = null;
+  let Component: ComponentType<ToolbarComponentProps> | null | false = null;
   let values: any = undefined;
   for (const mode of props.modes) {
     values = mode.active(view);
@@ -85,7 +85,7 @@ const SelectionToolbar: React.FC<Props> = props => {
           typeof mode.items === "function"
             ? mode.items(values, view)
             : mode.items;
-      } else if (mode.component) {
+      } else if (mode.component !== null && mode.component !== undefined) {
         Component = mode.component;
       }
       break;
@@ -171,8 +171,8 @@ const SelectionToolbar: React.FC<Props> = props => {
 
   return (
     <Portal>
-      <FloatingToolbar view={view} active={isActive(props)}>
-        {Component ? (
+      {Component ? (
+        <FloatingToolbar view={view} active={isActive(props)}>
           <Component
             {...props}
             values={values}
@@ -182,10 +182,14 @@ const SelectionToolbar: React.FC<Props> = props => {
             addNode={addNode}
             removeSelectionNode={removeSelectionNode}
           />
-        ) : (
-          <Menu {...props} items={items} />
-        )}
-      </FloatingToolbar>
+        </FloatingToolbar>
+      ) : (
+        Component !== false && (
+          <FloatingToolbar view={view} active={isActive(props)}>
+            <Menu {...props} items={items} />
+          </FloatingToolbar>
+        )
+      )}
     </Portal>
   );
 };

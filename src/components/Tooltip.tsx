@@ -47,8 +47,6 @@ const Tooltip: React.FC<Props> = ({
 
 const Span = styled.span`
   display: inline-block;
-  height: 100%;
-  width: 100%;
   padding: 2px;
 
   .i-icon {

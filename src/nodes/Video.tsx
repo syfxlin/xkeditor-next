@@ -1,5 +1,5 @@
 import Node, { NodeArgs } from "./Node";
-import { EmptyAttrs } from "../lib/Extension";
+import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
 import nodeInputRule from "../lib/nodeInputRule";
@@ -7,6 +7,9 @@ import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { TokenConfig } from "prosemirror-markdown";
 import { PluginSimple } from "markdown-it";
 import { inlinePlugin } from "../lib/markdown/container";
+import { t } from "../i18n";
+import { VideoFile } from "@icon-park/react";
+import { blockMenuInput } from "../components/BlockMenuComponent";
 
 type VideoAttrs = {
   src: string | null;
@@ -53,6 +56,15 @@ export default class Video extends Node<EmptyAttrs, VideoAttrs> {
     };
   }
 
+  commands({ type }: NodeArgs): Command<Partial<VideoAttrs>> {
+    return attrs => (state, dispatch) => {
+      dispatch?.(
+        state.tr.replaceSelectionWith(type.create(attrs)).scrollIntoView()
+      );
+      return true;
+    };
+  }
+
   inputRules({ type }: NodeArgs): InputRule[] {
     return [
       nodeInputRule(VIDEO_INPUT_REGEX, type, 1, match => ({
@@ -89,6 +101,22 @@ export default class Video extends Node<EmptyAttrs, VideoAttrs> {
         md,
         name: this.name
       });
+    };
+  }
+
+  menuItems(): MenuItems {
+    return {
+      3: [
+        {
+          name: this.name,
+          title: t("视频"),
+          icon: VideoFile,
+          keywords: "video media",
+          component: blockMenuInput(value => ({ src: value }), {
+            placeholder: t("粘贴视频链接...")
+          })
+        }
+      ]
     };
   }
 }

@@ -62,7 +62,16 @@
   "粘贴 {{title}} 链接...": "Paste a {{title}} link…",
   "复制": "Copy",
   "预览 & 编辑": "View & Edit",
+  "公式": "Formula",
   "输入科学公式...": "Enter scientific formula…",
   "帮助": "Help",
-  "打开原始图片": "Open original picture"
+  "打开原始图片": "Open original picture",
+  "音频": "Audio",
+  "粘贴音频链接...": "Paste a audio link…",
+  "视频": "Video",
+  "粘贴视频链接...": "Paste a video link…",
+  "切换": "Switch",
+  "文字颜色": "Text color",
+  "背景颜色": "Background color",
+  "完成": "Done"
 }

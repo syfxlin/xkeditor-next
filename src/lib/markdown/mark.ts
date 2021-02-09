@@ -25,7 +25,7 @@ export default function(options: { delim: string; mark: string }) {
     const ch = String.fromCharCode(marker);
     const len = scanned.length;
 
-    if (len < 1) {
+    if (len < options.delim.length) {
       return false;
     }
 

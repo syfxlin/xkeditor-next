@@ -63,7 +63,7 @@ export type ToolbarMode = {
   priority: number;
   active: (view: EditorView) => false | null | undefined | any;
   items?: ToolbarItem[] | ((values: any, view: EditorView) => ToolbarItem[]);
-  component?: ComponentType<ToolbarComponentProps> | null;
+  component?: ComponentType<ToolbarComponentProps> | null | false;
 };
 
 export type ToolbarItem = {

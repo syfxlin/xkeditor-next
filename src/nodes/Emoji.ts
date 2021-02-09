@@ -1,6 +1,5 @@
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
-import { EmojiConvertor } from "emoji-js";
 import Node, { NodeArgs } from "./Node";
 import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
@@ -9,9 +8,6 @@ import { EmptyAttrs } from "../lib/Extension";
 import { PluginSimple } from "markdown-it";
 import emojiPlugin from "markdown-it-emoji";
 import emojis from "markdown-it-emoji/lib/data/full.json";
-
-const emoji = new EmojiConvertor();
-emoji.replace_mode = "unified";
 
 export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -47,6 +43,9 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   }
 
   markdownPlugin(): PluginSimple {
-    return emojiPlugin as PluginSimple;
+    return md => {
+      // @ts-ignore
+      emojiPlugin(md, { shortcuts: {} });
+    };
   }
 }

@@ -12,13 +12,15 @@ import { NodeArgs } from "./Node";
 import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { applyContent, selectionDir } from "../utils/editor";
-import { EmptyAttrs } from "../lib/Extension";
+import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import FloatingToolbar from "../components/FloatingToolbar";
 import Input from "../components/Input";
 import { useTranslation } from "react-i18next";
 import Tooltip from "../components/Tooltip";
-import { Help } from "@icon-park/react";
+import { Help, Inline } from "@icon-park/react";
 import ToolbarButton from "../components/ToolbarButton";
+import { t } from "../i18n";
+import { NodeSelection } from "prosemirror-state";
 
 export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -108,6 +110,25 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
     };
   }
 
+  commands({
+    type,
+    schema
+  }: NodeArgs): Record<string, Command<Partial<EmptyAttrs>>> {
+    return {
+      katexExample: attrs => (state, dispatch) => {
+        const node = type.create(attrs, schema.text("E=mc^2"));
+        const tr = state.tr;
+        tr.replaceSelectionWith(node);
+        const resolvedPos = tr.doc.resolve(
+          tr.selection.anchor - (tr.selection.$anchor.nodeBefore?.nodeSize || 0)
+        );
+        tr.setSelection(new NodeSelection(resolvedPos));
+        dispatch?.(tr.scrollIntoView());
+        return true;
+      }
+    };
+  }
+
   inputRules({ type }: NodeArgs): InputRule[] {
     return [nodeInputRule(/\$([^$]+)\$/, type, 1)];
   }
@@ -131,5 +152,18 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
 
   markdownPlugin(): PluginSimple {
     return katexPlugin;
+  }
+
+  menuItems(): MenuItems {
+    return {
+      3: [
+        {
+          name: "katexExample",
+          title: t("公式"),
+          icon: Inline,
+          keywords: "katex formula math"
+        }
+      ]
+    };
   }
 }
