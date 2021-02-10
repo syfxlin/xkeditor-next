@@ -6,6 +6,7 @@ import { gapCursor } from "prosemirror-gapcursor";
 import { MarkdownParser, MarkdownSerializer } from "prosemirror-markdown";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
 import {
+  DOMSerializer,
   MarkSpec,
   Node as ProseMirrorNode,
   NodeSpec,
@@ -94,7 +95,7 @@ export { default as Extension } from "./lib/Extension";
 
 export type Props = {
   value?: string;
-  onChange: (value: () => string) => void;
+  onChange: (editor: Editor) => void;
   readOnly?: boolean;
   dark?: boolean;
   config?: {
@@ -161,41 +162,25 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     blockMenuSearch: ""
   };
 
-  // @ts-ignore
-  extensions: ExtensionManager;
   element?: HTMLElement | null;
-  // @ts-ignore
-  view: EditorView;
-  // @ts-ignore
-  schema: Schema;
-  // @ts-ignore
-  serializer: MarkdownSerializer;
-  // @ts-ignore
-  parser: MarkdownParser;
-  // @ts-ignore
-  plugins: Plugin[];
-  // @ts-ignore
-  keymaps: Plugin[];
-  // @ts-ignore
-  inputRules: InputRule[];
-  // @ts-ignore
-  nodeViews: {
+  extensions?: ExtensionManager;
+  view?: EditorView;
+  schema?: Schema;
+  serializer?: MarkdownSerializer;
+  parser?: MarkdownParser;
+  plugins?: Plugin[];
+  keymaps?: Plugin[];
+  inputRules?: InputRule[];
+  nodeViews?: {
     [name: string]: NodeViewCreator;
   };
-  // @ts-ignore
-  nodes: { [name: string]: NodeSpec };
-  // @ts-ignore
-  marks: { [name: string]: MarkSpec };
-  // @ts-ignore
-  commands: Record<string, any>;
-  // @ts-ignore
-  menuItems: MenuItem[];
-  // @ts-ignore
-  toolbarItems: ToolbarItem[];
-  // @ts-ignore
-  toolbarModes: ToolbarMode[];
-  // @ts-ignore
-  nodeViewContainer: NodeViewContainer;
+  nodes?: { [name: string]: NodeSpec };
+  marks?: { [name: string]: MarkSpec };
+  commands?: Record<string, any>;
+  menuItems?: MenuItem[];
+  toolbarItems?: ToolbarItem[];
+  toolbarModes?: ToolbarMode[];
+  nodeViewContainer?: NodeViewContainer;
 
   componentDidMount() {
     this.init();
@@ -216,13 +201,13 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     // Allow changes to the 'value' prop to update the editor from outside
     if (this.props.value && prevProps.value !== this.props.value) {
       const newState = this.createState(this.props.value);
-      this.view.updateState(newState);
+      this.view?.updateState(newState);
     }
 
     // pass readOnly changes through to underlying editor instance
     if (prevProps.readOnly !== this.props.readOnly) {
-      this.view.update({
-        ...this.view.props,
+      this.view?.update({
+        ...this.view?.props,
         editable: () => !this.props.readOnly
       });
     }
@@ -243,7 +228,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     }
 
     // 通知 ComponentView 重新渲染
-    this.nodeViewContainer.update();
+    this.nodeViewContainer?.update();
   }
 
   init() {
@@ -266,11 +251,14 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     this.commands = this.createCommands();
     this.menuItems = this.createMenuItems();
     const itemsAndModes = this.createToolbarItemsAndModes();
+    if (itemsAndModes === undefined) {
+      return;
+    }
     this.toolbarItems = itemsAndModes.items;
     this.toolbarModes = itemsAndModes.modes;
   }
 
-  createExtensions() {
+  private createExtensions() {
     // adding nodes here? Update schema.ts for serialization on the server
     return new ExtensionManager(
       [
@@ -352,31 +340,31 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     );
   }
 
-  createPlugins() {
-    return this.extensions.plugins;
+  private createPlugins() {
+    return this.extensions?.plugins;
   }
 
-  createKeymaps() {
-    return this.extensions.keymaps({
-      schema: this.schema
+  private createKeymaps() {
+    return this.extensions?.keymaps({
+      schema: this.schema as Schema
     });
   }
 
-  createInputRules() {
-    return this.extensions.inputRules({
-      schema: this.schema
+  private createInputRules() {
+    return this.extensions?.inputRules({
+      schema: this.schema as Schema
     });
   }
 
-  createNodeViews() {
-    return (this.extensions.extensions as ReactNode[])
+  private createNodeViews() {
+    return (this.extensions?.extensions as ReactNode[])
       .filter((extension: ReactNode) => extension.component)
       .reduce((nodeViews, extension: ReactNode) => {
         const nodeView: NodeViewCreator = ComponentView.create({
           editor: this,
           extension,
           component: extension.component(),
-          nodeViewContainer: this.nodeViewContainer
+          nodeViewContainer: this.nodeViewContainer as NodeViewContainer
         }) as any;
         return {
           ...nodeViews,
@@ -385,17 +373,20 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       }, {});
   }
 
-  createCommands() {
-    return this.extensions.commands({
-      schema: this.schema,
-      view: this.view
+  private createCommands() {
+    return this.extensions?.commands({
+      schema: this.schema as Schema,
+      view: this.view as EditorView
     });
   }
 
-  createMenuItems() {
-    const menuItems = this.extensions.menuItems({
-      schema: this.schema
+  private createMenuItems() {
+    const menuItems = this.extensions?.menuItems({
+      schema: this.schema as Schema
     });
+    if (menuItems === undefined) {
+      return menuItems;
+    }
     const result: MenuItem[] = [];
     for (const key in menuItems) {
       result.push(
@@ -407,8 +398,13 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     return result;
   }
 
-  createToolbarItemsAndModes() {
-    const toolbarItems = this.extensions.toolbarItems({ schema: this.schema });
+  private createToolbarItemsAndModes() {
+    const toolbarItems = this.extensions?.toolbarItems({
+      schema: this.schema as Schema
+    });
+    if (toolbarItems === undefined) {
+      return toolbarItems;
+    }
     const items: ToolbarItem[] = [];
     for (const key in toolbarItems.default) {
       items.push(
@@ -425,32 +421,32 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     };
   }
 
-  createNodes() {
-    return this.extensions.nodes;
+  private createNodes() {
+    return this.extensions?.nodes;
   }
 
-  createMarks() {
-    return this.extensions.marks;
+  private createMarks() {
+    return this.extensions?.marks;
   }
 
-  createSchema() {
+  private createSchema() {
     return new Schema({
-      nodes: this.nodes,
-      marks: this.marks
+      nodes: this.nodes as { [name: string]: NodeSpec },
+      marks: this.marks as { [name: string]: MarkSpec }
     });
   }
 
-  createSerializer() {
-    return this.extensions.serializer();
+  private createSerializer() {
+    return this.extensions?.serializer();
   }
 
-  createParser() {
-    return this.extensions.parser({
-      schema: this.schema
+  private createParser() {
+    return this.extensions?.parser({
+      schema: this.schema as Schema
     });
   }
 
-  createState(value?: string) {
+  private createState(value?: string) {
     const doc = this.createDocument(
       value || this.props.config?.defaultValue || ""
     );
@@ -459,23 +455,23 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       schema: this.schema,
       doc,
       plugins: [
-        ...this.plugins,
-        ...this.keymaps,
+        ...(this.plugins as Plugin[]),
+        ...(this.keymaps as Plugin[]),
         dropCursor({ color: this.theme().primary }),
         gapCursor(),
         inputRules({
-          rules: this.inputRules
+          rules: this.inputRules as InputRule[]
         }),
         keymap(baseKeymap)
       ]
     });
   }
 
-  createDocument(content: string) {
-    return this.parser.parse(content);
+  private createDocument(content: string) {
+    return this.parser?.parse(content);
   }
 
-  createView() {
+  private createView() {
     if (!this.element) {
       throw new Error("createView called before ref available");
     }
@@ -486,21 +482,20 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         (step: Step) =>
           step.slice.content.firstChild &&
           step.slice.content.firstChild.type.name ===
-            this.schema.nodes.checkbox_item.name
+            (this.schema as Schema).nodes.checkbox_item.name
       );
     };
 
-    const view = new EditorView(this.element, {
+    return new EditorView(this.element, {
       state: this.createState(),
       editable: () => !this.props.readOnly,
       nodeViews: this.nodeViews,
       handleDOMEvents: this.props.action?.handleDOMEvents,
       dispatchTransaction: transaction => {
-        const { state, transactions } = this.view.state.applyTransaction(
-          transaction
-        );
+        const { state, transactions } = (this
+          .view as EditorView).state.applyTransaction(transaction);
 
-        this.view.updateState(state);
+        (this.view as EditorView).updateState(state);
 
         // If any of the transactions being dispatched resulted in the doc
         // changing then call our own change handler to let the outside world
@@ -517,10 +512,50 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         this.forceUpdate();
       }
     });
-
-    return view;
   }
 
+  private handleChange = () => {
+    if (!this.props.onChange) return;
+
+    this.props.onChange(this);
+  };
+
+  private handleSave = () => {
+    const save = this.props.action?.save;
+    if (save) {
+      save({ done: false });
+    }
+  };
+
+  private handleSaveAndExit = () => {
+    const save = this.props.action?.save;
+    if (save) {
+      save({ done: true });
+    }
+  };
+
+  private handleOpenBlockMenu = (search: string) => {
+    this.setState({ blockMenuOpen: true, blockMenuSearch: search });
+  };
+
+  private handleCloseBlockMenu = () => {
+    if (!this.state.blockMenuOpen) return;
+    this.setState({ blockMenuOpen: false });
+  };
+
+  private handleSelectRow = (index: number, state: EditorState) => {
+    this.view?.dispatch(selectRow(index)(state.tr));
+  };
+
+  private handleSelectColumn = (index: number, state: EditorState) => {
+    this.view?.dispatch(selectColumn(index)(state.tr));
+  };
+
+  private handleSelectTable = (state: EditorState) => {
+    this.view?.dispatch(selectTable(state.tr));
+  };
+
+  // 'public' methods
   scrollToAnchor(hash: string) {
     if (!hash) return;
 
@@ -536,52 +571,37 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   }
 
   value = (): string => {
+    if (!this.view || !this.serializer) {
+      return "";
+    }
     return this.serializer.serialize(this.view.state.doc);
   };
 
-  handleChange = () => {
-    if (!this.props.onChange) return;
+  markdown = () => this.value();
 
-    this.props.onChange(() => this.value());
-  };
-
-  handleSave = () => {
-    const save = this.props.action?.save;
-    if (save) {
-      save({ done: false });
+  html = (): string => {
+    if (!this.view || !this.schema) {
+      return "";
     }
+    const div = document.createElement("div");
+    const fragment = DOMSerializer.fromSchema(this.schema).serializeFragment(
+      this.view.state.doc.content
+    );
+    div.appendChild(fragment);
+    return div.innerHTML;
   };
 
-  handleSaveAndExit = () => {
-    const save = this.props.action?.save;
-    if (save) {
-      save({ done: true });
+  json = (): { [key: string]: any } => {
+    if (!this.view) {
+      return {};
     }
+    return this.view.state.doc.toJSON();
   };
 
-  handleOpenBlockMenu = (search: string) => {
-    this.setState({ blockMenuOpen: true, blockMenuSearch: search });
-  };
-
-  handleCloseBlockMenu = () => {
-    if (!this.state.blockMenuOpen) return;
-    this.setState({ blockMenuOpen: false });
-  };
-
-  handleSelectRow = (index: number, state: EditorState) => {
-    this.view.dispatch(selectRow(index)(state.tr));
-  };
-
-  handleSelectColumn = (index: number, state: EditorState) => {
-    this.view.dispatch(selectColumn(index)(state.tr));
-  };
-
-  handleSelectTable = (state: EditorState) => {
-    this.view.dispatch(selectTable(state.tr));
-  };
-
-  // 'public' methods
   focusAtStart = () => {
+    if (!this.view) {
+      return;
+    }
     const selection = Selection.atStart(this.view.state.doc);
     const transaction = this.view.state.tr.setSelection(selection);
     this.view.dispatch(transaction);
@@ -589,6 +609,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   };
 
   focusAtEnd = () => {
+    if (!this.view) {
+      return;
+    }
     const selection = Selection.atEnd(this.view.state.doc);
     const transaction = this.view.state.tr.setSelection(selection);
     this.view.dispatch(transaction);
@@ -596,6 +619,9 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   };
 
   getHeadings = () => {
+    if (!this.view) {
+      return;
+    }
     const headings: { title: string; level: number; id: string }[] = [];
     const previouslySeen: Record<string, any> = {};
 
@@ -652,26 +678,31 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                 readOnly={readOnly}
                 ref={ref => (this.element = ref)}
               />
-              {!readOnly && this.view && (
-                <>
-                  <SelectionToolbar
-                    view={this.view}
-                    commands={this.commands}
-                    items={this.toolbarItems}
-                    modes={this.toolbarModes}
-                  />
-                  <BlockMenu
-                    view={this.view}
-                    commands={this.commands}
-                    isActive={this.state.blockMenuOpen}
-                    search={this.state.blockMenuSearch}
-                    onClose={this.handleCloseBlockMenu}
-                    upload={this.props.action?.upload}
-                    embeds={this.props.config?.embeds}
-                    items={this.menuItems}
-                  />
-                </>
-              )}
+              {!readOnly &&
+                this.view &&
+                this.commands &&
+                this.menuItems &&
+                this.toolbarModes &&
+                this.toolbarItems && (
+                  <>
+                    <SelectionToolbar
+                      view={this.view}
+                      commands={this.commands}
+                      items={this.toolbarItems}
+                      modes={this.toolbarModes}
+                    />
+                    <BlockMenu
+                      view={this.view}
+                      commands={this.commands}
+                      isActive={this.state.blockMenuOpen}
+                      search={this.state.blockMenuSearch}
+                      onClose={this.handleCloseBlockMenu}
+                      upload={this.props.action?.upload}
+                      embeds={this.props.config?.embeds}
+                      items={this.menuItems}
+                    />
+                  </>
+                )}
             </>
             <Toaster />
           </Flex>

@@ -1,10 +1,8 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { NodeSelection, Plugin, TextSelection } from "prosemirror-state";
 import { InputRule } from "prosemirror-inputrules";
-import { setTextSelection } from "prosemirror-utils";
-import styled from "styled-components";
-// @ts-ignore
-import ImageZoom from "react-medium-image-zoom";
+import { Controlled as Zoom } from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
@@ -18,15 +16,9 @@ import uploadFiles, {
   UploadResponse
 } from "../commands/uploadFiles";
 import { t } from "../i18n";
-import isNodeActive from "../queries/isNodeActive";
-import {
-  AlignHorizontally,
-  AlignLeft,
-  AlignRight,
-  Delete,
-  Pic,
-  Share
-} from "@icon-park/react";
+import { Delete, Pic, Share } from "@icon-park/react";
+import styled from "styled-components";
+import { setTextSelection } from "prosemirror-utils";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, class]
@@ -36,10 +28,10 @@ import {
  * ![](image.jpg "class") -> [, "", "image.jpg", "small"]
  * ![Lorem](image.jpg "class") -> [, "Lorem", "image.jpg", "small"]
  */
-const IMAGE_INPUT_REGEX = /!\[(?<alt>.*?)]\((?<filename>.*?)(?=[")])"?(?<layoutclass>[^"]+)?"?\)/;
+const IMAGE_INPUT_REGEX = /!\[(?<alt>.*?)]\((?<filename>.*?)(?=[")])"?(?<title>[^"]+)?"?\)/;
 
 export const imagePlaceholder = (root: HTMLElement, meta: any) => {
-  root.className = "image placeholder";
+  root.className = "image-placeholder";
   for (const file of meta.files) {
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
@@ -129,20 +121,6 @@ const uploadPlugin = (options: Partial<UploadFilesOptions>) =>
     }
   });
 
-const IMAGE_CLASSES = ["right-50", "left-50"];
-const getLayoutAndTitle = (tokenTitle: string | null) => {
-  if (!tokenTitle) return {};
-  if (IMAGE_CLASSES.includes(tokenTitle)) {
-    return {
-      layoutClass: tokenTitle
-    };
-  } else {
-    return {
-      title: tokenTitle
-    };
-  }
-};
-
 type ImageOptions = {
   upload: (files: File[]) => Promise<UploadResponse>;
   onClickLink?: (href: string, event?: MouseEvent) => void;
@@ -151,7 +129,6 @@ type ImageOptions = {
 type ImageAttrs = {
   src: null | string;
   alt: null | string;
-  layoutClass: null | string;
   title: null | string;
 };
 
@@ -169,18 +146,12 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
         alt: {
           default: null
         },
-        layoutClass: {
-          default: null
-        },
         title: {
           default: null
         }
       },
-      content: "text*",
-      marks: "",
       group: "inline",
       selectable: true,
-      draggable: true,
       parseDOM: [
         {
           tag: "img",
@@ -194,58 +165,39 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
           }
         },
         {
-          tag: "div[class~=image]",
+          tag: `.image-node-view`,
           getAttrs: node => {
-            const dom = node as HTMLElement;
-            const img = dom.getElementsByTagName("img")[0];
-            const className = dom.className;
-            const layoutClassMatched =
-              className && className.match(/image-(.*)$/);
-            const layoutClass = layoutClassMatched
-              ? layoutClassMatched[1]
-              : null;
+            const img = (node as HTMLElement).querySelector(
+              "img"
+            ) as HTMLImageElement;
             return {
               src: img.getAttribute("src"),
               alt: img.getAttribute("alt"),
-              title: img.getAttribute("title"),
-              layoutClass: layoutClass
+              title: img.getAttribute("title")
             };
           }
         }
       ],
       toDOM: node => {
-        const className = node.attrs.layoutClass
-          ? `image image-${node.attrs.layoutClass}`
-          : "image";
-        return [
-          "div",
-          {
-            class: className
-          },
-          ["img", { ...node.attrs, contentEditable: "false" }],
-          ["p", { class: "caption" }, 0]
-        ];
+        return ["img", node.attrs];
       }
     };
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ theme, isSelected, node, getPos }) => {
-      const { alt, src, title, layoutClass } = node.attrs;
-      const className = layoutClass ? `image image-${layoutClass}` : "image";
-
+    return ({ theme, select, isSelected, node, getPos, view }) => {
+      const [zoom, setZoom] = useState(false);
+      const { alt, src, title } = node.attrs;
       const handleSelect = useCallback(
         (event: any) => {
           event.preventDefault();
-
-          const { view } = this.editor;
-          const $pos = view.state.doc.resolve(getPos());
-          const transaction = view.state.tr.setSelection(
-            new NodeSelection($pos)
-          );
-          view.dispatch(transaction);
+          if (!isSelected) {
+            select();
+          } else {
+            setZoom(!zoom);
+          }
         },
-        [getPos]
+        [getPos, view, isSelected, zoom]
       );
       const handleKeyDown = useCallback(
         (event: any) => {
@@ -254,7 +206,6 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
           if (event.key === "Enter") {
             event.preventDefault();
 
-            const { view } = this.editor;
             const pos = getPos() + node.nodeSize;
             view.focus();
             view.dispatch(setTextSelection(pos)(view.state.tr));
@@ -264,7 +215,6 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
           // Pressing Backspace in an an empty caption field should remove the entire
           // image, leaving an empty paragraph
           if (event.key === "Backspace" && event.target.textContext === "") {
-            const { view } = this.editor;
             const $pos = view.state.doc.resolve(getPos());
             const tr = view.state.tr.setSelection(new NodeSelection($pos));
             view.dispatch(tr.deleteSelection());
@@ -272,7 +222,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
             return;
           }
         },
-        [node, getPos]
+        [node, getPos, view]
       );
       const handleBlur = useCallback(
         (event: any) => {
@@ -281,7 +231,6 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
 
           if (alt === node.attrs.alt) return;
 
-          const { view } = this.editor;
           const { tr } = view.state;
 
           // update meta on object
@@ -294,28 +243,24 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
           });
           view.dispatch(transaction);
         },
-        [node, getPos]
+        [node, getPos, view]
       );
 
       return (
-        <div contentEditable={false} className={className}>
+        <>
           <ImageWrapper
-            className={isSelected ? "ProseMirror-selectednode" : ""}
+            contentEditable={false}
             onClick={handleSelect}
+            onDoubleClick={() => setZoom(true)}
           >
-            <ImageZoom
-              image={{
-                src,
-                alt,
-                title
-              }}
-              defaultStyles={{
-                overlay: {
-                  backgroundColor: theme.background[2]
-                }
-              }}
-              shouldRespectMaxDimension
-            />
+            <Zoom
+              overlayBgColorEnd={theme.background[2]}
+              zoomMargin={40}
+              isZoomed={zoom}
+              onZoomChange={z => setZoom(z)}
+            >
+              <img src={src} alt={alt} title={title} draggable={true} />
+            </Zoom>
           </ImageWrapper>
           <Caption
             onKeyDown={handleKeyDown}
@@ -327,7 +272,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
           >
             {alt}
           </Caption>
-        </div>
+        </>
       );
     };
   }
@@ -338,9 +283,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
       state.esc((node.attrs.alt || "").replace("\n", "") || "") +
       "](" +
       state.esc(node.attrs.src);
-    if (node.attrs.layoutClass) {
-      markdown += ' "' + state.esc(node.attrs.layoutClass) + '"';
-    } else if (node.attrs.title) {
+    if (node.attrs.title) {
       markdown += ' "' + state.esc(node.attrs.title) + '"';
     }
     markdown += ")";
@@ -358,7 +301,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
               token.children[0] &&
               token.children[0].content) ||
             null,
-          ...getLayoutAndTitle(token.attrGet("title"))
+          title: token.attrGet("title")
         };
       }
     };
@@ -373,41 +316,6 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
       },
       deleteImage: () => (state, dispatch) => {
         dispatch?.(state.tr.deleteSelection());
-        return true;
-      },
-      alignRight: () => (state, dispatch) => {
-        const attrs = {
-          ...(state.selection as NodeSelection).node.attrs,
-          title: null,
-          layoutClass: "right-50"
-        };
-        const { selection } = state;
-        dispatch?.(
-          state.tr.setNodeMarkup(selection.$from.pos, undefined, attrs)
-        );
-        return true;
-      },
-      alignLeft: () => (state, dispatch) => {
-        const attrs = {
-          ...(state.selection as NodeSelection).node.attrs,
-          title: null,
-          layoutClass: "left-50"
-        };
-        const { selection } = state;
-        dispatch?.(
-          state.tr.setNodeMarkup(selection.$from.pos, undefined, attrs)
-        );
-        return true;
-      },
-      alignCenter: () => (state, dispatch) => {
-        const attrs = {
-          ...(state.selection as NodeSelection).node.attrs,
-          layoutClass: null
-        };
-        const { selection } = state;
-        dispatch?.(
-          state.tr.setNodeMarkup(selection.$from.pos, undefined, attrs)
-        );
         return true;
       },
       createImage: attrs => (state, dispatch) => {
@@ -426,7 +334,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
   inputRules({ type }: NodeArgs) {
     return [
       new InputRule(IMAGE_INPUT_REGEX, (state, match, start, end) => {
-        const [okay, alt, src, matchedTitle] = match;
+        const [okay, alt, src, title] = match;
         const { tr } = state;
         if (okay) {
           tr.replaceWith(
@@ -435,7 +343,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
             type.create({
               src,
               alt,
-              ...getLayoutAndTitle(matchedTitle)
+              title
             })
           );
         }
@@ -467,13 +375,7 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
     };
   }
 
-  toolbarItems({ type }: NodeArgs): ToolbarItems {
-    const isLeftAligned = isNodeActive(type, {
-      layoutClass: "left-50"
-    });
-    const isRightAligned = isNodeActive(type, {
-      layoutClass: "right-50"
-    });
+  toolbarItems(): ToolbarItems {
     return {
       modes: [
         {
@@ -488,27 +390,6 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
               name: "openOriginal",
               title: t("打开原始图片"),
               icon: Share
-            },
-            {
-              name: "alignLeft",
-              title: t("左对齐"),
-              icon: AlignLeft,
-              active: isLeftAligned
-            },
-            {
-              name: "alignCenter",
-              title: t("居中对齐"),
-              icon: AlignHorizontally,
-              active: state =>
-                isNodeActive(type)(state) &&
-                !isLeftAligned(state) &&
-                !isRightAligned(state)
-            },
-            {
-              name: "alignRight",
-              title: t("右对齐"),
-              icon: AlignRight,
-              active: isRightAligned
             },
             {
               name: "separator"
@@ -529,6 +410,14 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
 const ImageWrapper = styled.span`
   line-height: 0;
   display: inline-block;
+
+  button {
+    display: none;
+  }
+
+  img {
+    z-index: ${props => props.theme.zIndex + 10};
+  }
 `;
 
 const Caption = styled.p`

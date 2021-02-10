@@ -8,6 +8,7 @@ import Node, { default as EditorNode } from "../nodes/Node";
 import { Attrs } from "./Extension";
 import { Theme } from "../theme";
 import NodeViewContainer from "./NodeViewContainer";
+import { NodeSelection } from "prosemirror-state";
 
 export type ForwardRef<T extends HTMLElement = any> = RefObject<T>;
 export type ComponentProps = {
@@ -21,6 +22,7 @@ export type ComponentProps = {
   decorations: Decoration[];
   options: any;
   updateAttrs: (attrs: Attrs) => void;
+  select: () => void;
   forwardRef: ForwardRef;
 };
 
@@ -86,10 +88,12 @@ export default class ComponentView implements NodeView {
     this.dom = node.type.spec.inline
       ? document.createElement("span")
       : document.createElement("div");
+    this.dom.className = `${this.node.type.name}-node-view`;
     if (!this.node.isLeaf) {
       this.contentDOM = node.type.spec.inline
         ? document.createElement("span")
         : document.createElement("div");
+      this.contentDOM.className = `${this.node.type.name}-content`;
     }
     this.renderElement();
   }
@@ -107,6 +111,7 @@ export default class ComponentView implements NodeView {
       decorations: this.decorations,
       options: this.extension.options,
       updateAttrs: this.updateAttrs.bind(this),
+      select: this.handleSelect.bind(this),
       forwardRef
     };
     ReactDOM.render(
@@ -158,6 +163,14 @@ export default class ComponentView implements NodeView {
       ...attrs
     };
     const transaction = state.tr.setNodeMarkup(pos, undefined, newAttrs);
+    this.view.dispatch(transaction);
+  }
+
+  handleSelect() {
+    const $pos = this.view.state.doc.resolve(this.getPos());
+    const transaction = this.view.state.tr.setSelection(
+      new NodeSelection($pos)
+    );
     this.view.dispatch(transaction);
   }
 

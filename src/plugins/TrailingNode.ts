@@ -15,6 +15,9 @@ export default class TrailingNode extends Extension {
 
   get plugins() {
     const plugin = new PluginKey(this.name);
+    if (!this.editor.schema) {
+      return [];
+    }
     const disabledNodes = Object.entries(this.editor.schema.nodes)
       .map(([, value]) => value)
       .filter(node => this.options.notAfter.includes(node.name));

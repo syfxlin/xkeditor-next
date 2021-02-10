@@ -88,8 +88,8 @@ class Example extends React.Component {
     this.setState({ value });
   };
 
-  handleChange = debounce(value => {
-    const text = value();
+  handleChange = debounce((editor: Editor) => {
+    const text = editor.markdown();
     console.log(text);
     localStorage.setItem("saved", text);
   }, 250);

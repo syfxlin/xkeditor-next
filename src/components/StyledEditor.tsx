@@ -476,42 +476,25 @@ const StyledEditor = styled("div")<{
   }
 
   // Image
-  .image {
-    text-align: center;
-    max-width: 100%;
-    clear: both;
-
-    img {
-      pointer-events: ${props => (props.readOnly ? "initial" : "none")};
-      display: inline-block;
-      max-width: 100%;
-      max-height: 75vh;
-    }
+  .image-node-view {
+    display: inline-block;
+    margin: 10px;
   }
 
-  .image.placeholder {
+  img {
+    pointer-events: ${props => (props.readOnly ? "initial" : "none")};
+    display: inline-block;
+    max-width: 100%;
+    max-height: 75vh;
+  }
+
+  .image-placeholder {
     position: relative;
     background: ${props => props.theme.background[2]};
 
     img {
       opacity: 0.5;
     }
-  }
-
-  .image-right-50 {
-    float: right;
-    width: 50%;
-    margin-left: 2em;
-    margin-bottom: 1em;
-    clear: initial;
-  }
-
-  .image-left-50 {
-    float: left;
-    width: 50%;
-    margin-right: 2em;
-    margin-bottom: 1em;
-    clear: initial;
   }
 
   // Details

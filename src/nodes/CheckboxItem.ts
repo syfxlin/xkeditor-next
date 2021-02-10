@@ -67,6 +67,9 @@ export default class CheckboxItem extends Node<EmptyAttrs, CheckboxItemAttrs> {
 
   handleChange = (event: any) => {
     const { view } = this.editor;
+    if (!view) {
+      return;
+    }
     const { tr } = view.state;
     const { top, left } = event.target.getBoundingClientRect();
     const result = view.posAtCoords({ top, left });
