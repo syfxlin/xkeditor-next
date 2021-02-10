@@ -6,8 +6,11 @@ import { TokenConfig } from "prosemirror-markdown";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { EmptyAttrs } from "../lib/Extension";
 import { PluginSimple } from "markdown-it";
-import emojiPlugin from "markdown-it-emoji";
-import emojis from "markdown-it-emoji/lib/data/full.json";
+import emojiPlugin from "../lib/markdown/emoji";
+import { EmojiConvertor } from "emoji-js";
+
+const emoji = new EmojiConvertor();
+emoji.replace_mode = "unified";
 
 export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   get name() {
@@ -24,8 +27,7 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
       toDOM: node => [
         "span",
         { "data-type": this.name },
-        (emojis as { [key: string]: string })[node.textContent] ||
-          node.textContent
+        emoji.replace_colons(`:${node.textContent}:`)
       ]
     };
   }
@@ -35,7 +37,9 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   }
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
+    state.write(":");
     state.text(node.textContent);
+    state.write(":");
   }
 
   parseMarkdown(): TokenConfig {
@@ -43,9 +47,6 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
   }
 
   markdownPlugin(): PluginSimple {
-    return md => {
-      // @ts-ignore
-      emojiPlugin(md, { shortcuts: {} });
-    };
+    return emojiPlugin;
   }
 }
