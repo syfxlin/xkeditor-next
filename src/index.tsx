@@ -51,9 +51,8 @@ const docSearchResults = [
   }
 ];
 
-const YoutubeEmbed: React.FC<ComponentProps> = ({ isSelected, node }) => (
+const YoutubeEmbed: React.FC<ComponentProps> = ({ node }) => (
   <iframe
-    className={isSelected ? "ProseMirror-selectednode" : ""}
     src={`https://www.youtube.com/embed/${node.attrs.matches[1]}?modestbranding=1`}
   />
 );

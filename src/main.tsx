@@ -90,6 +90,11 @@ import PlantUml from "./nodes/PlantUml";
 import MindMap from "./nodes/MindMap";
 import NodeViewContainer from "./lib/NodeViewContainer";
 import Style from "./nodes/Style";
+import CodePen from "./embeds/CodePen";
+import CodeSandbox from "./embeds/CodeSandbox";
+import DrawIO from "./embeds/DrawIO";
+import GithubGist from "./embeds/GithubGist";
+import Trello from "./embeds/Trello";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -181,6 +186,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
   toolbarItems?: ToolbarItem[];
   toolbarModes?: ToolbarMode[];
   nodeViewContainer?: NodeViewContainer;
+  embeds?: EmbedDescriptor[];
 
   componentDidMount() {
     this.init();
@@ -237,6 +243,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       // 当 Update 事件被调用时重新渲染 ComponentView
       views.forEach(view => view.renderElement())
     );
+    this.embeds = this.createEmbeds();
     this.extensions = this.createExtensions();
     this.nodes = this.createNodes();
     this.marks = this.createMarks();
@@ -256,6 +263,17 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
     }
     this.toolbarItems = itemsAndModes.items;
     this.toolbarModes = itemsAndModes.modes;
+  }
+
+  private createEmbeds() {
+    return [
+      CodePen,
+      CodeSandbox,
+      DrawIO,
+      GithubGist,
+      Trello,
+      ...(this.props.config?.embeds || [])
+    ];
   }
 
   private createExtensions() {
@@ -698,7 +716,7 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
                       search={this.state.blockMenuSearch}
                       onClose={this.handleCloseBlockMenu}
                       upload={this.props.action?.upload}
-                      embeds={this.props.config?.embeds}
+                      embeds={this.embeds}
                       items={this.menuItems}
                     />
                   </>

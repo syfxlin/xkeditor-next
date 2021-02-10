@@ -35,7 +35,7 @@ export default class MarkdownPaste extends Extension {
               }
 
               // Is this link embeddable? Create an embed!
-              const embeds = this.editor.props.config?.embeds;
+              const embeds = this.editor.embeds;
 
               if (embeds) {
                 for (const embed of embeds) {

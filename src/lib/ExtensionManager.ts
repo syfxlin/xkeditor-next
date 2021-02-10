@@ -30,7 +30,7 @@ export default class ExtensionManager {
     }
 
     this.extensions = extensions;
-    this.embeds = editor ? editor.props.config?.embeds : undefined;
+    this.embeds = editor ? editor.embeds : undefined;
   }
 
   get nodes() {
