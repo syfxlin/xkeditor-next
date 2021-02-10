@@ -1,5 +1,10 @@
-import { AllSelection, Plugin, Selection } from "prosemirror-state";
-import Extension, { EmptyAttrs } from "../lib/Extension";
+import {
+  AllSelection,
+  Plugin,
+  Selection,
+  TextSelection
+} from "prosemirror-state";
+import Extension, { Dispatcher, EmptyAttrs } from "../lib/Extension";
 
 const isMac = window.navigator.platform === "MacIntel";
 
@@ -12,6 +17,30 @@ type KeysOptions = {
 export default class Keys extends Extension<KeysOptions, EmptyAttrs> {
   get name() {
     return "keys";
+  }
+
+  keys(): Record<string, Dispatcher> {
+    return {
+      Delete: (state, dispatch) => {
+        const { $cursor } = state.selection as TextSelection;
+        if (
+          $cursor &&
+          $cursor.nodeAfter === null &&
+          ($cursor.marks().length > 0 || state.storedMarks)
+        ) {
+          let tr = state.tr;
+          for (const mark of state.storedMarks || []) {
+            tr = tr.removeStoredMark(mark);
+          }
+          for (const mark of $cursor.marks()) {
+            tr = tr.removeStoredMark(mark);
+          }
+          dispatch?.(tr);
+          return true;
+        }
+        return false;
+      }
+    };
   }
 
   get plugins() {

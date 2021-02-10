@@ -30,7 +30,7 @@ type StyleAttrs = {
   style: CSSStyleDeclaration;
 };
 
-const STYLE_INPUT_REGEX = /:style\[(?<text>.*?)]{(?<style>.*?)(?=[")])}/;
+const STYLE_INPUT_REGEX = /{\s*([^|}]+)\s*\|\s*([^}]+)}/;
 
 const convertToString = (style: CSSStyleDeclaration) => {
   return style.cssText;

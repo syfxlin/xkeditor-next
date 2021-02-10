@@ -47,7 +47,7 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
   }
 
   component(): React.FC<ComponentProps> {
-    return ({ editor, theme, node, view, getPos, isSelected }) => {
+    return ({ select, editor, theme, node, view, getPos, isSelected }) => {
       const tex = useRef<HTMLElement>(null);
       const input = useRef<HTMLInputElement>(null);
       const { t } = useTranslation();
@@ -85,7 +85,12 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
 
       return (
         <>
-          <span data-type={"katex-inline"} ref={tex} contentEditable={false} />
+          <span
+            data-type={"katex-inline"}
+            ref={tex}
+            contentEditable={false}
+            onClick={() => select()}
+          />
           <FloatingToolbar view={view} active={isSelected}>
             <Input
               value={node.textContent}
