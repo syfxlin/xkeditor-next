@@ -23,6 +23,7 @@ import { t } from "../i18n";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems, MonacoAttrs } from "../lib/Extension";
 import { Code } from "@icon-park/react";
+import { ResizableBox } from "react-resizable";
 
 type MonacoBlockAttrs = {
   language: string;
@@ -185,29 +186,38 @@ export default class MonacoBlock extends ReactNode<
         <div className={"code-block"} contentEditable={false}>
           {isEditable && node.attrs.isEdit ? (
             <section className={"code-editor"}>
-              <MonacoEditor
-                value={node.textContent}
-                theme={"vs-dark"}
-                language={node.attrs.language}
-                onChange={handleChange}
-                onMount={handleMount}
-              />
-              <div className={"toolbar"}>
-                <button onClick={handleEdit}>{t("预览")}</button>
-                <select
-                  value={node.attrs.language}
-                  onChange={handleLanguageChange}
-                >
-                  {Object.entries(languages).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {value.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <ResizableBox
+                width={Infinity}
+                height={300}
+                minConstraints={[Infinity, 100]}
+                maxConstraints={[Infinity, Infinity]}
+                axis="y"
+                resizeHandles={["s"]}
+              >
+                <MonacoEditor
+                  value={node.textContent}
+                  theme={"vs-dark"}
+                  language={node.attrs.language}
+                  onChange={handleChange}
+                  onMount={handleMount}
+                />
+                <div className={"toolbar"}>
+                  <button onClick={handleEdit}>{t("预览")}</button>
+                  <select
+                    value={node.attrs.language}
+                    onChange={handleLanguageChange}
+                  >
+                    {Object.entries(languages).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </ResizableBox>
             </section>
           ) : (
-            <section className={"code-preview"}>
+            <section className={"code-preview not-bg"}>
               <PrismHighlight
                 language={node.attrs.language}
                 code={node.textContent}

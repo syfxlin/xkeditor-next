@@ -163,10 +163,7 @@ export default class Mermaid extends ReactNode<
 }
 
 const MermaidWrapper = styled.div`
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  background: ${props => props.theme.background[1]};
-  border-radius: 8px;
-  padding: 10px 0 10px 1em;
+  svg {
+    max-height: 100%;
+  }
 `;

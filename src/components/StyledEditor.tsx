@@ -513,21 +513,33 @@ const StyledEditor = styled("div")<{
   .notice-block {
     position: relative;
     margin: 0.5em 0;
+    display: flex;
+    flex-direction: column;
 
     > section {
+      flex: 1;
       width: 100%;
-
-      &.hidden {
-        visibility: hidden;
-      }
 
       &.code-editor {
         position: relative;
-        min-height: 300px;
 
         > section {
           position: absolute !important;
         }
+      }
+
+      &.code-preview:not(.not-bg) {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        background: ${props => props.theme.background[1]};
+        border-radius: 8px;
+        padding: 10px 0 10px 1em;
+        box-sizing: border-box;
+      }
+
+      &.hidden:not(.not-bg) {
+        display: none;
       }
     }
 
@@ -568,6 +580,12 @@ const StyledEditor = styled("div")<{
         display: inline;
       }
     }
+  }
+
+  // Embed
+  .embed {
+    margin: 0.5em 0;
+    border: 1px solid ${props => props.theme.divider};
   }
 
   // Notice
@@ -714,11 +732,6 @@ const StyledEditor = styled("div")<{
   li p:first-child {
     margin: 0;
     word-break: break-word;
-  }
-
-  // Embed
-  .embed {
-    margin: 0.5em 0;
   }
 
   // Media

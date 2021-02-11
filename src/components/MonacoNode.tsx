@@ -4,6 +4,7 @@ import { ComponentProps } from "../lib/ComponentView";
 import MonacoEditor, { OnChange } from "@monaco-editor/react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useTranslation } from "react-i18next";
+import { ResizableBox } from "react-resizable";
 
 export type MonacoNodeAttrs = {
   mode: "edit" | "preview" | "both";
@@ -117,14 +118,22 @@ const MonacoNode: React.FC<Props> = props => {
   const { t } = useTranslation();
 
   return (
-    <div
+    <ResizableBox
+      width={Infinity}
+      height={300}
+      minConstraints={[Infinity, 100]}
+      maxConstraints={[Infinity, Infinity]}
+      axis="y"
+      resizeHandles={["s"]}
       className={"code-block"}
+      // @ts-ignore
       contentEditable={false}
       style={{ width, height }}
     >
       <section
-        hidden={!isEditable || node.attrs.mode === "preview"}
-        className={"code-editor"}
+        className={`code-editor ${
+          !isEditable || node.attrs.mode === "preview" ? "hidden" : ""
+        }`}
       >
         <MonacoEditor
           value={node.textContent}
@@ -140,8 +149,9 @@ const MonacoNode: React.FC<Props> = props => {
         </div>
       </section>
       <section
-        hidden={isEditable && node.attrs.mode === "edit"}
-        className={"code-preview"}
+        className={`code-preview ${
+          isEditable && node.attrs.mode === "edit" ? "hidden" : ""
+        }`}
       >
         {props.children}
         <div className={"toolbar"}>
@@ -154,7 +164,7 @@ const MonacoNode: React.FC<Props> = props => {
           {props.viewToolbar}
         </div>
       </section>
-    </div>
+    </ResizableBox>
   );
 };
 

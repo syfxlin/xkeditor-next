@@ -151,5 +151,5 @@ export default class MindMap extends ReactNode<
 
 const MindMapWrapper = styled.svg`
   width: 100%;
-  min-height: 300px;
+  height: 100%;
 `;

@@ -8,6 +8,7 @@ import { ApplyCommand, Attrs, Command, EmptyAttrs } from "../lib/Extension";
 import { ComponentProps } from "../lib/ComponentView";
 import { EditorView } from "prosemirror-view";
 import { IIconProps } from "@icon-park/react/lib/runtime";
+import { ResizableBox } from "react-resizable";
 
 export type EmbedDescriptor = {
   title: string;
@@ -80,9 +81,17 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
     return props => {
       const Component = props.node.attrs.component;
       return (
-        <div className={"embed"}>
+        <ResizableBox
+          width={Infinity}
+          height={300}
+          minConstraints={[Infinity, 100]}
+          maxConstraints={[Infinity, Infinity]}
+          axis="y"
+          resizeHandles={["s"]}
+          className={"embed"}
+        >
           <Component {...props} />
-        </div>
+        </ResizableBox>
       );
     };
   }

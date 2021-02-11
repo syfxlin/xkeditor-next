@@ -73,6 +73,7 @@ import Emoji from "./nodes/Emoji";
 // Init
 import "./init";
 import "./styles/global.less";
+import "./styles/resizeable.less";
 import "@icon-park/react/styles/index.css";
 import { Toaster } from "react-hot-toast";
 import { UploadResponse } from "./commands/uploadFiles";

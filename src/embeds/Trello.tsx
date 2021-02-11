@@ -41,7 +41,7 @@ const Trello: EmbedDescriptor = {
 
 const StyledIframe = styled.iframe`
   width: 100%;
-  height: 400px;
+  height: 100%;
 `;
 
 export default Trello;
