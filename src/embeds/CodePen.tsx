@@ -1,18 +1,11 @@
 import React from "react";
 import { EmbedDescriptor } from "../nodes/Embed";
-import styled from "styled-components";
+import StyledIframe from "../components/StyledIframe";
 
 const CodePen: EmbedDescriptor = {
   title: "CodePen",
   keywords: "codepen",
-  icon: () => (
-    <img
-      src="https://codepen.io/favicon.ico"
-      alt={"CodePen icon"}
-      width={24}
-      height={24}
-    />
-  ),
+  icon: () => <img src="https://codepen.io/favicon.ico" alt={"CodePen icon"} />,
   matcher: url => {
     const match = url.match(/(?:https?:\/\/)?codepen\.?io\/?(.*)$/i);
     if (!match) {
@@ -23,22 +16,8 @@ const CodePen: EmbedDescriptor = {
     };
   },
   component: ({ node }) => {
-    return (
-      <StyledIframe
-        scrolling="no"
-        src={node.attrs.href}
-        frameBorder="no"
-        loading="lazy"
-        allowTransparency={true}
-        allowFullScreen={true}
-      />
-    );
+    return <StyledIframe src={node.attrs.href} />;
   }
 };
-
-const StyledIframe = styled.iframe`
-  width: 100%;
-  height: 100%;
-`;
 
 export default CodePen;

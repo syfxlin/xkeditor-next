@@ -585,7 +585,6 @@ const StyledEditor = styled("div")<{
   // Embed
   .embed {
     margin: 0.5em 0;
-    border: 1px solid ${props => props.theme.divider};
   }
 
   // Notice

@@ -1,18 +1,11 @@
 import React from "react";
 import { EmbedDescriptor } from "../nodes/Embed";
-import styled from "styled-components";
+import StyledIframe from "../components/StyledIframe";
 
 const GithubGist: EmbedDescriptor = {
   title: "Github Gist",
   keywords: "github gist",
-  icon: () => (
-    <img
-      src="https://github.com/favicon.ico"
-      alt={"Github icon"}
-      width={24}
-      height={24}
-    />
-  ),
+  icon: () => <img src="https://github.com/favicon.ico" alt={"Github icon"} />,
   matcher: url => {
     const match = url.match(/(?:https?:\/\/)?gist\.github\.?com\/?(.*)$/i);
     if (!match) {
@@ -32,18 +25,9 @@ const GithubGist: EmbedDescriptor = {
             <script src="${node.attrs.href}.js"></script>
           </body>
         `}
-        frameBorder="no"
-        loading="lazy"
-        allowTransparency={true}
-        allowFullScreen={true}
       />
     );
   }
 };
-
-const StyledIframe = styled.iframe`
-  width: 100%;
-  height: 100%;
-`;
 
 export default GithubGist;

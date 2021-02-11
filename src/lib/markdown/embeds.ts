@@ -19,7 +19,7 @@ function isLinkClose(token: Token) {
 
 export default function(embeds: any[]): (md: MarkdownIt) => void {
   function isEmbed(token: Token, link: Token) {
-    const href = link.attrs ? link.attrs[0][1] : "";
+    const href = link.attrGet("href") || "";
     const simpleLink = href === token.content;
 
     if (!simpleLink) return false;
@@ -30,7 +30,8 @@ export default function(embeds: any[]): (md: MarkdownIt) => void {
       if (matches) {
         return {
           ...embed,
-          matches
+          ...matches,
+          title: link.attrGet("title")
         };
       }
     }
@@ -72,6 +73,7 @@ export default function(embeds: any[]): (md: MarkdownIt) => void {
                 token.attrSet("href", content);
                 token.attrSet("component", result.component);
                 token.attrSet("matches", result.matches);
+                token.attrSet("title", result.title);
 
                 // delete the inline link – this makes the assumption that the
                 // embed is the only thing in the para.

@@ -1,18 +1,15 @@
 import React from "react";
 import { EmbedDescriptor } from "../nodes/Embed";
-import styled from "styled-components";
+import StyledIframe from "../components/StyledIframe";
+
+const Icon = () => (
+  <img src="https://app.diagrams.net/favicon.ico" alt={"Draw.io icon"} />
+);
 
 const DrawIO: EmbedDescriptor = {
   title: "Draw.io",
   keywords: "draw.io diagrams",
-  icon: () => (
-    <img
-      src="https://app.diagrams.net/favicon.ico"
-      alt={"Draw.io icon"}
-      width={24}
-      height={24}
-    />
-  ),
+  icon: Icon,
   matcher: url => {
     const match = url.match(
       /(?:https?:\/\/)?(?:app|viewer)\.diagrams\.?net\/?(.*)$/i
@@ -21,7 +18,7 @@ const DrawIO: EmbedDescriptor = {
       return null;
     }
     return {
-      href: `https://viewer.diagrams.net/${match[1].substring(
+      href: `https://app.diagrams.net/${match[1].substring(
         match[1].lastIndexOf("#")
       )}`
     };
@@ -29,20 +26,13 @@ const DrawIO: EmbedDescriptor = {
   component: ({ node }) => {
     return (
       <StyledIframe
-        scrolling="no"
-        src={node.attrs.href}
-        frameBorder="no"
-        loading="lazy"
-        allowTransparency={true}
-        allowFullScreen={true}
+        icon={Icon}
+        title={"Draw.io"}
+        src={node.attrs.href.replace("app.", "viewer.")}
+        canonicalUrl={node.attrs.href}
       />
     );
   }
 };
-
-const StyledIframe = styled.iframe`
-  width: 100%;
-  height: 100%;
-`;
 
 export default DrawIO;

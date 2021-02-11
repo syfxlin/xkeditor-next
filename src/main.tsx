@@ -66,7 +66,6 @@ import SmartText from "./plugins/SmartText";
 import TrailingNode from "./plugins/TrailingNode";
 import MarkdownPaste from "./plugins/MarkdownPaste";
 import Sup from "./marks/Sup";
-import Sub from "./marks/Sub";
 import Katex from "./nodes/Katex";
 import Emoji from "./nodes/Emoji";
 
@@ -96,6 +95,11 @@ import CodeSandbox from "./embeds/CodeSandbox";
 import DrawIO from "./embeds/DrawIO";
 import GithubGist from "./embeds/GithubGist";
 import Trello from "./embeds/Trello";
+import Airtable from "./embeds/Airtable";
+import Office from "./embeds/Office";
+import GoogleDocs from "./embeds/GoogleDocs";
+import GoogleDrive from "./embeds/GoogleDrive";
+import IFrame from "./embeds/IFrame";
 
 export { default as Extension } from "./lib/Extension";
 
@@ -273,7 +277,12 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
       DrawIO,
       GithubGist,
       Trello,
-      ...(this.props.config?.embeds || [])
+      Airtable,
+      Office,
+      GoogleDocs,
+      GoogleDrive,
+      ...(this.props.config?.embeds || []),
+      IFrame
     ];
   }
 
@@ -339,7 +348,8 @@ class RichMarkdownEditor extends React.PureComponent<Props, State> {
         //
         new Embed(),
         new Sup(),
-        new Sub(),
+        // TODO: 语法冲突
+        // new Sub(),
         new Details(),
         new Notice(),
         new MonacoBlock(),

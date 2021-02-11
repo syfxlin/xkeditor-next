@@ -25,6 +25,22 @@ type EmbedAttrs = {
   href: null | string;
   component: null | ComponentType<ComponentProps>;
   matches: Record<string, string>;
+  allow?: string | null;
+  referrerpolicy?: string | null;
+  sandbox?: string | null;
+};
+
+const convertAttrs = (title: string) => {
+  if (title === "") {
+    return {};
+  }
+  const strings = title.split(",");
+  const attrs: { [key: string]: string } = {};
+  for (const string of strings) {
+    const kv = string.split("=");
+    attrs[kv[0].trim()] = kv[1].trim();
+  }
+  return attrs;
 };
 
 export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
@@ -42,6 +58,15 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
         component: {},
         matches: {
           default: null
+        },
+        allow: {
+          default: null
+        },
+        referrerpolicy: {
+          default: null
+        },
+        sandbox: {
+          default: null
         }
       },
       parseDOM: [
@@ -57,9 +82,12 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
                 const matches = embed.matcher(href);
                 if (matches) {
                   return {
+                    ...matches,
                     href,
                     component: embed.component,
-                    matches
+                    allow: dom.getAttribute("allow"),
+                    referrerpolicy: dom.getAttribute("referrerpolicy"),
+                    sandbox: dom.getAttribute("sandbox")
                   };
                 }
               }
@@ -71,7 +99,13 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
       ],
       toDOM: node => [
         "iframe",
-        { src: node.attrs.href, contentEditable: "false" },
+        {
+          src: node.attrs.href,
+          allow: node.attrs.allow,
+          referrerpolicy: node.attrs.referrerpolicy,
+          sandbox: node.attrs.sandbox,
+          contentEditable: "false"
+        },
         0
       ]
     };
@@ -107,8 +141,21 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
 
   toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
     state.ensureNewLine();
+    let options = "";
+    if (node.attrs.allow) {
+      options += `allow=${node.attrs.allow},`;
+    }
+    if (node.attrs.referrerpolicy) {
+      options += `referrerpolicy=${node.attrs.referrerpolicy},`;
+    }
+    if (node.attrs.sandbox) {
+      options += `sandbox=${node.attrs.sandbox},`;
+    }
+    options = options.replace(/,$/, "");
     state.write(
-      "[" + state.esc(node.attrs.href) + "](" + state.esc(node.attrs.href) + ")"
+      `[${state.esc(node.attrs.href)}](${state.esc(
+        node.attrs.href
+      )} "${options}")`
     );
     state.write("\n\n");
   }
@@ -119,7 +166,8 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
       getAttrs: (token: Token) => ({
         href: token.attrGet("href"),
         matches: token.attrGet("matches"),
-        component: token.attrGet("component")
+        component: token.attrGet("component"),
+        ...convertAttrs(token.attrGet("title") || "")
       })
     };
   }

@@ -3,6 +3,7 @@ import debounce from "lodash/debounce";
 import Editor from "./main";
 import { ComponentProps } from "./lib/ComponentView";
 import ReactDOM from "react-dom";
+import StyledIframe from "./components/StyledIframe";
 
 const element = document.getElementById("root");
 const savedText = localStorage.getItem("saved");
@@ -52,7 +53,7 @@ const docSearchResults = [
 ];
 
 const YoutubeEmbed: React.FC<ComponentProps> = ({ node }) => (
-  <iframe
+  <StyledIframe
     src={`https://www.youtube.com/embed/${node.attrs.matches[1]}?modestbranding=1`}
   />
 );
@@ -60,17 +61,12 @@ const YoutubeEmbed: React.FC<ComponentProps> = ({ node }) => (
 class Example extends React.Component {
   state = {
     readOnly: false,
-    template: false,
     dark: localStorage.getItem("dark") === "enabled",
     value: undefined
   };
 
   handleToggleReadOnly = () => {
     this.setState({ readOnly: !this.state.readOnly });
-  };
-
-  handleToggleTemplate = () => {
-    this.setState({ template: !this.state.template });
   };
 
   handleToggleDark = () => {
@@ -108,9 +104,6 @@ class Example extends React.Component {
           </button>{" "}
           <button type="button" onClick={this.handleToggleDark}>
             {this.state.dark ? "Switch to Light" : "Switch to Dark"}
-          </button>{" "}
-          <button type="button" onClick={this.handleToggleTemplate}>
-            {this.state.template ? "Switch to Document" : "Switch to Template"}
           </button>{" "}
           <button type="button" onClick={this.handleUpdateValue}>
             Update value

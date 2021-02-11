@@ -83,6 +83,16 @@ const MenuItem = styled.button<{
         ? props.theme.selected.background
         : props.theme.hover.background};
   }
+
+  img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .i-icon svg {
+    height: 20px;
+    width: 20px;
+  }
 `;
 
 const Shortcut = styled.span`
