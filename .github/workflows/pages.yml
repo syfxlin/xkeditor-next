@@ -8,7 +8,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Build
-        run: yarn && yarn build
+        run: yarn && CI='' yarn build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
