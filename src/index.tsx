@@ -14,44 +14,6 @@ This is example content. It is persisted between reloads in localStorage.
 `;
 const defaultValue = savedText || exampleText;
 
-const docSearchResults = [
-  {
-    title: "Hiring",
-    subtitle: "Created by Jane",
-    url: "/doc/hiring"
-  },
-  {
-    title: "Product Roadmap",
-    subtitle: "Created by Tom",
-    url: "/doc/product-roadmap"
-  },
-  {
-    title: "Finances",
-    subtitle: "Created by Coley",
-    url: "/doc/finances"
-  },
-  {
-    title: "Security",
-    subtitle: "Created by Coley",
-    url: "/doc/security"
-  },
-  {
-    title: "Super secret stuff",
-    subtitle: "Created by Coley",
-    url: "/doc/secret-stuff"
-  },
-  {
-    title: "Supero notes",
-    subtitle: "Created by Vanessa",
-    url: "/doc/supero-notes"
-  },
-  {
-    title: "Meeting notes",
-    subtitle: "Created by Rob",
-    url: "/doc/meeting-notes"
-  }
-];
-
 const YoutubeEmbed: React.FC<ComponentProps> = ({ node }) => (
   <StyledIframe
     src={`https://www.youtube.com/embed/${node.attrs.matches[1]}?modestbranding=1`}
