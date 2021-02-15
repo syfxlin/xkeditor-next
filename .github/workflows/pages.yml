@@ -1,0 +1,20 @@
+name: GitHub Pages Build and Deploy
+on: [push, pull_request, repository_dispatch]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Build
+        run: yarn && yarn build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          publish_dir: ./build
+          cname: xkeditor-next.ixk.me
+          enable_jekyll: false
+          force_orphan: true
