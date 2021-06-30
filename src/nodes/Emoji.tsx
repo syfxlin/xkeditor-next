@@ -5,6 +5,7 @@ import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
 import { EmptyAttrs } from "../lib/Extension";
 import { PluginSimple } from "markdown-it";
+// @ts-ignore
 import emojiPlugin from "../lib/markdown/emoji";
 import { EmojiConvertor } from "emoji-js";
 
@@ -23,11 +24,11 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
       marks: "",
       content: "text*",
       parseDOM: [{ tag: `span[data-type="${this.name}"]` }],
-      toDOM: node => [
+      toDOM: (node) => [
         "span",
         { "data-type": this.name },
-        emoji.replace_colons(`:${node.textContent}:`)
-      ]
+        emoji.replace_colons(`:${node.textContent}:`),
+      ],
     };
   }
 

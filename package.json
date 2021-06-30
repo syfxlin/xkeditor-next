@@ -84,6 +84,7 @@
     "@types/react-portal": "^4.0.2",
     "@types/react-resizable": "^1.7.2",
     "@types/refractor": "^2.8.0",
+    "@types/remarkable": "^2.0.2",
     "@types/styled-components": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
     "@typescript-eslint/parser": "^4.0.0",
