@@ -40,15 +40,6 @@ export default class Underline extends Mark<EmptyAttrs, EmptyAttrs> {
     };
   }
 
-  toMarkdown() {
-    return {
-      open: "__",
-      close: "__",
-      mixable: true,
-      expelEnclosingWhitespace: true
-    };
-  }
-
   parseMarkdown() {
     return { mark: this.name };
   }

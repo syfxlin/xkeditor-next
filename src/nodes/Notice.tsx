@@ -2,10 +2,9 @@ import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleWrap from "../commands/toggleWrap";
 import React from "react";
 import { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
@@ -97,14 +96,6 @@ export default class Notice extends ReactNode<EmptyAttrs, NoticeAttrs> {
 
   inputRules({ type }: NodeArgs) {
     return [wrappingInputRule(/^:::\s?notice$/, type)];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("\n:::notice " + (node.attrs.style || "info") + "\n");
-    state.renderContent(node);
-    state.ensureNewLine();
-    state.write(":::");
-    state.closeBlock(node);
   }
 
   parseMarkdown() {

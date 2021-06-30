@@ -2,8 +2,7 @@ import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
 import toggleWrap from "../commands/toggleWrap";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { NodeSpec } from "prosemirror-model";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
 import { t } from "../i18n";
 import { mod } from "../menus/block";
@@ -36,10 +35,6 @@ export default class Blockquote extends Node<EmptyAttrs, EmptyAttrs> {
     return {
       "Mod-]": toggleWrap(type)
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.wrapBlock("> ", undefined, node, () => state.renderContent(node));
   }
 
   parseMarkdown() {

@@ -7,7 +7,7 @@ import React, {
   Ref,
   RefObject,
   useEffect,
-  useState
+  useState,
 } from "react";
 import { Portal } from "react-portal";
 import { EditorView } from "prosemirror-view";
@@ -25,26 +25,28 @@ const defaultPosition = {
   left: -1000,
   top: 0,
   offset: 0,
-  visible: false
+  visible: false,
 };
 
 const useComponentSize = (ref: Ref<HTMLDivElement>) => {
   const [size, setSize] = useState({
     width: 0,
-    height: 0
+    height: 0,
   });
 
   useEffect(() => {
-    const sizeObserver = new ResizeObserver(entries => {
-      entries.forEach(({ target }) => {
-        if (
-          size.width !== target.clientWidth ||
-          size.height !== target.clientHeight
-        ) {
-          setSize({ width: target.clientWidth, height: target.clientHeight });
-        }
-      });
-    });
+    const sizeObserver = new ResizeObserver(
+      (entries: ResizeObserverEntry[]) => {
+        entries.forEach(({ target }) => {
+          if (
+            size.width !== target.clientWidth ||
+            size.height !== target.clientHeight
+          ) {
+            setSize({ width: target.clientWidth, height: target.clientHeight });
+          }
+        });
+      }
+    );
     sizeObserver.observe(
       (ref as RefObject<HTMLDivElement>).current as HTMLDivElement
     );
@@ -58,7 +60,7 @@ const useComponentSize = (ref: Ref<HTMLDivElement>) => {
 const usePosition = ({
   menuRef,
   isSelectingText,
-  props
+  props,
 }: {
   menuRef: Ref<HTMLDivElement>;
   isSelectingText: boolean;
@@ -82,7 +84,7 @@ const usePosition = ({
     top: Math.min(fromPos.top, toPos.top),
     bottom: Math.max(fromPos.bottom, toPos.bottom),
     left: Math.min(fromPos.left, toPos.left),
-    right: Math.max(fromPos.right, toPos.right)
+    right: Math.max(fromPos.right, toPos.right),
   };
 
   // tables are an oddity, and need their own positioning logic
@@ -117,7 +119,7 @@ const usePosition = ({
       left: Math.round(left + width / 2 + window.scrollX - menuWidth / 2),
       top: Math.round(top + window.scrollY - menuHeight),
       offset: 0,
-      visible: true
+      visible: true,
     };
   } else {
     // calcluate the horizontal center of the selection
@@ -146,18 +148,18 @@ const usePosition = ({
       left: Math.round(left + window.scrollX),
       top: Math.round(top + window.scrollY),
       offset: Math.round(offset),
-      visible: true
+      visible: true,
     };
   }
 };
 
-const FloatingToolbar: FC<Props> = props => {
+const FloatingToolbar: FC<Props> = (props) => {
   const menuRef = props.forwardedRef || createRef<HTMLDivElement>();
   const [isSelectingText, setSelectingText] = useState(false);
   const position = usePosition({
     menuRef,
     isSelectingText,
-    props
+    props,
   });
 
   useEffect(() => {
@@ -190,7 +192,7 @@ const FloatingToolbar: FC<Props> = props => {
         offset={position.offset}
         style={{
           top: `${position.top}px`,
-          left: `${position.left}px`
+          left: `${position.left}px`,
         }}
       >
         {position.visible && props.children}
@@ -206,9 +208,9 @@ const Wrapper = styled.div<{
   will-change: opacity, transform;
   padding: 8px 10px;
   position: absolute;
-  z-index: ${props => props.theme.zIndex + 100};
+  z-index: ${(props) => props.theme.zIndex + 100};
   opacity: 0;
-  background-color: ${props => props.theme.reverse.background[2]};
+  background-color: ${(props) => props.theme.reverse.background[2]};
   border-radius: 4px;
   transform: scale(0.95);
   transition: opacity 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275),
@@ -228,12 +230,12 @@ const Wrapper = styled.div<{
     width: 24px;
     height: 24px;
     transform: translateX(-50%) rotate(45deg);
-    background: ${props => props.theme.reverse.background[2]};
+    background: ${(props) => props.theme.reverse.background[2]};
     border-radius: 3px;
     z-index: -1;
     position: absolute;
     bottom: -2px;
-    left: calc(50% - ${props => props.offset || 0}px);
+    left: calc(50% - ${(props) => props.offset || 0}px);
   }
 
   * {

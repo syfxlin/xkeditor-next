@@ -1,7 +1,7 @@
 import React from "react";
 import { toggleMark } from "prosemirror-commands";
 import { Plugin } from "prosemirror-state";
-import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
+import Mark, { MarkArgs } from "./Mark";
 import { Fragment, Mark as ProseMirrorMark, MarkSpec } from "prosemirror-model";
 import { Attrs, Dispatcher, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
@@ -175,22 +175,6 @@ export default class Link extends Mark<LinkOptions, LinkAttrs> {
         }
       })
     ];
-  }
-
-  toMarkdown(): MarkSerializerConfig {
-    return {
-      open: (state, mark, parent, index) => {
-        return isPlainURL(mark, parent, index, 1) ? "<" : "[";
-      },
-      close: (state, mark, parent, index) => {
-        return isPlainURL(mark, parent, index, -1)
-          ? ">"
-          : "](" +
-              state.esc(mark.attrs.href) +
-              (mark.attrs.title ? " " + state.quote(mark.attrs.title) : "") +
-              ")";
-      }
-    };
   }
 
   parseMarkdown() {

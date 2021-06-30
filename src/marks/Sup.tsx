@@ -33,15 +33,6 @@ export default class Sup extends Mark<EmptyAttrs, EmptyAttrs> {
     };
   }
 
-  toMarkdown() {
-    return {
-      open: "^",
-      close: "^",
-      mixable: true,
-      expelEnclosingWhitespace: true
-    };
-  }
-
   parseMarkdown() {
     return { mark: this.name };
   }
@@ -60,6 +51,7 @@ export default class Sup extends Mark<EmptyAttrs, EmptyAttrs> {
             shortcut: `${ctrl} ${shift} P`,
             icon: ArrowRightUp,
             active: isMarkActive(type),
+
             priority: 2
           }
         ]

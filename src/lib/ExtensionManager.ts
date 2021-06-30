@@ -1,7 +1,6 @@
 import { Schema } from "prosemirror-model";
 import { keymap } from "prosemirror-keymap";
 import { MarkdownParser } from "prosemirror-markdown";
-import { MarkdownSerializer } from "./markdown/serializer";
 import { Editor } from "../main";
 import Extension, {
   Attrs,
@@ -42,61 +41,6 @@ export default class ExtensionManager {
         [node.name]: node.schema
       }),
       {}
-    );
-  }
-
-  serializer() {
-    const nodes = (this.extensions.filter(
-      extension => extension.type === "node"
-    ) as Node[]).reduce(
-      (nodes, extension: Node) => ({
-        ...nodes,
-        [extension.name]: extension.toMarkdown
-      }),
-      {}
-    );
-
-    const marks = (this.extensions.filter(
-      extension => extension.type === "mark"
-    ) as Mark[]).reduce(
-      (marks, extension: Mark) => ({
-        ...marks,
-        [extension.name]: extension.toMarkdown
-      }),
-      {}
-    );
-
-    return new MarkdownSerializer(nodes, marks);
-  }
-
-  parser({ schema }: { schema: Schema }) {
-    const nodeAndMarks = this.extensions.filter(
-      extension => extension.type === "mark" || extension.type === "node"
-    ) as (Node | Mark)[];
-
-    const tokens = nodeAndMarks.reduce((nodes, extension: Node | Mark) => {
-      const md = extension.parseMarkdown();
-      if (!md) return nodes;
-
-      return {
-        ...nodes,
-        [extension.markdownToken]: md
-      };
-    }, {});
-
-    const plugins = nodeAndMarks
-      .map((extension: Node | Mark) => extension.markdownPlugin())
-      .filter(plugin => plugin !== undefined) as (
-      | PluginSimple
-      | PluginWithParams
-      | PluginWithOptions
-    )[];
-
-    return new MarkdownParser(
-      schema,
-      // @ts-ignore
-      makeRules({ embeds: this.embeds, plugins }),
-      tokens
     );
   }
 
@@ -279,5 +223,36 @@ export default class ExtensionManager {
         )
         .sort((a, b) => a.priority - b.priority)
     };
+  }
+
+  parser({ schema }: { schema: Schema }) {
+    const nodeAndMarks = this.extensions.filter(
+      extension => extension.type === "mark" || extension.type === "node"
+    ) as (Node | Mark)[];
+
+    const tokens = nodeAndMarks.reduce((nodes, extension: Node | Mark) => {
+      const md = extension.parseMarkdown();
+      if (!md) return nodes;
+
+      return {
+        ...nodes,
+        [extension.markdownToken]: md
+      };
+    }, {});
+
+    const plugins = nodeAndMarks
+      .map((extension: Node | Mark) => extension.markdownPlugin())
+      .filter(plugin => plugin !== undefined) as (
+      | PluginSimple
+      | PluginWithParams
+      | PluginWithOptions
+    )[];
+
+    return new MarkdownParser(
+      schema,
+      // @ts-ignore
+      makeRules({ embeds: this.embeds, plugins }),
+      tokens
+    );
   }
 }

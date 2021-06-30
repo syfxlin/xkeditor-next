@@ -4,8 +4,7 @@ import {
   splitListItem
 } from "prosemirror-schema-list";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { NodeSpec } from "prosemirror-model";
 import Token from "markdown-it/lib/token";
 import { EmptyAttrs } from "../lib/Extension";
 
@@ -90,11 +89,6 @@ export default class CheckboxItem extends Node<EmptyAttrs, CheckboxItemAttrs> {
       "Mod-]": sinkListItem(type),
       "Mod-[": liftListItem(type)
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write(node.attrs.checked ? "[x] " : "[ ] ");
-    state.renderContent(node);
   }
 
   parseMarkdown() {

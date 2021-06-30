@@ -1,7 +1,7 @@
 import React from "react";
 import { toggleMark } from "prosemirror-commands";
 import markInputRule from "../lib/markInputRule";
-import Mark, { MarkArgs, MarkSerializerConfig } from "./Mark";
+import Mark, { MarkArgs } from "./Mark";
 import { MarkSpec, Node } from "prosemirror-model";
 import { EmptyAttrs, ToolbarItems } from "../lib/Extension";
 import { t } from "../i18n";
@@ -44,7 +44,7 @@ export default class Code extends Mark<EmptyAttrs, EmptyAttrs> {
   }
 
   inputRules({ type }: MarkArgs) {
-    return [markInputRule(/(?:^|[^`])(`([^`]+)`)$/, type)];
+    return [markInputRule(/(?:^|[^`])`([^`]+)`$/, type)];
   }
 
   keys({ type }: MarkArgs) {
@@ -52,18 +52,6 @@ export default class Code extends Mark<EmptyAttrs, EmptyAttrs> {
     // https://github.com/ProseMirror/prosemirror/issues/515
     return {
       "Mod`": toggleMark(type)
-    };
-  }
-
-  toMarkdown(): MarkSerializerConfig {
-    return {
-      open: (state, mark, parent, index) => {
-        return backticksFor(parent.child(index), -1);
-      },
-      close: (state, mark, parent, index) => {
-        return backticksFor(parent.child(index - 1), 1);
-      },
-      escape: false
     };
   }
 

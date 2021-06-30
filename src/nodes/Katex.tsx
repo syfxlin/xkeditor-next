@@ -1,7 +1,6 @@
 import Node, { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
@@ -50,13 +49,6 @@ export default class Katex extends Node<EmptyAttrs, EmptyAttrs> {
 
   inputRules({ type }: NodeArgs): InputRule[] {
     return [nodeInputRule(/\$\$([^$]+)\$\$/, type, 1)];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("$$");
-    state.text(node.textContent);
-    state.write("$$");
-    state.closeBlock(node);
   }
 
   parseMarkdown(): TokenConfig {

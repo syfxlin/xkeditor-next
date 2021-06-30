@@ -1,9 +1,8 @@
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { InputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
 import nodeInputRule from "../lib/nodeInputRule";
 import { TokenConfig } from "prosemirror-markdown";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { EmptyAttrs } from "../lib/Extension";
 import { PluginSimple } from "markdown-it";
 import emojiPlugin from "../lib/markdown/emoji";
@@ -34,12 +33,6 @@ export default class Emoji extends Node<EmptyAttrs, EmptyAttrs> {
 
   inputRules({ type }: NodeArgs): InputRule[] {
     return [nodeInputRule(/(?::)([^:]+)(?::)$/, type)];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write(":");
-    state.text(node.textContent);
-    state.write(":");
   }
 
   parseMarkdown(): TokenConfig {

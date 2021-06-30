@@ -1,18 +1,32 @@
 import React from "react";
 import debounce from "lodash/debounce";
-import Editor from "./main";
+import { Editor } from "./main";
 import { ComponentProps } from "./lib/ComponentView";
 import ReactDOM from "react-dom";
 import StyledIframe from "./components/StyledIframe";
 
 const element = document.getElementById("root");
 const savedText = localStorage.getItem("saved");
-const exampleText = `
-# Welcome
-
-This is example content. It is persisted between reloads in localStorage.
-`;
-const defaultValue = savedText || exampleText;
+const defaultValue = (savedText ? JSON.parse(savedText) : undefined) || {
+  type: "doc",
+  content: [
+    {
+      type: "heading",
+      attrs: { level: 1 },
+      content: [{ type: "text", text: "Welcome" }]
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text:
+            "This is example content. It is persisted between reloads in localStorage."
+        }
+      ]
+    }
+  ]
+};
 
 const YoutubeEmbed: React.FC<ComponentProps> = ({ node }) => (
   <StyledIframe
@@ -24,7 +38,7 @@ class Example extends React.Component {
   state = {
     readOnly: false,
     dark: localStorage.getItem("dark") === "enabled",
-    value: undefined
+    value: defaultValue
   };
 
   handleToggleReadOnly = () => {
@@ -46,9 +60,9 @@ class Example extends React.Component {
   };
 
   handleChange = debounce((editor: Editor) => {
-    const text = editor.markdown();
-    console.log(text);
-    localStorage.setItem("saved", text);
+    const json = editor.json();
+    console.log(json);
+    localStorage.setItem("saved", JSON.stringify(json));
   }, 250);
 
   render() {
@@ -76,100 +90,95 @@ class Example extends React.Component {
         <Editor
           value={this.state.value}
           onChange={this.handleChange}
-          readOnly={this.state.readOnly}
+          editable={!this.state.readOnly}
           dark={this.state.dark}
-          config={{
-            id: "example",
-            defaultValue,
-            autoFocus: true,
-            scrollTo: window.location.hash,
-            embeds: [
-              {
-                title: "YouTube",
-                keywords: "youtube video tube google",
-                icon: () => (
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg"
-                    width={24}
-                    height={24}
-                  />
-                ),
-                matcher: url => {
-                  const match = url.match(
-                    /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
-                  );
-                  if (match) {
-                    return {
-                      href: url,
-                      matches: match
-                    };
-                  }
-                  return null;
-                },
-                component: YoutubeEmbed
-              }
-            ]
-          }}
-          action={{
-            handleDOMEvents: {
-              focus: () => {
-                console.log("FOCUS");
-                return false;
+          autofocus={true}
+          scrollTo={window.location.hash}
+          embeds={[
+            {
+              title: "YouTube",
+              keywords: "youtube video tube google",
+              icon: () => (
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg"
+                  width={24}
+                  height={24}
+                />
+              ),
+              matcher: (url: string) => {
+                const match = url.match(
+                  /(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([a-zA-Z0-9_-]{11})$/i
+                );
+                if (match) {
+                  return {
+                    href: url,
+                    matches: match
+                  };
+                }
+                return null;
               },
-              blur: () => {
-                console.log("BLUR");
-                return false;
-              },
-              paste: () => {
-                console.log("PASTE");
-                return false;
-              },
-              touchstart: () => {
-                console.log("TOUCH START");
-                return false;
-              }
-            },
-            save: options => console.log("Save triggered", options),
-            cancel: () => console.log("Cancel triggered"),
-            onClickLink: (href, event) => {
-              console.log("Clicked link: ", href, event);
-              window.open(href, "_blank");
-            },
-            onHoverLink: event => {
-              console.log(
-                "Hovered link: ",
-                (event.target as HTMLAnchorElement).href
-              );
+              component: YoutubeEmbed
+            }
+          ]}
+          handleDOMEvents={{
+            focus: () => {
+              console.log("FOCUS");
               return false;
             },
-            onClickHashtag: (tag, event) =>
-              console.log("Clicked hashtag: ", tag, event),
-            upload: fs => {
-              console.log("File upload triggered: ", fs);
-
-              // Delay to simulate time taken to upload
-              return new Promise(resolve => {
-                setTimeout(
-                  () =>
-                    resolve({
-                      error: false,
-                      message: "OK",
-                      code: 200,
-                      data: [
-                        {
-                          extname: "png",
-                          filename: "123",
-                          key: "123",
-                          md5: "123",
-                          size: 123,
-                          url: "https://picsum.photos/600/600"
-                        }
-                      ]
-                    }),
-                  1500
-                );
-              });
+            blur: () => {
+              console.log("BLUR");
+              return false;
+            },
+            paste: () => {
+              console.log("PASTE");
+              return false;
+            },
+            touchstart: () => {
+              console.log("TOUCH START");
+              return false;
             }
+          }}
+          handleSave={done => console.log("Save triggered", done)}
+          handleCancel={() => console.log("Cancel triggered")}
+          onClickLink={(href, event) => {
+            console.log("Clicked link: ", href, event);
+            window.open(href, "_blank");
+          }}
+          onHoverLink={event => {
+            console.log(
+              "Hovered link: ",
+              (event.target as HTMLAnchorElement).href
+            );
+            return false;
+          }}
+          onClickTag={(tag, event) =>
+            console.log("Clicked hashtag: ", tag, event)
+          }
+          handleUpload={fs => {
+            console.log("File upload triggered: ", fs);
+
+            // Delay to simulate time taken to upload
+            return new Promise(resolve => {
+              setTimeout(
+                () =>
+                  resolve({
+                    error: false,
+                    message: "OK",
+                    code: 200,
+                    data: [
+                      {
+                        extname: "png",
+                        filename: "123",
+                        key: "123",
+                        md5: "123",
+                        size: 123,
+                        url: "https://picsum.photos/600/600"
+                      }
+                    ]
+                  }),
+                1500
+              );
+            });
           }}
         />
       </div>

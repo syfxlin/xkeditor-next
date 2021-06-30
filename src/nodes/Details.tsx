@@ -1,4 +1,4 @@
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import toggleWrap from "../commands/toggleWrap";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
@@ -6,7 +6,6 @@ import ReactNode from "./ReactNode";
 import React, { useCallback } from "react";
 import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
 import { blockPlugin } from "../lib/markdown/container";
@@ -90,18 +89,6 @@ export default class Details extends ReactNode<EmptyAttrs, DetailsAttrs> {
 
   inputRules({ type }: NodeArgs) {
     return [wrappingInputRule(/^:::details$/, type, { open: true })];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write(
-      "\n:::details" +
-        (node.attrs.summary ? " " + node.attrs.summary : "") +
-        "\n"
-    );
-    state.renderContent(node);
-    state.ensureNewLine();
-    state.write(":::");
-    state.closeBlock(node);
   }
 
   parseMarkdown() {

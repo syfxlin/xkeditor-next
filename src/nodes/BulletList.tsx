@@ -2,8 +2,7 @@ import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { NodeSpec } from "prosemirror-model";
 import { t } from "../i18n";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
@@ -35,10 +34,6 @@ export default class BulletList extends Node<EmptyAttrs, EmptyAttrs> {
 
   inputRules({ type }: NodeArgs) {
     return [wrappingInputRule(/^\s*([-+*])\s$/, type)];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.renderList(node, "  ", () => (node.attrs.bullet || "*") + " ");
   }
 
   parseMarkdown() {

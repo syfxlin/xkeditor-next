@@ -30,10 +30,9 @@ import {
   MenuItems,
   ToolbarItems
 } from "../lib/Extension";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { PluginSimple } from "markdown-it";
 import tablesPlugin from "../lib/markdown/tables";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { t } from "../i18n";
 import getColumnIndex from "../queries/getColumnIndex";
 import getRowIndex from "../queries/getRowIndex";
@@ -137,11 +136,6 @@ export default class Table extends Node<EmptyAttrs, EmptyAttrs> {
         return true;
       }
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.renderTable(node);
-    state.closeBlock(node);
   }
 
   parseMarkdown() {

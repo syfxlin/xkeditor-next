@@ -16,15 +16,6 @@ export default class Placeholder extends Mark<EmptyAttrs, EmptyAttrs> {
     };
   }
 
-  toMarkdown() {
-    return {
-      open: "!!",
-      close: "!!",
-      mixable: true,
-      expelEnclosingWhitespace: true
-    };
-  }
-
   parseMarkdown() {
     return { mark: this.name };
   }

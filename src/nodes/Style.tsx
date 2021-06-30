@@ -1,4 +1,4 @@
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import React, {
   ChangeEvent,
   MouseEvent,
@@ -10,7 +10,6 @@ import { EmptyAttrs, ToolbarItems } from "../lib/Extension";
 import { TokenConfig } from "prosemirror-markdown";
 import { PluginSimple } from "markdown-it";
 import { NodeArgs } from "./Node";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { InputRule } from "prosemirror-inputrules";
 import nodeInputRule from "../lib/nodeInputRule";
 import ReactNode from "./ReactNode";
@@ -189,14 +188,6 @@ export default class Style extends ReactNode<EmptyAttrs, StyleAttrs> {
         style: convertToCss(match[2])
       }))
     ];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("{");
-    state.write(node.textContent);
-    state.write("|");
-    state.write(convertToString(node.attrs.style));
-    state.write("}");
   }
 
   parseMarkdown(): TokenConfig {

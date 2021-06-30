@@ -41,15 +41,6 @@ export default class Strikethrough extends Mark<EmptyAttrs, EmptyAttrs> {
     return [markInputRule(/~~([^~]+)~~$/, type)];
   }
 
-  toMarkdown() {
-    return {
-      open: "~~",
-      close: "~~",
-      mixable: true,
-      expelEnclosingWhitespace: true
-    };
-  }
-
   get markdownToken() {
     return "s";
   }

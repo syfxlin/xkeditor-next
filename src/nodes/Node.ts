@@ -1,10 +1,4 @@
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
-import {
-  Node as ProseMirrorNode,
-  NodeSpec,
-  NodeType,
-  Schema
-} from "prosemirror-model";
+import { NodeSpec, NodeType, Schema } from "prosemirror-model";
 import Extension, {
   Attrs,
   Command,
@@ -31,10 +25,6 @@ export default abstract class Node<
 
   get markdownToken(): string {
     return this.name;
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode): void {
-    console.error("toMarkdown not implemented", state, node);
   }
 
   parseMarkdown(): TokenConfig | undefined {

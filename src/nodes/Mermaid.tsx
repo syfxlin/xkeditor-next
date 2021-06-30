@@ -1,5 +1,5 @@
 import { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { mergeSpec, nodeKeys } from "../utils/editor";
 import {
   Command,
@@ -14,7 +14,6 @@ import { ComponentProps } from "../lib/ComponentView";
 import React, { useEffect, useRef } from "react";
 import MonacoNode, { MonacoNodeAttrs } from "../components/MonacoNode";
 import mermaid from "mermaid";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
 import { usePromise } from "react-use";
@@ -122,14 +121,6 @@ export default class Mermaid extends ReactNode<
   commands({ type, schema }: NodeArgs): Record<string, Command> | Command {
     return () =>
       toggleBlockType(type, schema.nodes.paragraph, { mode: "edit" });
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("\n:::mermaid\n");
-    state.renderContent(node);
-    state.ensureNewLine();
-    state.write(":::");
-    state.closeBlock(node);
   }
 
   parseMarkdown() {

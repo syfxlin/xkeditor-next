@@ -1,4 +1,4 @@
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import nodeInputRule from "../lib/nodeInputRule";
 // @ts-ignore
 import katexPlugin from "@iktakahiro/markdown-it-katex";
@@ -10,7 +10,6 @@ import { InputRule } from "prosemirror-inputrules";
 import { PluginSimple } from "markdown-it";
 import { NodeArgs } from "./Node";
 import { TokenConfig } from "prosemirror-markdown";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { applyContent, selectionDir } from "../utils/editor";
 import { Command, EmptyAttrs, MenuItems } from "../lib/Extension";
 import FloatingToolbar from "../components/FloatingToolbar";
@@ -80,7 +79,7 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
       );
       const handleOpenLink = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
-        editor.props.action?.onClickLink?.("https://katex.org/", e.nativeEvent);
+        editor.props.onClickLink?.("https://katex.org/", e.nativeEvent);
       };
 
       return (
@@ -143,12 +142,6 @@ export default class KatexInline extends ReactNode<EmptyAttrs, EmptyAttrs> {
       block: this.name,
       noCloseToken: true
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("$");
-    state.text(node.textContent);
-    state.write("$");
   }
 
   get markdownToken(): string {

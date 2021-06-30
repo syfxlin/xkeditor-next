@@ -1,7 +1,6 @@
 import React, { ComponentType } from "react";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import Token from "markdown-it/lib/token";
 import { NodeArgs } from "./Node";
 import { ApplyCommand, Attrs, Command, EmptyAttrs } from "../lib/Extension";
@@ -137,27 +136,6 @@ export default class Embed extends ReactNode<EmptyAttrs, EmbedAttrs> {
       );
       return true;
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.ensureNewLine();
-    let options = "";
-    if (node.attrs.allow) {
-      options += `allow=${node.attrs.allow},`;
-    }
-    if (node.attrs.referrerpolicy) {
-      options += `referrerpolicy=${node.attrs.referrerpolicy},`;
-    }
-    if (node.attrs.sandbox) {
-      options += `sandbox=${node.attrs.sandbox},`;
-    }
-    options = options.replace(/,$/, "");
-    state.write(
-      `[${state.esc(node.attrs.href)}](${state.esc(
-        node.attrs.href
-      )} "${options}")`
-    );
-    state.write("\n\n");
   }
 
   parseMarkdown() {

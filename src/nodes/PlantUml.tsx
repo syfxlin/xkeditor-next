@@ -7,11 +7,10 @@ import {
   MenuItems,
   MonacoAttrs
 } from "../lib/Extension";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { mergeSpec, nodeKeys } from "../utils/editor";
 import { InputRule, textblockTypeInputRule } from "prosemirror-inputrules";
 import toggleBlockType from "../commands/toggleBlockType";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { PluginSimple } from "markdown-it";
 import { blockPlugin } from "../lib/markdown/container";
 import { t } from "../i18n";
@@ -94,14 +93,6 @@ export default class PlantUml extends ReactNode<
   commands({ type, schema }: NodeArgs): Record<string, Command> | Command {
     return () =>
       toggleBlockType(type, schema.nodes.paragraph, { mode: "edit" });
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write("\n:::plantuml\n");
-    state.renderContent(node);
-    state.ensureNewLine();
-    state.write(":::");
-    state.closeBlock(node);
   }
 
   parseMarkdown() {

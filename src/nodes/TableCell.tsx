@@ -6,8 +6,7 @@ import {
   isTableSelected
 } from "prosemirror-utils";
 import Node from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { NodeSpec } from "prosemirror-model";
 import Token from "markdown-it/lib/token";
 import { EmptyAttrs } from "../lib/Extension";
 
@@ -38,10 +37,6 @@ export default class TableCell extends Node<any, EmptyAttrs> {
         alignment: { default: null }
       }
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.renderContent(node);
   }
 
   parseMarkdown() {

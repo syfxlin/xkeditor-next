@@ -2,7 +2,7 @@ import React, { ComponentType, RefObject } from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import { Decoration, EditorView, NodeView } from "prosemirror-view";
-import { Editor, EditorContext, NodeViewCreator } from "../main";
+import { Editor, EditorContext } from "../main";
 import { Node as ProseMirrorNode } from "prosemirror-model";
 import Node, { default as EditorNode } from "../nodes/Node";
 import { Attrs } from "./Extension";
@@ -33,9 +33,21 @@ export type CreateNodeViewProps = {
   extension: EditorNode;
 };
 
+export type NodeViewCreator = (
+  node: ProseMirrorNode,
+  view: EditorView,
+  getPos: (() => number) | boolean,
+  decorations: Decoration[]
+) => NodeView;
+
 export default class ComponentView implements NodeView {
   static create(props: CreateNodeViewProps): NodeViewCreator {
-    return (node, view, getPos, decorations) =>
+    return (
+      node: ProseMirrorNode,
+      view: EditorView,
+      getPos: (() => number) | boolean,
+      decorations: Decoration[]
+    ) =>
       new ComponentView({
         node,
         view,

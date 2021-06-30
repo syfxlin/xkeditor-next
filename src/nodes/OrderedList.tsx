@@ -2,8 +2,7 @@ import React from "react";
 import { wrappingInputRule } from "prosemirror-inputrules";
 import toggleList from "../commands/toggleList";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { NodeSpec } from "prosemirror-model";
 import { t } from "../i18n";
 import { ctrl, shift } from "../menus/block";
 import { EmptyAttrs, MenuItems } from "../lib/Extension";
@@ -66,17 +65,6 @@ export default class OrderedList extends Node<EmptyAttrs, OrderedListAttrs> {
         (match, node) => node.childCount + node.attrs.order === +match[1]
       )
     ];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    const start = node.attrs.order || 1;
-    const maxW = `${start + node.childCount - 1}`.length;
-    const space = state.repeat(" ", maxW + 2);
-
-    state.renderList(node, space, (i: number) => {
-      const nStr = `${start + i}`;
-      return state.repeat(" ", maxW - nStr.length) + nStr + ". ";
-    });
   }
 
   parseMarkdown() {

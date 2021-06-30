@@ -49,10 +49,6 @@ export default abstract class Mark<
     return this.name;
   }
 
-  toMarkdown(): MarkSerializerConfig {
-    return {} as MarkSerializerConfig;
-  }
-
   parseMarkdown(): TokenConfig | undefined {
     return undefined;
   }

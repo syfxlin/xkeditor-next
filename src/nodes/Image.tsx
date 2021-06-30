@@ -4,13 +4,12 @@ import { InputRule } from "prosemirror-inputrules";
 import { Controlled as Zoom } from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import getDataTransferFiles from "../lib/getDataTransferFiles";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import ReactNode from "./ReactNode";
 import { ComponentProps } from "../lib/ComponentView";
 import { NodeArgs } from "./Node";
 import { Command, MenuItems, ToolbarItems } from "../lib/Extension";
 import Token from "markdown-it/lib/token";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import uploadFiles, {
   UploadFilesOptions,
   UploadResponse
@@ -275,19 +274,6 @@ export default class Image extends ReactNode<ImageOptions, ImageAttrs> {
         </>
       );
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    let markdown =
-      " ![" +
-      state.esc((node.attrs.alt || "").replace("\n", "") || "") +
-      "](" +
-      state.esc(node.attrs.src);
-    if (node.attrs.title) {
-      markdown += ' "' + state.esc(node.attrs.title) + '"';
-    }
-    markdown += ")";
-    state.write(markdown);
   }
 
   parseMarkdown() {

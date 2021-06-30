@@ -1,9 +1,8 @@
 import React from "react";
 import { InputRule } from "prosemirror-inputrules";
 import Node, { NodeArgs } from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
+import { NodeSpec } from "prosemirror-model";
 import { Command, Dispatcher, EmptyAttrs, MenuItems } from "../lib/Extension";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import { mod } from "../menus/block";
 import { t } from "../i18n";
 import { DividingLine } from "@icon-park/react";
@@ -53,11 +52,6 @@ export default class HorizontalRule extends Node<EmptyAttrs, EmptyAttrs> {
         return tr;
       })
     ];
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write(node.attrs.markup || "\n---");
-    state.closeBlock(node);
   }
 
   parseMarkdown() {

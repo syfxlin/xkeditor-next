@@ -2,8 +2,7 @@ import { Decoration, DecorationSet } from "prosemirror-view";
 import { Plugin } from "prosemirror-state";
 import { getCellsInRow, isColumnSelected } from "prosemirror-utils";
 import Node from "./Node";
-import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
+import { NodeSpec } from "prosemirror-model";
 import Token from "markdown-it/lib/token";
 import { EmptyAttrs } from "../lib/Extension";
 
@@ -34,10 +33,6 @@ export default class TableHeadCell extends Node<any, EmptyAttrs> {
         alignment: { default: null }
       }
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.renderContent(node);
   }
 
   parseMarkdown() {

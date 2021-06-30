@@ -5,7 +5,6 @@ import { Decoration, DecorationSet } from "prosemirror-view";
 import { Node as ProseMirrorNode, NodeSpec } from "prosemirror-model";
 import { textblockTypeInputRule } from "prosemirror-inputrules";
 import { setBlockType } from "prosemirror-commands";
-import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import backspaceToParagraph from "../commands/backspaceToParagraph";
 import toggleBlockType from "../commands/toggleBlockType";
 import headingToSlug from "../lib/headingToSlug";
@@ -84,12 +83,6 @@ export default class Heading extends Node<HeadingOptions, HeadingAttrs> {
         ];
       }
     };
-  }
-
-  toMarkdown(state: MarkdownSerializerState, node: ProseMirrorNode) {
-    state.write(state.repeat("#", node.attrs.level) + " ");
-    state.renderInline(node);
-    state.closeBlock(node);
   }
 
   parseMarkdown() {
