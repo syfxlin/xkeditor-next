@@ -1,8 +1,8 @@
 # XK-Editor (Next)
 
 > 一个支持富文本和 Markdown 的编辑器
-
-> 项目目前已经基本完善，后续将会用在 XK-Note（Next），不过今年要开始准备招聘了，项目可能会开坑了一直不写 2333。
+> 
+> 本项目已不再开发。Tiptap v2 已不再基于 Vue 开发，在使用和扩展性上也更为优秀。目前已开发了基于 Tiptap 的 [StarterKit](https://github.com/syfxlin/tiptap-starter-kit)，添加了本编辑器的一些特有功能，如块菜单（斜杠菜单）、浮动菜单等。同时未依赖于任何框架，可以在任何 Tiptap 支持的框架上使用，如 Vue、React 等。
 
 ![Author](https://img.shields.io/badge/Author-Otstar%20Lin-blue.svg?style=flat-square) ![License](https://img.shields.io/github/license/syfxlin/xkeditor.svg?style=flat-square)
 
